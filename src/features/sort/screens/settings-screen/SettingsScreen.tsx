@@ -39,7 +39,7 @@ export function SettingsScreen({ settings, onChange }: SettingsScreenProps) {
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto px-7 py-7">
         <Card className="overflow-hidden">
-          <ul className="divide-y divide-white/[.04]">
+          <ul className="divide-y divide-[var(--color-divider-soft)]">
             {ROWS.map((row) => (
               <li key={row.key} className="px-4 py-3.5 flex items-center gap-4">
                 <div className="flex-1">

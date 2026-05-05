@@ -4,7 +4,8 @@ const VARIANTS = {
   primary: "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-85",
   secondary:
     "border border-[var(--color-border-strong)] text-[var(--color-fg-1)] hover:bg-[var(--color-surface-2)]",
-  ghost: "text-[var(--color-fg-2)] hover:text-[var(--color-fg-1)] hover:bg-white/5",
+  ghost:
+    "text-[var(--color-fg-2)] hover:text-[var(--color-fg-1)] hover:bg-[var(--color-hover-soft)]",
   cautious:
     "border border-[var(--color-warning)]/30 text-[var(--color-warning)] hover:bg-[var(--color-warning)]/10",
 } as const;

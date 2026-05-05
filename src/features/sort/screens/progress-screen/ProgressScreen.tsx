@@ -60,7 +60,7 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
             Activity log
           </div>
           <Card className="overflow-hidden">
-            <ul className="divide-y divide-white/[.04]">
+            <ul className="divide-y divide-[var(--color-divider-soft)]">
               {progress.log.map((entry, index) => (
                 <li
                   key={`${entry.time}-${index}`}

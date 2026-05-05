@@ -12,9 +12,12 @@ export function HistoryScreen({ history, onRevert }: HistoryScreenProps) {
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto px-7 py-7">
         <Card className="overflow-hidden">
-          <ul className="divide-y divide-white/[.04]">
+          <ul className="divide-y divide-[var(--color-divider-soft)]">
             {history.map((job) => (
-              <li key={job.id} className="px-4 py-3 flex items-center gap-4 hover:bg-white/[.02]">
+              <li
+                key={job.id}
+                className="px-4 py-3 flex items-center gap-4 hover:bg-[var(--color-hover-soft)]"
+              >
                 <div className="flex-1">
                   <div className="text-[13px] font-medium">{job.name}</div>
                   <div className="font-mono text-[11px] text-[var(--color-fg-3)] mt-0.5">
