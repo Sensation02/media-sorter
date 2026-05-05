@@ -1,0 +1,47 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - production
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate version consistency (package.json ↔ Cargo.toml ↔ tauri.conf.json ↔ manifest)
+        run: |
+          set -euo pipefail
+          PKG=$(node -p "require('./package.json').version")
+          MANIFEST=$(node -p "require('./.release-please-manifest.json')['.']")
+          if [ "$PKG" != "$MANIFEST" ]; then
+            echo "::error::package.json ($PKG) != .release-please-manifest.json (.: $MANIFEST). Prepare-release PR must update both."
+            exit 1
+          fi
+          if [ -f src-tauri/Cargo.toml ]; then
+            CARGO=$(awk -F\" '/^version[[:space:]]*=/ { print $2; exit }' src-tauri/Cargo.toml)
+            if [ -n "$CARGO" ] && [ "$CARGO" != "$PKG" ]; then
+              echo "::error::src-tauri/Cargo.toml ($CARGO) != package.json ($PKG)."
+              exit 1
+            fi
+          fi
+          if [ -f src-tauri/tauri.conf.json ]; then
+            TAURI=$(node -p "try { require('./src-tauri/tauri.conf.json').version } catch (e) { '' }")
+            if [ -n "$TAURI" ] && [ "$TAURI" != "$PKG" ]; then
+              echo "::error::src-tauri/tauri.conf.json ($TAURI) != package.json ($PKG)."
+              exit 1
+            fi
+          fi
+          echo "Version consistency OK: $PKG"
+
+      - uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          target-branch: production
