@@ -124,7 +124,7 @@ Separate groups with a blank line only when the linter requires it.
 ## Architecture Rules
 
 1. **Entities / domain types** → centralized location (Rust: `src-tauri/src/domain/`; TS: `src/types/`) — never inside feature modules
-2. **DTOs / IPC schemas** → modules' `dto/` folder with barrel export; Tauri commands declare types on both sides
+2. **DTOs / IPC schemas** → live inside their feature module as `dto.rs` (or `dto/` with barrel if multiple files). Shared envelopes (e.g. `JobIdRequest`) live with the feature that owns them and are imported by siblings via `crate::<feature>::dto::...`. Tauri commands declare types on both sides
 3. **Utilities** → centralized location (`src-tauri/src/utils/`, `src/utils/`) — never duplicated per module
 4. **Primary keys** → integer (not UUID) unless a hard requirement says otherwise
 5. **Barrel exports** → use `index.ts` / `mod.rs` files
@@ -132,6 +132,33 @@ Separate groups with a blank line only when the linter requires it.
 7. **Migrations** → none (no DB at start). If a DB is added, auto-generated migrations only
 8. **UI server-state** — N/A (десктоп без бекенд-API). For local async state from Rust commands use the project's chosen state lib (TanStack Query можна, але часто overkill — обираємо коли з'явиться потреба)
 9. **Tests** → unit tests only for critical business logic
+
+### Backend module layout (Rust / `src-tauri/src/`)
+
+Hybrid: **feature modules vertical, shared core horizontal.** Each feature owns its IPC entry points, business logic, persistence, and DTOs. Shared types and utilities are centralized so features can depend on them without depending on each other.
+
+```
+src-tauri/src/
+├── lib.rs            ← bootstrap, plugin registration, invoke_handler
+├── error.rs          ← AppError, AppResult (shared)
+├── domain/           ← entities, enums, value objects (shared, never per-feature)
+├── utils/            ← cross-cutting helpers (shared)
+├── <feature>/        ← e.g. scanning, sorting, history
+│   ├── mod.rs        ← re-exports the public command fns and dto types
+│   ├── command.rs    ← #[tauri::command] entry points (thin)
+│   ├── service.rs    ← business logic (where the work happens)
+│   ├── repository.rs ← filesystem / persistence access (optional per feature)
+│   └── dto.rs        ← request / response IPC contracts for this feature
+└── …
+```
+
+Rules:
+
+- **Feature module owns its `command.rs` and `dto.rs`.** No flat `commands/` or `dto/` umbrella module.
+- **Domain types stay in `domain/`** even if used by exactly one feature today — moving them later breaks more than the duplication it avoids.
+- **`lib.rs` reexports nothing from features except command fns** — register them in `tauri::generate_handler![feature::command_name, …]`.
+- **Cross-feature imports allowed only for DTOs and read-only domain types**, never for service internals. If two features need to share business logic, extract to `domain/` or a new shared module.
+- **Frontend mirrors the same vertical split** under `src/features/<feature>/` (components, hooks, IPC bindings).
 
 ## Testing Philosophy
 
