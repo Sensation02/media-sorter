@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Pre-commit hook: run lint-staged on changed files only.
+# - JS/TS: ESLint + Prettier
+# - Rust:  cargo fmt + cargo clippy (whole crate; clippy can't be scoped to a file)
+
+echo "Running lint-staged on staged files..."
+
+pnpm exec lint-staged
+
+if [ $? -ne 0 ]; then
+  echo "Lint/format check failed. Fix the issues above and re-stage."
+  exit 1
+fi
+
+echo "Pre-commit checks passed."

@@ -1,0 +1,33 @@
+{
+  "name": "media-sorter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Desktop app that sorts photos and videos into <Month Year> folders, then by geolocation derived from EXIF metadata.",
+  "type": "module",
+  "scripts": {
+    "prepare": "husky",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx,js,jsx}": [
+      "pnpm exec eslint --fix",
+      "pnpm exec prettier --write"
+    ],
+    "src/**/*.{json,css,md}": [
+      "pnpm exec prettier --write"
+    ],
+    "src-tauri/**/*.rs": [
+      "bash -c 'cd src-tauri && cargo fmt --'",
+      "bash -c 'cd src-tauri && cargo clippy --all-targets -- -D warnings'"
+    ]
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
