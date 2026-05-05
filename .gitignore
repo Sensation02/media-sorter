@@ -9,6 +9,9 @@ dist
 dist-ssr
 build
 
+# TypeScript build cache
+*.tsbuildinfo
+
 # Tauri / Rust build artefacts
 src-tauri/target/
 src-tauri/gen/
