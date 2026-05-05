@@ -42,6 +42,9 @@
     --surface-2: oklch(0.97 0.004 250);
     --surface-3: oklch(0.94 0.005 250);
 
+    --hover-soft: oklch(0.95 0.005 250);
+    --divider-soft: oklch(0.94 0.005 250);
+
     --fg-1: oklch(0.18 0.01 250);
     --fg-2: oklch(0.42 0.01 250);
     --fg-3: oklch(0.62 0.008 250);
@@ -96,6 +99,9 @@
     --surface-2: oklch(0.23 0.01 250);
     --surface-3: oklch(0.26 0.01 250);
 
+    --hover-soft: oklch(1 0 0 / 0.05);
+    --divider-soft: oklch(1 0 0 / 0.04);
+
     --fg-1: oklch(0.93 0.005 250);
     --fg-2: oklch(0.65 0.01 250);
     --fg-3: oklch(0.42 0.01 250);
@@ -135,6 +141,9 @@
   --color-surface-1: var(--surface-1);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
+
+  --color-hover-soft: var(--hover-soft);
+  --color-divider-soft: var(--divider-soft);
 
   --color-fg-1: var(--fg-1);
   --color-fg-2: var(--fg-2);

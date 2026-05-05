@@ -35,7 +35,7 @@ export function Sidebar({ active, onNavigate }: SidebarProps) {
           className={`w-9 h-9 rounded-md flex items-center justify-center transition-colors ${
             active === item.id
               ? "bg-[var(--color-surface-2)] text-[var(--color-primary)]"
-              : "text-[var(--color-fg-3)] hover:text-[var(--color-fg-1)] hover:bg-white/5"
+              : "text-[var(--color-fg-3)] hover:text-[var(--color-fg-1)] hover:bg-[var(--color-hover-soft)]"
           }`}
         >
           <span className="text-[15px]">{item.icon}</span>
