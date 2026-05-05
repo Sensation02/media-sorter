@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Tauri Development Debug",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": ["build", "--manifest-path=src-tauri/Cargo.toml", "--no-default-features"]
+      },
+      "preLaunchTask": "ui:dev (background)",
+      "env": { "RUST_BACKTRACE": "1" }
+    },
+    {
+      "name": "Tauri Production Debug",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": ["build", "--release", "--manifest-path=src-tauri/Cargo.toml"]
+      },
+      "preLaunchTask": "ui:build",
+      "env": { "RUST_BACKTRACE": "1" }
+    },
+    {
+      "name": "Attach to Vite UI (Chrome)",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}/src",
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+    }
+  ]
+}

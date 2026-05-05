@@ -1,0 +1,51 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "ui:dev (background)",
+      "type": "shell",
+      "command": "pnpm dev",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": [{ "regexp": ".", "file": 1, "location": 2, "message": 3 }],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "VITE.*ready",
+          "endsPattern": "Local:.*"
+        }
+      },
+      "presentation": { "reveal": "silent", "panel": "dedicated" }
+    },
+    {
+      "label": "ui:build",
+      "type": "shell",
+      "command": "pnpm build",
+      "problemMatcher": [],
+      "presentation": { "reveal": "silent" }
+    },
+    {
+      "label": "kill port 1420 (Vite default for Tauri)",
+      "type": "shell",
+      "command": "lsof -ti :1420 | xargs kill -9 2>/dev/null || true; sleep 0.5",
+      "problemMatcher": [],
+      "presentation": { "reveal": "never", "panel": "shared", "close": true }
+    },
+    {
+      "label": "rust:clippy",
+      "type": "shell",
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "options": { "cwd": "${workspaceFolder}/src-tauri" },
+      "problemMatcher": ["$rustc"],
+      "presentation": { "reveal": "silent" }
+    },
+    {
+      "label": "rust:test",
+      "type": "shell",
+      "command": "cargo test",
+      "options": { "cwd": "${workspaceFolder}/src-tauri" },
+      "problemMatcher": ["$rustc"],
+      "presentation": { "reveal": "silent" }
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+.pnpm-store
+
+# Build / output
+dist
+dist-ssr
+build
+
+# Tauri / Rust build artefacts
+src-tauri/target/
+src-tauri/gen/
+**/*.rs.bk
+
+# Tauri bundles / installers (built artefacts)
+*.app
+*.dmg
+*.exe
+*.msi
+*.deb
+*.rpm
+*.AppImage
+*.tar.gz
+
+# Env and secrets
+.env
+.env.local
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+
+# Logs and debug
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+coverage
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/*
+
+# IDE / OS
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.idea
+Thumbs.db
+
+# Git worktrees (parallel agent isolation)
+.worktrees/
+
+# Superpowers (plans, specs, brainstorm mockups — local-only working notes)
+.superpowers/
+docs/superpowers/
+
+# Tauri signing / private update keys (NEVER commit)
+*.tauri-signing-key
+*.tauri-signing-key.pub
+~/.tauri/
+.tauri/
