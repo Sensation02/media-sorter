@@ -19,7 +19,8 @@ const LOG_DOT_COLORS: Record<SortLogLevel, string> = {
 };
 
 export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenProps) {
-  const pct = Math.round((progress.processed / progress.total) * PERCENT_BASE);
+  const pct =
+    progress.total > 0 ? Math.round((progress.processed / progress.total) * PERCENT_BASE) : 0;
 
   return (
     <div className="flex flex-col h-full">
