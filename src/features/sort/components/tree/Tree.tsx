@@ -24,7 +24,9 @@ export function Tree({ nodes, depth = 0 }: TreeProps) {
               {node.label}
             </span>
           </div>
-          {node.children && <Tree nodes={node.children} depth={depth + 1} />}
+          {node.kind === "folder" && node.children.length > 0 && (
+            <Tree nodes={node.children} depth={depth + 1} />
+          )}
         </li>
       ))}
     </ul>

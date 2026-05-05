@@ -36,7 +36,7 @@ export const DEFAULT_RULES: SortRule[] = [
           },
         ],
       },
-      { kind: "folder", label: "2023", muted: true },
+      { kind: "folder", label: "2023", muted: true, children: [] },
     ],
   },
   {
