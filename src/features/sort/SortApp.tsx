@@ -37,10 +37,6 @@ export function SortApp() {
   const [screen, setScreen] = useState<SortScreen>("setup");
   const [settings, setSettings] = useState<SortSettings>(DEFAULT_SETTINGS);
 
-  const onSettingChange = (key: keyof SortSettings, value: boolean) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-  };
-
   const subtitle = TOOLBAR_SUBTITLE[screen];
 
   return (
@@ -97,9 +93,7 @@ export function SortApp() {
               }}
             />
           )}
-          {screen === "settings" && (
-            <SettingsScreen settings={settings} onChange={onSettingChange} />
-          )}
+          {screen === "settings" && <SettingsScreen settings={settings} onChange={setSettings} />}
         </main>
       </div>
     </div>
