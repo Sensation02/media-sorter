@@ -34,6 +34,7 @@ LEAD                 (Rust)   (React)              GUARD     SECURITY /
 This is NOT a separate sub-agent but the role of the main Claude Code session.
 
 **Responsibilities:**
+
 - Receives task from user
 - Assesses task complexity (simple / complex / multi-stack)
 - Chooses execution strategy (A / B / C / D)
@@ -44,6 +45,7 @@ This is NOT a separate sub-agent but the role of the main Claude Code session.
 - Verifies the final result
 
 **Orchestrator Rules:**
+
 - ALWAYS start by analyzing task complexity
 - NEVER delegate a task you don't understand yourself
 - If a sub-agent failed — understand why before restarting
@@ -54,6 +56,7 @@ This is NOT a separate sub-agent but the role of the main Claude Code session.
 **Scope:** planning only — never writes code.
 
 **Responsibilities:**
+
 - Analyzes codebase (file search, dependencies)
 - Breaks task into atomic subtasks
 - Identifies dependencies between subtasks
@@ -65,12 +68,14 @@ This is NOT a separate sub-agent but the role of the main Claude Code session.
 **Scope:** research and discovery only — does not write implementation code.
 
 **When to delegate:**
+
 - Task lacks clear requirements or acceptance criteria
 - Need to compare libraries (e.g., choosing between EXIF parser crates)
 - Need offline-database options for reverse geocoding
 - GitHub Issue is too vague for direct implementation
 
 **Delegation template:**
+
 ```
 Task: "Read .claude/agents/researcher.md and follow those role instructions.
 
@@ -83,12 +88,14 @@ CONTEXT: [any additional context]."
 **Scope:** everything inside `src-tauri/` — Rust modules, Tauri commands, state, EXIF/FS logic.
 
 **Responsibilities:**
+
 - Reads the relevant spec from `docs/specs/`
 - Implements ONE specific backend subtask
 - Does not exceed subtask scope
 - Does not touch frontend code
 
 **Delegation template:**
+
 ```
 Task: "Read .claude/agents/backend-developer.md and follow those role instructions.
 
@@ -110,11 +117,13 @@ VERIFICATION: cd src-tauri && cargo clippy --all-targets -- -D warnings && cargo
 **Scope:** everything inside `src/` — React components, pages, hooks, IPC type mirrors, styles.
 
 **Responsibilities:**
+
 - Implements ONE specific frontend subtask
 - Does not exceed subtask scope
 - Does not touch backend code
 
 **Delegation template:**
+
 ```
 Task: "Read .claude/agents/frontend-developer.md and follow those role instructions.
 
@@ -134,6 +143,7 @@ VERIFICATION: pnpm lint && pnpm build"
 ### Reviewer Agent (sub-agent, Phase 3 — Quality Gate)
 
 **Responsibilities:**
+
 - Checks types, tests, linter
 - Verifies compliance with the plan
 - Looks for anti-patterns
@@ -148,6 +158,7 @@ VERIFICATION: pnpm lint && pnpm build"
 ### Tester / Security Auditor / Refactoring Specialist / Documentation Writer
 
 Specialist sub-agents invoked when their domain matches the task:
+
 - **Tester** — write/extend tests (Rust unit/integration; UI tests)
 - **Security Auditor** — when capability config, IPC inputs, or filesystem-destructive code changes
 - **Refactoring Specialist** — pure structural refactor with behavior preservation
@@ -167,18 +178,19 @@ Parallel agents are dispatched via the `Agent` tool with `run_in_background: tru
 
 ### File Scope Rules
 
-| Agent | Read access | Write access | Forbidden writes |
-|-------|------------|-------------|-----------------|
-| Backend Developer | `src-tauri/`, shared specs, `src/types/ipc.ts` (read for type mirror) | `src-tauri/` | `src/` |
-| Frontend Developer | `src/`, shared specs | `src/` | `src-tauri/` |
-| Tester | `src-tauri/`, `src/` | Rust `#[cfg(test)]` blocks, `src-tauri/tests/`, `*.test.tsx` only | Production code |
-| Phase 0/2 Agent | Full project | Shared resources as delegated (typically: `src/types/ipc.ts`, `src-tauri/src/types.rs`, barrel `index.ts` / `mod.rs`) | Anything outside delegated scope |
+| Agent              | Read access                                                           | Write access                                                                                                          | Forbidden writes                 |
+| ------------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| Backend Developer  | `src-tauri/`, shared specs, `src/types/ipc.ts` (read for type mirror) | `src-tauri/`                                                                                                          | `src/`                           |
+| Frontend Developer | `src/`, shared specs                                                  | `src/`                                                                                                                | `src-tauri/`                     |
+| Tester             | `src-tauri/`, `src/`                                                  | Rust `#[cfg(test)]` blocks, `src-tauri/tests/`, `*.test.tsx` only                                                     | Production code                  |
+| Phase 0/2 Agent    | Full project                                                          | Shared resources as delegated (typically: `src/types/ipc.ts`, `src-tauri/src/types.rs`, barrel `index.ts` / `mod.rs`) | Anything outside delegated scope |
 
 ### Shared Resource Rules
 
 Shared resources (IPC types on both sides, constants, barrel exports) are created/updated ONLY by a dedicated sequential agent in Strategy Phase 0 or Phase 2.
 
 If a parallel agent needs a shared resource that doesn't exist:
+
 1. **Prevention (primary):** Orchestrator analyzes all subtask scopes and pre-creates required shared resources in Phase 0.
 2. **Fallback:** Agent completes what it can, documents the gap in its completion report. Orchestrator creates the resource via sequential agent and re-runs the affected subtask.
 
@@ -273,11 +285,11 @@ Orchestrator defines the **IPC contract** and launches a parallel team. Each age
 
 Quality Gate is a mandatory final step for ALL strategies:
 
-| Strategy | Quality Gate |
-|----------|-------------|
-| A: Simple | Minimum: Pattern Guard (single background agent) |
+| Strategy      | Quality Gate                                                 |
+| ------------- | ------------------------------------------------------------ |
+| A: Simple     | Minimum: Pattern Guard (single background agent)             |
 | B: Sequential | Full: Reviewer + Pattern Guard (parallel, run_in_background) |
-| C: Parallel | Full: Reviewer + Pattern Guard (parallel, run_in_background) |
+| C: Parallel   | Full: Reviewer + Pattern Guard (parallel, run_in_background) |
 | D: Full-Stack | Full: Reviewer + Pattern Guard (parallel, run_in_background) |
 
 Both agents run in parallel. The Orchestrator triages findings from both: duplicate findings count as one, disagreements are resolved by the Orchestrator.
@@ -361,6 +373,7 @@ The most common conflict with Strategy D — frontend calls a Tauri command diff
 ## Architecture Rules
 
 ### General Rules
+
 - **One file — one responsibility** (Single Responsibility)
 - **Naming**:
   - TS/React: camelCase for variables/functions, PascalCase for components/types, kebab-case for files
@@ -405,6 +418,7 @@ src/
 ```
 
 ### Test Rules
+
 - ~60–70% coverage for MVP — only critical business logic
 - Rust: colocated `#[cfg(test)] mod tests { ... }` for unit, `src-tauri/tests/<feature>.rs` for integration
 - TS: colocated `<name>.test.tsx`

@@ -23,43 +23,53 @@
 # Plan: [task name]
 
 ## Task
+
 [1-2 sentences]
 
 ## Strategy: [A/B/C/D]
+
 [Why this strategy was chosen — 1-2 sentences explaining the reasoning
 based on: file count, stack scope (Rust only / UI only / both), dependencies between subtasks]
 
 ## PR Split (if multi-PR)
+
 [If the work is large enough for multiple PRs — define them here.
 Each PR must: build independently, not break other PRs, have clear scope.]
 
 ### PR #1: `type(scope): title`
+
 - Scope: [files/directories]
 - Build safety: [why this PR builds independently]
 
 ## Subtasks
 
 ### Group 1 (parallel) — independent, can run in parallel
+
 - [ ] 1.1 [Backend] Create ExifData domain type — `src-tauri/src/domain/exif.rs`
 - [ ] 1.2 [Frontend] Create ExifData TS interface mirror — `src/types/ipc.ts`
 
 ### Group 2 (sequential, depends on Group 1)
+
 - [ ] 2.1 [Backend] Implement extract_exif command — `src-tauri/src/commands/exif.rs`
 - [ ] 2.2 [Frontend] Hook to invoke command — `src/hooks/useExif.ts`
 
 ### Group 3 (parallel) — tests
+
 - [ ] 3.1 [Backend] Tests for exif parser — `#[cfg(test)] mod tests` in `domain/exif.rs`
 
 ## IPC Contract (for Strategy D)
-  Command: extract_exif
-    Rust:  async fn extract_exif(path: String) -> Result<ExifData, AppError>
-    TS:    invoke<ExifData>('extract_exif', { path })
-    Types: ExifData { taken_at: Option<DateTime<Utc>>, gps: Option<GpsCoords>, camera: Option<String> }
+
+Command: extract_exif
+Rust: async fn extract_exif(path: String) -> Result<ExifData, AppError>
+TS: invoke<ExifData>('extract_exif', { path })
+Types: ExifData { taken_at: Option<DateTime<Utc>>, gps: Option<GpsCoords>, camera: Option<String> }
 
 ## Risks
+
 - [risk description and mitigation]
 
 ## Files Changed
+
 - `src-tauri/src/domain/exif.rs` (new)
 - `src-tauri/src/commands/exif.rs` (new)
 - `src/types/ipc.ts` (modified — add ExifData)
@@ -76,11 +86,11 @@ Each PR must: build independently, not break other PRs, have clear scope.]
 
 Orchestrator determines which Developer is needed based on file scope:
 
-| Files in scope | Agent |
-|---|---|
-| `src-tauri/` — Rust modules, Tauri commands, FS/EXIF logic | Backend Developer |
-| `src/` — components, pages, hooks, IPC mirrors | Frontend Developer |
-| Both stacks (full-stack feature) | Backend + Frontend in parallel (Strategy D) |
+| Files in scope                                             | Agent                                       |
+| ---------------------------------------------------------- | ------------------------------------------- |
+| `src-tauri/` — Rust modules, Tauri commands, FS/EXIF logic | Backend Developer                           |
+| `src/` — components, pages, hooks, IPC mirrors             | Frontend Developer                          |
+| Both stacks (full-stack feature)                           | Backend + Frontend in parallel (Strategy D) |
 
 ### Backend — sequential execution (Strategy B)
 
@@ -146,6 +156,7 @@ Phase 3 (QUALITY GATE — run_in_background):
 ```
 
 **IMPORTANT for parallel tasks:**
+
 - Each parallel agent uses `run_in_background: true` in the same working directory
 - File scope separation enforced: Backend → `src-tauri/`, Frontend → `src/`, Tester → test files only
 - Shared resources (Rust ↔ TS type mirror) prepared by sequential agent in Phase 0 (before parallel launch)
@@ -221,12 +232,14 @@ This phase runs AFTER Phase 3 (Verify) and BEFORE Phase 4 (Deliver). It is **man
 If you discover a **recurring pattern** — an error you've made before or a gotcha that's not obvious — save it to memory or to `docs/workflow/anti-patterns.md` (as a candidate AP-XXX) so it doesn't happen again.
 
 **What to document:**
+
 - Recurring typos or naming mistakes
 - Framework gotchas (Tauri serde renaming, Vite module resolution, Tailwind v4 syntax)
 - Project-specific patterns that are easy to forget
 - False positive patterns from review tools
 
 **What NOT to document:**
+
 - One-off mistakes that won't recur
 - Information already in CLAUDE.md or specs
 - Session-specific context

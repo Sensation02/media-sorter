@@ -2,7 +2,11 @@
 
 # Pre-commit hook: run lint-staged on changed files only.
 # - JS/TS: ESLint + Prettier
-# - Rust:  cargo fmt + cargo clippy (whole crate; clippy can't be scoped to a file)
+# - Rust:  cargo fmt + cargo clippy (gracefully skipped if cargo isn't installed)
+
+if ! command -v cargo >/dev/null 2>&1; then
+  echo "Note: cargo not installed — Rust hooks will be skipped. Install Rust: https://rustup.rs"
+fi
 
 echo "Running lint-staged on staged files..."
 

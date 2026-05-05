@@ -223,7 +223,7 @@ impl MyTrait for MyType {
 
 ### Parse, don't validate
 
-Alexis King's principle. Convert raw data into a type that *guarantees* validity at the type level.
+Alexis King's principle. Convert raw data into a type that _guarantees_ validity at the type level.
 
 ```rust
 // Bad: validation that doesn't enrich types
@@ -561,24 +561,25 @@ Principles repeated by the gurus (Aaron Turon, Niko Matsakis, Jon Gjengset, fast
 
 ## 11. Useful Crates by Category
 
-| Category | Crates |
-|----------|--------|
-| Errors | `thiserror`, `anyhow`, `eyre` |
-| Async runtime | `tokio`, `async-std` (rare) |
-| HTTP server | `axum`, `actix-web`, `rocket` |
-| HTTP client | `reqwest`, `hyper` |
-| Serialization | `serde`, `serde_json`, `bincode`, `postcard` |
-| Logging/tracing | `tracing`, `tracing-subscriber` |
-| CLI | `clap`, `argh` |
-| Database | `sqlx`, `sea-orm`, `diesel` |
-| Testing | `criterion`, `proptest`, `insta`, `mockall` |
-| Utilities | `itertools`, `once_cell`, `parking_lot`, `dashmap` |
+| Category        | Crates                                             |
+| --------------- | -------------------------------------------------- |
+| Errors          | `thiserror`, `anyhow`, `eyre`                      |
+| Async runtime   | `tokio`, `async-std` (rare)                        |
+| HTTP server     | `axum`, `actix-web`, `rocket`                      |
+| HTTP client     | `reqwest`, `hyper`                                 |
+| Serialization   | `serde`, `serde_json`, `bincode`, `postcard`       |
+| Logging/tracing | `tracing`, `tracing-subscriber`                    |
+| CLI             | `clap`, `argh`                                     |
+| Database        | `sqlx`, `sea-orm`, `diesel`                        |
+| Testing         | `criterion`, `proptest`, `insta`, `mockall`        |
+| Utilities       | `itertools`, `once_cell`, `parking_lot`, `dashmap` |
 
 ---
 
 ## How to Use This Skill
 
 When working on Rust code, refer to the relevant sections:
+
 - **Architectural decision** → sections 3, 7, 9
 - **Code won't compile / borrow checker issue** → section 2 (rule 1)
 - **Error handling** → section 4

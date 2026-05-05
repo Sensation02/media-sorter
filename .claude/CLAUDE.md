@@ -8,18 +8,18 @@ You are my senior full-stack engineer assistant working directly in VS Code or C
 
 ## Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| Desktop runtime | Rust + Tauri | Native shell, FS / EXIF доступ, IPC до UI |
-| Frontend framework | React | UI всередині Tauri webview |
-| Build tool (UI) | Vite | Dev server + bundler для React |
-| EXIF / metadata | TBD | Читання EXIF/GPS з фото та відео — бібліотеку оберемо пізніше |
-| Reverse geocoding | offline, з метаданих (TBD) | GPS → назва міста; без зовнішніх API на старті |
-| Linter / Formatter (UI) | ESLint + Prettier | Якість React-коду |
-| Linter / Formatter (Rust) | rustfmt + clippy | Стандартний тулчейн Rust |
-| Testing (Rust) | TBD | Дослідимо коли почнемо писати тести |
-| Testing (UI) | TBD | Імовірно Vitest пізніше |
-| CI | None | Без CI на старті |
+| Layer                     | Technology                 | Purpose                                                       |
+| ------------------------- | -------------------------- | ------------------------------------------------------------- |
+| Desktop runtime           | Rust + Tauri               | Native shell, FS / EXIF доступ, IPC до UI                     |
+| Frontend framework        | React                      | UI всередині Tauri webview                                    |
+| Build tool (UI)           | Vite                       | Dev server + bundler для React                                |
+| EXIF / metadata           | TBD                        | Читання EXIF/GPS з фото та відео — бібліотеку оберемо пізніше |
+| Reverse geocoding         | offline, з метаданих (TBD) | GPS → назва міста; без зовнішніх API на старті                |
+| Linter / Formatter (UI)   | ESLint + Prettier          | Якість React-коду                                             |
+| Linter / Formatter (Rust) | rustfmt + clippy           | Стандартний тулчейн Rust                                      |
+| Testing (Rust)            | TBD                        | Дослідимо коли почнемо писати тести                           |
+| Testing (UI)              | TBD                        | Імовірно Vitest пізніше                                       |
+| CI                        | None                       | Без CI на старті                                              |
 
 ## Package Manager
 
@@ -73,6 +73,7 @@ Commit `pnpm-lock.yaml` та `Cargo.lock` only. Never commit `package-lock.json`
 **Time** — use a single time library consistently (`chrono` в Rust, один з `date-fns` / `dayjs` / `luxon` у TS — обираємо один). Never use raw platform clocks (`Date.now()`, `std::time::SystemTime::now()`) directly in business logic.
 
 **Naming conventions:**
+
 - Rust: `snake_case` для функцій/змінних, `PascalCase` для типів, `SCREAMING_SNAKE_CASE` для constants
 - TS/React: `camelCase` для функцій/змінних, `PascalCase` для типів та компонентів, `UPPER_SNAKE_CASE` для constants
 - Private fields immutable by default
@@ -81,6 +82,7 @@ Commit `pnpm-lock.yaml` та `Cargo.lock` only. Never commit `package-lock.json`
 ## Code Structure & Readability
 
 **Import order** (enforced by linter, but follow intentionally):
+
 1. External packages
 2. Internal absolute paths
 3. Relative siblings
@@ -88,6 +90,7 @@ Commit `pnpm-lock.yaml` та `Cargo.lock` only. Never commit `package-lock.json`
 Separate groups with a blank line only when the linter requires it.
 
 **Class / module member order:**
+
 1. Static properties / constants
 2. Private immutable fields
 3. Constructor / initializer
@@ -97,12 +100,14 @@ Separate groups with a blank line only when the linter requires it.
 7. Pure validation / helper methods at the bottom
 
 **Blank lines as section separators:**
+
 - One blank line between methods — always
 - One blank line after the constructor
 - One blank line between logical blocks inside a method (setup → main logic → return)
 - No double blank lines anywhere
 
 **Method body structure** — each method should read top-to-bottom like a recipe:
+
 1. Guards / validation (early returns, throw if invalid)
 2. Data preparation (fetch, transform, build)
 3. Main action (save, update, call external)
@@ -111,6 +116,7 @@ Separate groups with a blank line only when the linter requires it.
 **Guard clause breathing room** — add a blank line before and after guard clauses (`if (!x) return`) to visually separate data preparation from guards from main logic. Also add a blank line before cleanup returns in effects / destructors.
 
 **Ternaries and conditionals:**
+
 - Single-condition ternary: inline is fine
 - Multi-condition: use `if/else` or extract to a variable / helper
 - Never nest ternaries
@@ -132,12 +138,14 @@ Separate groups with a blank line only when the linter requires it.
 **Target: ~60–70% for MVP.** Test only critical business logic.
 
 **Test ONLY:**
+
 - Complex data transformations (EXIF parsing, date extraction, geolocation reverse-lookup)
 - Error handling paths (corrupted files, missing metadata)
 - Core business flows (sorting, deduplication, conflict resolution)
 - Isolation invariants (filesystem operations within sandbox)
 
 **Do NOT test:**
+
 - "should be defined"
 - Simple CRUD
 - DTOs / serializers
@@ -150,25 +158,26 @@ Separate groups with a blank line only when the linter requires it.
 
 ## Design Patterns
 
-| Pattern | Usage |
-|---------|-------|
-| Repository | Data access abstraction (filesystem reads/writes wrapper) |
-| Factory | Dynamic object instantiation |
-| Strategy | Interchangeable algorithms (different sorting modes — by date, by location, both) |
-| Decorator | Cross-cutting concerns (logging, profiling) |
-| Singleton | Config, shared resources (Tauri app handle) |
+| Pattern    | Usage                                                                             |
+| ---------- | --------------------------------------------------------------------------------- |
+| Repository | Data access abstraction (filesystem reads/writes wrapper)                         |
+| Factory    | Dynamic object instantiation                                                      |
+| Strategy   | Interchangeable algorithms (different sorting modes — by date, by location, both) |
+| Decorator  | Cross-cutting concerns (logging, profiling)                                       |
+| Singleton  | Config, shared resources (Tauri app handle)                                       |
 
 ## Error Handling
 
-| Situation | Semantic | UI signal |
-|-----------|----------|-----------|
-| File not readable | I/O error | Toast + skip in batch |
-| Invalid metadata | Validation error | Mark as "unknown date / location" |
-| Permission denied | Forbidden | Modal with "Grant access" CTA |
-| Duplicate target file | Conflict | Conflict resolution dialog (skip / overwrite / rename) |
-| Unknown error | Internal error | Error toast + log line |
+| Situation             | Semantic         | UI signal                                              |
+| --------------------- | ---------------- | ------------------------------------------------------ |
+| File not readable     | I/O error        | Toast + skip in batch                                  |
+| Invalid metadata      | Validation error | Mark as "unknown date / location"                      |
+| Permission denied     | Forbidden        | Modal with "Grant access" CTA                          |
+| Duplicate target file | Conflict         | Conflict resolution dialog (skip / overwrite / rename) |
+| Unknown error         | Internal error   | Error toast + log line                                 |
 
 Map these to:
+
 - Rust: `Result<T, AppError>` with `thiserror`-style enum
 - TS: typed `Error` subclasses or discriminated union types
 
@@ -205,20 +214,20 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`
 
 **Flow:** code → self-improve → split into branch(es) → atomic commits → Pattern Guard → review → triage (incl. false positives) → fix → verify → push + open PR → CI check → merge (manual)
 
-| Phase | What happens |
-|-------|--------------|
-| Develop | All code written in working directory |
-| Self-improve | Re-read own code, fix typos / naming / imports, document learnings |
-| Split | Create branch per PR, stage files by logical group |
-| Commit | Atomic commits — one logical step per commit, never one big commit |
-| Pattern Guard | Scan against `docs/workflow/anti-patterns.md`, fix AP-XXX matches |
-| Review | Multi-agent code review |
-| Triage | Classify findings: real issue / false positive / style preference |
-| Fix | Address accepted findings, commit fixes separately |
-| Verify | Lint + build + tests for every workspace |
-| Push | `git push -u origin <branch>` + open PR |
-| CI check | Never merge with red CI |
-| Merge | Manual via UI or explicit command — never auto-merge |
+| Phase         | What happens                                                       |
+| ------------- | ------------------------------------------------------------------ |
+| Develop       | All code written in working directory                              |
+| Self-improve  | Re-read own code, fix typos / naming / imports, document learnings |
+| Split         | Create branch per PR, stage files by logical group                 |
+| Commit        | Atomic commits — one logical step per commit, never one big commit |
+| Pattern Guard | Scan against `docs/workflow/anti-patterns.md`, fix AP-XXX matches  |
+| Review        | Multi-agent code review                                            |
+| Triage        | Classify findings: real issue / false positive / style preference  |
+| Fix           | Address accepted findings, commit fixes separately                 |
+| Verify        | Lint + build + tests for every workspace                           |
+| Push          | `git push -u origin <branch>` + open PR                            |
+| CI check      | Never merge with red CI                                            |
+| Merge         | Manual via UI or explicit command — never auto-merge               |
 
 ### Rules
 
@@ -256,25 +265,26 @@ When a task is split into multiple PRs:
 
 **Strategy selection:**
 
-| Strategy | When to use |
-|----------|-------------|
-| A — Simple | Trivial change. Orchestrator writes code directly. |
-| B — Sequential | Small feature, one agent at a time |
-| C — Parallel | Independent file scopes, no shared state |
+| Strategy       | When to use                                                                   |
+| -------------- | ----------------------------------------------------------------------------- |
+| A — Simple     | Trivial change. Orchestrator writes code directly.                            |
+| B — Sequential | Small feature, one agent at a time                                            |
+| C — Parallel   | Independent file scopes, no shared state                                      |
 | D — Full-Stack | Backend + Frontend + specialists in parallel after API/IPC contract is locked |
 
 **Agent delegation convention (Strategy B/C/D):** when dispatching subagents, ALWAYS include in the prompt: `Read .claude/agents/<role>.md and follow those role instructions.`
 
-| Task type | Agent definition |
-|-----------|-----------------|
-| Planning, strategy | `.claude/agents/team-lead.md` |
-| Research, discovery | `.claude/agents/researcher.md` |
-| Backend (`src-tauri`) | `.claude/agents/backend-developer.md` |
-| Frontend (`src`) | `.claude/agents/frontend-developer.md` |
-| Code review | `.claude/agents/reviewer.md` |
-| Anti-pattern scan | `.claude/agents/pattern-guard.md` |
+| Task type             | Agent definition                       |
+| --------------------- | -------------------------------------- |
+| Planning, strategy    | `.claude/agents/team-lead.md`          |
+| Research, discovery   | `.claude/agents/researcher.md`         |
+| Backend (`src-tauri`) | `.claude/agents/backend-developer.md`  |
+| Frontend (`src`)      | `.claude/agents/frontend-developer.md` |
+| Code review           | `.claude/agents/reviewer.md`           |
+| Anti-pattern scan     | `.claude/agents/pattern-guard.md`      |
 
 **In-session parallelization (Strategy C & D):**
+
 - Parallel agents use background execution in the same working directory
 - File scope separation enforced: backend agent → `src-tauri`, frontend agent → `src`
 - Shared resources (types, constants, IPC contracts, barrel exports) prepared by sequential agent before parallel work
@@ -282,6 +292,7 @@ When a task is split into multiple PRs:
 - Strategy A exception: Orchestrator may write code directly for simple tasks
 
 **Key rules:**
+
 - ALWAYS analyze task complexity before starting
 - Plan MUST include: chosen strategy (A/B/C/D) with justification
 - Plan MUST include PR split if work is large

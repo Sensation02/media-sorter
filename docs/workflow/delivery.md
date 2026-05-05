@@ -41,6 +41,7 @@ Bad (1 commit in one PR):
 ```
 
 **Commit granularity rules:**
+
 - One Rust type/struct definition = one commit
 - One Tauri command = one commit (with its parser/service if small; separately if large)
 - One UI component group = one commit
@@ -105,6 +106,7 @@ For each PR defined in the plan:
 ```
 
 **Multi-PR rules:**
+
 - Each PR MUST build independently (`pnpm build` and `cd src-tauri && cargo build`)
 - PRs MUST NOT break each other — no import dependencies across PR boundaries
 - Each PR gets its own branch (e.g., `feat/exif-parser`, `feat/exif-ui-panel`)
@@ -131,14 +133,15 @@ Review tools can produce false positives — findings that look like issues but 
 
 **Triage every finding before acting:**
 
-| Classification | Action | Example |
-|----------------|--------|---------|
-| **Real issue** | Fix immediately, commit separately | Missing `?` operator, wrong type, real null hazard |
-| **False positive** | Ignore, document pattern in memory | Flagging an intentional `unwrap()` with adjacent invariant comment |
-| **Style preference** | Ignore unless it violates CLAUDE.md | Reviewer prefers different naming |
-| **Outdated rule** | Ignore, update rule if recurring | Rule conflicts with newer project convention |
+| Classification       | Action                              | Example                                                            |
+| -------------------- | ----------------------------------- | ------------------------------------------------------------------ |
+| **Real issue**       | Fix immediately, commit separately  | Missing `?` operator, wrong type, real null hazard                 |
+| **False positive**   | Ignore, document pattern in memory  | Flagging an intentional `unwrap()` with adjacent invariant comment |
+| **Style preference** | Ignore unless it violates CLAUDE.md | Reviewer prefers different naming                                  |
+| **Outdated rule**    | Ignore, update rule if recurring    | Rule conflicts with newer project convention                       |
 
 **How to detect false positives:**
+
 1. Read the flagged code in context — does the "fix" actually improve correctness?
 2. Check if the finding contradicts an existing project convention (CLAUDE.md, specs)
 3. Verify the finding against the actual runtime behavior, not just static analysis
@@ -176,6 +179,7 @@ After push, verify CI passes before merge:
 ```
 
 **Rules:**
+
 - Merge is NEVER automatic — always manual or by explicit user command
 - If CI fails due to missing imports from another PR → merge dependency PR first, rebase, re-push
 - After squash-merge of a dependency PR → `git rebase staging` on child branch (duplicate commits auto-drop)
@@ -186,10 +190,10 @@ After push, verify CI passes before merge:
 
 Apply PR labels based on content:
 
-| Label | When to apply | Notes |
-|-------|---------------|-------|
-| _(none)_ | Default — code changes that need verification | Walk the affected flow in `pnpm tauri dev` before merge |
-| `skip-testing` | Docs-only, config, CI, non-functional | Can merge after green CI without manual UX verification |
+| Label                  | When to apply                                        | Notes                                                        |
+| ---------------------- | ---------------------------------------------------- | ------------------------------------------------------------ |
+| _(none)_               | Default — code changes that need verification        | Walk the affected flow in `pnpm tauri dev` before merge      |
+| `skip-testing`         | Docs-only, config, CI, non-functional                | Can merge after green CI without manual UX verification      |
 | `cross-platform-check` | Touches FS, OS dialogs, paths, or Tauri capabilities | Verify on macOS + at least one of Windows/Linux before merge |
 
 ### What qualifies for `skip-testing`
@@ -220,16 +224,17 @@ The PR description must always reflect the **actual content** of the PR. This is
 
 ### When to update
 
-| Trigger | Action |
-|---------|--------|
-| New commits pushed to PR branch | Review if description still covers all changes |
-| User requests additional work on the PR | Update description after pushing the changes |
-| Review findings fixed | No update needed (fixes are expected) |
-| PR scope expanded beyond original task | Update summary and test plan |
+| Trigger                                 | Action                                         |
+| --------------------------------------- | ---------------------------------------------- |
+| New commits pushed to PR branch         | Review if description still covers all changes |
+| User requests additional work on the PR | Update description after pushing the changes   |
+| Review findings fixed                   | No update needed (fixes are expected)          |
+| PR scope expanded beyond original task  | Update summary and test plan                   |
 
 ### How to verify
 
 Before marking a PR as ready or requesting merge:
+
 1. `gh pr view <number> --json commits,files` — list all commits and changed files
 2. Compare against the PR description — every significant change should be mentioned
 3. `gh pr edit <number> --body "..."` — update if mismatched
