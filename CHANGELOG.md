@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 
+- Refreshed UI: dark workbench layout for sort jobs (setup, progress, done, history, settings)
+- Design system tokens extended (@theme): surface scale, fg scale, semantic colors (warning/success), radius scale
+
 ### Bug Fixes
 
 ### Performance
