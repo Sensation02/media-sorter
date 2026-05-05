@@ -4,7 +4,7 @@ import type { SortSettings } from "../../../../types/sort";
 
 export type SettingsScreenProps = {
   settings: SortSettings;
-  onChange: (key: keyof SortSettings, value: boolean) => void;
+  onChange: (next: SortSettings) => void;
 };
 
 const ROWS: {
@@ -49,7 +49,7 @@ export function SettingsScreen({ settings, onChange }: SettingsScreenProps) {
                 <Toggle
                   checked={settings[row.key]}
                   onChange={(value) => {
-                    onChange(row.key, value);
+                    onChange({ ...settings, [row.key]: value });
                   }}
                 />
               </li>
