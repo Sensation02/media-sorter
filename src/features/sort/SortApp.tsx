@@ -82,11 +82,20 @@ export function SortApp() {
               onNewSort={() => {
                 setScreen("setup");
               }}
-              onReveal={() => undefined}
+              onReveal={() => {
+                // TODO(IPC): wire to a Tauri command that reveals the destination in Finder/Explorer
+                console.warn("[SortApp] onReveal not yet wired to Tauri");
+              }}
             />
           )}
           {screen === "history" && (
-            <HistoryScreen history={DEFAULT_HISTORY} onRevert={() => undefined} />
+            <HistoryScreen
+              history={DEFAULT_HISTORY}
+              onRevert={(id) => {
+                // TODO(IPC): wire to a Tauri command that reverts the sort job by id
+                console.warn("[SortApp] onRevert not yet wired to Tauri", { id });
+              }}
+            />
           )}
           {screen === "settings" && (
             <SettingsScreen settings={settings} onChange={onSettingChange} />
