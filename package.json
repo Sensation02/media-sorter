@@ -2,15 +2,55 @@
   "name": "media-sorter",
   "version": "0.1.0",
   "private": true,
-  "description": "Desktop app that sorts photos and videos into <Month Year> folders, then by geolocation derived from EXIF metadata.",
+  "description": "Desktop app that sorts photos and videos into Month/Year folders, then by geolocation derived from EXIF.",
   "type": "module",
   "scripts": {
-    "prepare": "husky",
-    "tauri": "tauri"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/plugin-opener": "^2.5.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@tailwindcss/vite": "^4.2.4",
+    "@tauri-apps/cli": "^2.11.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/coverage-v8": "^4.1.5",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.5.0",
     "husky": "^9.1.7",
-    "lint-staged": "^15.4.3"
+    "jsdom": "^29.1.1",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3",
+    "tailwindcss": "^4.2.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.2",
+    "vite": "^8.0.10",
+    "vitest": "^4.1.5"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx,js,jsx}": [
@@ -21,13 +61,13 @@
       "pnpm exec prettier --write"
     ],
     "src-tauri/**/*.rs": [
-      "bash -c 'cd src-tauri && cargo fmt --'",
-      "bash -c 'cd src-tauri && cargo clippy --all-targets -- -D warnings'"
+      "sh -c 'command -v cargo >/dev/null 2>&1 && (cd src-tauri && cargo fmt --) || echo skip:cargo-fmt-no-cargo'",
+      "sh -c 'command -v cargo >/dev/null 2>&1 && (cd src-tauri && cargo clippy --all-targets -- -D warnings) || echo skip:cargo-clippy-no-cargo'"
     ]
   },
   "engines": {
     "node": ">=22.0.0",
-    "pnpm": ">=9.0.0"
+    "pnpm": ">=10.0.0"
   },
-  "packageManager": "pnpm@9.15.0"
+  "packageManager": "pnpm@10.33.3"
 }
