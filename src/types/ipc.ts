@@ -1,0 +1,122 @@
+export type MediaKind = "photo" | "raw" | "video";
+
+export type SortRuleId = "by-date" | "by-date-and-place" | "by-type" | "by-camera";
+
+export type DateSource = "exif" | "mtime" | "unknown";
+
+export type JobStatus = "idle" | "running" | "paused" | "done" | "cancelled" | "failed";
+
+export type GeoPoint = {
+  latitude: number;
+  longitude: number;
+};
+
+export type Place = {
+  name: string;
+  country: string | null;
+};
+
+export type Camera = {
+  make: string | null;
+  model: string | null;
+};
+
+export type CaptureDate = {
+  at: string;
+  source: DateSource;
+};
+
+export type Metadata = {
+  capture: CaptureDate | null;
+  geo: GeoPoint | null;
+  camera: Camera | null;
+};
+
+export type MediaFile = {
+  path: string;
+  sizeBytes: number;
+  kind: MediaKind;
+};
+
+export type ByKind = {
+  photos: number;
+  raw: number;
+  videos: number;
+};
+
+export type ScanSummary = {
+  root: string;
+  fileCount: number;
+  sizeBytes: number;
+  byKind: ByKind;
+};
+
+export type SortPlanItem = {
+  source: string;
+  target: string;
+};
+
+export type SortPlan = {
+  rule: SortRuleId;
+  root: string;
+  items: SortPlanItem[];
+};
+
+export type JobId = number;
+
+export type MoveOp = {
+  from: string;
+  to: string;
+  atMs: number;
+};
+
+export type SortSettingsDto = {
+  copy: boolean;
+  skipDuplicates: boolean;
+  watchSource: boolean;
+  writeReport: boolean;
+};
+
+export type HistoryItemDto = {
+  id: JobId;
+  name: string;
+  startedAtMs: number;
+  durationMs: number;
+  moved: number;
+  skipped: number;
+};
+
+export type AppErrorKind = "io" | "validation" | "forbidden" | "conflict" | "internal";
+
+export type AppErrorDto =
+  | { kind: "io"; message: string }
+  | { kind: "validation"; message: string }
+  | { kind: "forbidden"; path: string }
+  | { kind: "conflict"; path: string }
+  | { kind: "internal"; message: string };
+
+export type SortLogLevelDto = "ok" | "warn" | "error";
+
+export type SortLogEntryDto = {
+  time: string;
+  level: SortLogLevelDto;
+  text: string;
+};
+
+export type SortProgressDto = {
+  total: number;
+  processed: number;
+  moved: number;
+  skipped: number;
+  folders: number;
+  current: string;
+};
+
+export type SortDoneDto = {
+  jobId: JobId;
+  durationMs: number;
+  moved: number;
+  skipped: number;
+  folders: number;
+  destination: string;
+};
