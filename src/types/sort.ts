@@ -1,11 +1,8 @@
 export type SortRuleId = "by-date" | "by-type" | "by-camera";
 
-export type SortTreeNode = {
-  kind: "folder" | "file";
-  label: string;
-  muted?: boolean;
-  children?: SortTreeNode[];
-};
+export type SortTreeNode =
+  | { kind: "folder"; label: string; muted?: boolean; children: SortTreeNode[] }
+  | { kind: "file"; label: string; muted?: boolean };
 
 export type SortRule = {
   id: SortRuleId;
