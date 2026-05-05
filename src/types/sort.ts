@@ -1,35 +1,35 @@
 export type SortRuleId = "by-date" | "by-type" | "by-camera";
 
-export interface SortTreeNode {
+export type SortTreeNode = {
   kind: "folder" | "file";
   label: string;
   muted?: boolean;
   children?: SortTreeNode[];
-}
+};
 
-export interface SortRule {
+export type SortRule = {
   id: SortRuleId;
   name: string;
   hint: string;
   description: string;
   preview: SortTreeNode[];
-}
+};
 
-export interface SortSource {
+export type SortSource = {
   path: string;
   fileCount: number;
   size: string;
-}
+};
 
 export type SortLogLevel = "ok" | "warn" | "error";
 
-export interface SortLogEntry {
+export type SortLogEntry = {
   time: string;
   level: SortLogLevel;
   text: string;
-}
+};
 
-export interface SortProgress {
+export type SortProgress = {
   total: number;
   processed: number;
   moved: number;
@@ -39,32 +39,32 @@ export interface SortProgress {
   remaining: string;
   current: string;
   log: SortLogEntry[];
-}
+};
 
-export interface SortDone {
+export type SortDone = {
   duration: string;
   moved: number;
   skipped: number;
   folders: number;
   destination: string;
-}
+};
 
-export interface SortHistoryItem {
+export type SortHistoryItem = {
   id: number;
   name: string;
   date: string;
   duration: string;
   moved: number;
   skipped: number;
-}
+};
 
 export type SortStatus = "idle" | "running" | "paused" | "warning" | "error";
 
 export type SortScreen = "setup" | "progress" | "done" | "history" | "settings";
 
-export interface SortSettings {
+export type SortSettings = {
   copy: boolean;
   skipDuplicates: boolean;
   watchSource: boolean;
   writeReport: boolean;
-}
+};
