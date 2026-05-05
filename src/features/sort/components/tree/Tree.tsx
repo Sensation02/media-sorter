@@ -1,0 +1,32 @@
+import type { SortTreeNode } from "../../../../types/sort";
+
+export type TreeProps = {
+  nodes: SortTreeNode[];
+  depth?: number;
+};
+
+export function Tree({ nodes, depth = 0 }: TreeProps) {
+  const className = depth === 0 ? "font-mono text-[12px] space-y-0.5" : "ml-4 space-y-0.5";
+
+  return (
+    <ul className={className}>
+      {nodes.map((node, index) => (
+        <li key={`${depth}-${index}-${node.label}`}>
+          <div
+            className={`flex items-center gap-2 py-0.5 ${
+              node.muted ? "text-[var(--color-fg-3)]" : ""
+            }`}
+          >
+            <span className="text-[var(--color-fg-3)]">
+              {node.kind === "folder" ? "\u25b8" : "\u00b7"}
+            </span>
+            <span className={node.muted ? "text-[var(--color-fg-3)]" : "text-[var(--color-fg-1)]"}>
+              {node.label}
+            </span>
+          </div>
+          {node.children && <Tree nodes={node.children} depth={depth + 1} />}
+        </li>
+      ))}
+    </ul>
+  );
+}
