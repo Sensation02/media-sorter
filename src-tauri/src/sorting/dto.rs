@@ -5,12 +5,6 @@ use crate::domain::{JobId, SortPlan, SortRuleId, SortSettings};
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ScanSourceRequest {
-    pub path: PathBuf,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct PreviewPlanRequest {
     pub root: PathBuf,
     pub rule: SortRuleId,
@@ -27,12 +21,6 @@ pub struct StartSortRequest {
 #[serde(rename_all = "camelCase")]
 pub struct JobIdRequest {
     pub job_id: JobId,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct RevealRequest {
-    pub path: PathBuf,
 }
 
 #[derive(Debug, Clone, Serialize)]
