@@ -41,6 +41,8 @@ export function SortApp() {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
+  const subtitle = TOOLBAR_SUBTITLE[screen];
+
   return (
     <div className="h-screen w-screen flex bg-[var(--color-bg)] text-[var(--color-fg-1)] antialiased">
       <Sidebar active={screen} onNavigate={setScreen} />
@@ -48,7 +50,7 @@ export function SortApp() {
         <Toolbar
           jobName={TOOLBAR_TITLE[screen]}
           status={TOOLBAR_STATUS[screen]}
-          subtitle={TOOLBAR_SUBTITLE[screen]}
+          {...(subtitle !== undefined && { subtitle })}
         />
         <main className="flex-1 min-h-0">
           {screen === "setup" && (
