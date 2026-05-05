@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ErrorBoundary } from "./components/error-boundary";
 import { Sidebar } from "./components/sidebar";
 import { Toolbar } from "./components/toolbar";
 import { DoneScreen, HistoryScreen, ProgressScreen, SettingsScreen, SetupScreen } from "./screens";
@@ -49,51 +50,53 @@ export function SortApp() {
           {...(subtitle !== undefined && { subtitle })}
         />
         <main className="flex-1 min-h-0">
-          {screen === "setup" && (
-            <SetupScreen
-              rules={DEFAULT_RULES}
-              source={DEFAULT_SOURCE}
-              onRun={() => {
-                setScreen("progress");
-              }}
-            />
-          )}
-          {screen === "progress" && (
-            <ProgressScreen
-              progress={DEFAULT_PROGRESS}
-              onPause={() => {
-                setScreen("setup");
-              }}
-              onCancel={() => {
-                setScreen("setup");
-              }}
-            />
-          )}
-          {screen === "done" && (
-            <DoneScreen
-              done={DEFAULT_DONE}
-              onUndo={() => {
-                setScreen("history");
-              }}
-              onNewSort={() => {
-                setScreen("setup");
-              }}
-              onReveal={() => {
-                // TODO(IPC): wire to a Tauri command that reveals the destination in Finder/Explorer
-                console.warn("[SortApp] onReveal not yet wired to Tauri");
-              }}
-            />
-          )}
-          {screen === "history" && (
-            <HistoryScreen
-              history={DEFAULT_HISTORY}
-              onRevert={(id) => {
-                // TODO(IPC): wire to a Tauri command that reverts the sort job by id
-                console.warn("[SortApp] onRevert not yet wired to Tauri", { id });
-              }}
-            />
-          )}
-          {screen === "settings" && <SettingsScreen settings={settings} onChange={setSettings} />}
+          <ErrorBoundary>
+            {screen === "setup" && (
+              <SetupScreen
+                rules={DEFAULT_RULES}
+                source={DEFAULT_SOURCE}
+                onRun={() => {
+                  setScreen("progress");
+                }}
+              />
+            )}
+            {screen === "progress" && (
+              <ProgressScreen
+                progress={DEFAULT_PROGRESS}
+                onPause={() => {
+                  setScreen("setup");
+                }}
+                onCancel={() => {
+                  setScreen("setup");
+                }}
+              />
+            )}
+            {screen === "done" && (
+              <DoneScreen
+                done={DEFAULT_DONE}
+                onUndo={() => {
+                  setScreen("history");
+                }}
+                onNewSort={() => {
+                  setScreen("setup");
+                }}
+                onReveal={() => {
+                  // TODO(IPC): wire to a Tauri command that reveals the destination in Finder/Explorer
+                  console.warn("[SortApp] onReveal not yet wired to Tauri");
+                }}
+              />
+            )}
+            {screen === "history" && (
+              <HistoryScreen
+                history={DEFAULT_HISTORY}
+                onRevert={(id) => {
+                  // TODO(IPC): wire to a Tauri command that reverts the sort job by id
+                  console.warn("[SortApp] onRevert not yet wired to Tauri", { id });
+                }}
+              />
+            )}
+            {screen === "settings" && <SettingsScreen settings={settings} onChange={setSettings} />}
+          </ErrorBoundary>
         </main>
       </div>
     </div>
