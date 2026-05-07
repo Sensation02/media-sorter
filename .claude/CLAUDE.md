@@ -407,6 +407,29 @@ Migrations: `none` (no DB at start).
 3. UX (loading states, error states, accessibility — особливо клавіатурна навігація для масових операцій)
 4. Updated docs
 
+## Session Context
+
+The repository owner is using this project as a vehicle for **learning Rust** alongside delivery. They are a senior JS / TS / React developer with no prior Rust background.
+
+When the agent makes Rust changes in `src-tauri/`, it MUST briefly explain in Ukrainian:
+
+- new syntax that hasn't appeared in this codebase yet (`let-else`, `match`, `?`, closures `|x|`, lifetimes, generics, turbofish, pattern matching, `impl Trait`)
+- attribute macros (`#[derive(...)]`, `#[tauri::command]`, `#[serde(...)]`, `#[cfg(...)]`, `#[error("...")]`)
+- ownership / borrowing decisions (`&str` vs `String`, `&Path` vs `PathBuf`, `&mut`, when to `.clone()`)
+- async vs blocking trade-offs in Tauri commands (`blocking_*`, `spawn_blocking`, oneshot channels)
+- module / crate structure (`mod`, `pub`, `use`, `super::`, `crate::`, barrel re-exports)
+- error-handling patterns (`Result`, `Option`, `?`, `From`, `thiserror`, `map_err`)
+
+Style for explanations:
+
+- short, concrete, with code excerpts
+- Ukrainian
+- mark explanation blocks clearly so they are skippable (e.g. dedicated `### 🎓` heading or block)
+- do NOT repeat explanations of concepts already covered in the same conversation — rely on context
+- skip explanations on trivial mechanical edits (renames, formatting fixes, moving lines)
+
+For TS / React / Vite changes, **do not** explain language features unless asked — the user is fluent there.
+
 ## How to Respond
 
 1. Compact explanations
