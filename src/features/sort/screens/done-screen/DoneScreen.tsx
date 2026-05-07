@@ -1,5 +1,6 @@
-import { Button } from "../../components/button";
-import { Card } from "../../components/card";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
 import { Stat } from "../../components/stat";
 import { StatusDot } from "../../components/status-dot";
 import type { SortDone } from "../../../../types/sort";

@@ -1,7 +1,10 @@
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
+
+import { Toaster } from "@/components/ui/sonner";
+
 import { ErrorBoundary } from "./components/error-boundary";
 import { Sidebar } from "./components/sidebar";
-import { Toast } from "./components/toast";
 import { Toolbar } from "./components/toolbar";
 import { DoneScreen, HistoryScreen, ProgressScreen, SettingsScreen, SetupScreen } from "./screens";
 import {
@@ -12,7 +15,7 @@ import {
   DEFAULT_SETTINGS,
 } from "./constants";
 import { pickSourceDir, scanSource } from "../../ipc";
-import { toAppErrorView, type ToastErrorView } from "../../utils";
+import { toAppErrorView } from "../../utils";
 import type { ScanSummary } from "../../types/ipc";
 import type { SortScreen, SortSettings, SortStatus } from "../../types/sort";
 
@@ -42,11 +45,8 @@ export function SortApp() {
   const [settings, setSettings] = useState<SortSettings>(DEFAULT_SETTINGS);
   const [source, setSource] = useState<ScanSummary | null>(null);
   const [scanning, setScanning] = useState(false);
-  const [errorToast, setErrorToast] = useState<ToastErrorView | null>(null);
 
   const handlePickSource = useCallback(async () => {
-    setErrorToast(null);
-
     try {
       const path = await pickSourceDir();
 
@@ -59,7 +59,8 @@ export function SortApp() {
       const summary = await scanSource(path);
       setSource(summary);
     } catch (error) {
-      setErrorToast(toAppErrorView(error));
+      const view = toAppErrorView(error);
+      toast.error(view.title, { description: view.detail });
     } finally {
       setScanning(false);
     }
@@ -130,18 +131,7 @@ export function SortApp() {
           </ErrorBoundary>
         </main>
       </div>
-      {errorToast !== null && (
-        <div className="fixed bottom-5 right-5 z-50">
-          <Toast
-            title={errorToast.title}
-            detail={errorToast.detail}
-            tone="error"
-            onDismiss={() => {
-              setErrorToast(null);
-            }}
-          />
-        </div>
-      )}
+      <Toaster />
     </div>
   );
 }
