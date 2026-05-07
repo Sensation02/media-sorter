@@ -86,14 +86,14 @@ export type HistoryItemDto = {
   skipped: number;
 };
 
-export type AppErrorKind = "io" | "validation" | "forbidden" | "conflict" | "internal";
+export type AppErrorCode = "io" | "validation" | "forbidden" | "conflict" | "internal";
 
 export type AppErrorDto =
-  | { kind: "io"; message: string }
-  | { kind: "validation"; message: string }
-  | { kind: "forbidden"; path: string }
-  | { kind: "conflict"; path: string }
-  | { kind: "internal"; message: string };
+  | { code: "io"; params: { message: string } }
+  | { code: "validation"; params: { message: string } }
+  | { code: "forbidden"; params: { path: string } }
+  | { code: "conflict"; params: { path: string } }
+  | { code: "internal"; params: { message: string } };
 
 export type SortLogLevelDto = "ok" | "warn" | "error";
 

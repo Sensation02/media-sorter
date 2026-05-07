@@ -1,8 +1,15 @@
+use std::fmt::Display;
+
 use serde::Serialize;
 use thiserror::Error;
 
 #[derive(Debug, Clone, Error, Serialize)]
-#[serde(tag = "kind", rename_all = "kebab-case")]
+#[serde(
+    tag = "code",
+    content = "params",
+    rename_all = "kebab-case",
+    rename_all_fields = "camelCase"
+)]
 pub enum AppError {
     #[error("io error: {message}")]
     Io { message: String },
@@ -21,21 +28,21 @@ pub enum AppError {
 }
 
 impl AppError {
-    pub fn internal(message: impl Into<String>) -> Self {
+    pub fn internal(message: impl Display) -> Self {
         Self::Internal {
-            message: message.into(),
+            message: message.to_string(),
         }
     }
 
-    pub fn validation(message: impl Into<String>) -> Self {
+    pub fn validation(message: impl Display) -> Self {
         Self::Validation {
-            message: message.into(),
+            message: message.to_string(),
         }
     }
 
-    pub fn io(message: impl Into<String>) -> Self {
+    pub fn io(message: impl Display) -> Self {
         Self::Io {
-            message: message.into(),
+            message: message.to_string(),
         }
     }
 }
