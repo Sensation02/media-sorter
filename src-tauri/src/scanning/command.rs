@@ -16,9 +16,7 @@ pub async fn pick_source_dir(app: AppHandle) -> AppResult<Option<PathBuf>> {
         return Ok(None);
     };
 
-    let path = file_path
-        .into_path()
-        .map_err(|error| AppError::internal(error.to_string()))?;
+    let path = file_path.into_path().map_err(AppError::internal)?;
 
     Ok(Some(path))
 }
