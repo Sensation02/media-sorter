@@ -1,6 +1,6 @@
 # EPIC-02. Source selection & scanning
 
-**Status:** in progress
+**Status:** complete
 **Depends on:** EPIC-01
 
 ## Goal
@@ -46,13 +46,13 @@ Backend (PR #4 — open, awaiting verify + merge):
 - [x] Repository-обгортка з фільтрами (`scanning::service` + `scanning::filters` + `domain::extensions`)
 - [x] Unit tests на критичні гілки (класифікація, hidden, flat, symlinks, validation)
 
-UI integration (next session, окремий PR):
+UI integration (PR — current branch):
 
-- [ ] Підключити кнопку Browse у `SetupScreen` (виклик `pick_source_dir`)
-- [ ] Тригерити `scan_source` після вибору теки
-- [ ] Рендерити `ScanSummary` (fileCount, sizeBytes, byKind) під полем шляху
-- [ ] Loading + error states (toast на `AppError`, спінер під час scan)
-- [ ] Прибрати `DEFAULT_SOURCE` з UI
+- [x] Підключити кнопку Browse у `SetupScreen` (виклик `pick_source_dir`)
+- [x] Тригерити `scan_source` після вибору теки
+- [x] Рендерити `ScanSummary` (fileCount, sizeBytes, byKind) під полем шляху
+- [x] Loading + error states (toast на `AppError`, спінер під час scan)
+- [x] Прибрати `DEFAULT_SOURCE` з UI
 
 ## Progress notes
 

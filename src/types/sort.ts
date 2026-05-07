@@ -12,12 +12,6 @@ export type SortRule = {
   preview: SortTreeNode[];
 };
 
-export type SortSource = {
-  path: string;
-  fileCount: number;
-  size: string;
-};
-
 export type SortLogLevel = "ok" | "warn" | "error";
 
 export type SortLogEntry = {

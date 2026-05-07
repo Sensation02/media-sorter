@@ -4,14 +4,7 @@ import type {
   SortProgress,
   SortRule,
   SortSettings,
-  SortSource,
 } from "../../types/sort";
-
-export const DEFAULT_SOURCE: SortSource = {
-  path: "~/Pictures/Imports/2024-vacation",
-  fileCount: 1247,
-  size: "8.4 GB",
-};
 
 export const DEFAULT_RULES: SortRule[] = [
   {

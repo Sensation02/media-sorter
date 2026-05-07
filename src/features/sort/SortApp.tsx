@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Sidebar } from "./components/sidebar";
+import { Toast } from "./components/toast";
 import { Toolbar } from "./components/toolbar";
 import { DoneScreen, HistoryScreen, ProgressScreen, SettingsScreen, SetupScreen } from "./screens";
 import {
@@ -9,8 +10,10 @@ import {
   DEFAULT_PROGRESS,
   DEFAULT_RULES,
   DEFAULT_SETTINGS,
-  DEFAULT_SOURCE,
 } from "./constants";
+import { pickSourceDir, scanSource } from "../../ipc";
+import { toAppErrorView, type ToastErrorView } from "../../utils";
+import type { ScanSummary } from "../../types/ipc";
 import type { SortScreen, SortSettings, SortStatus } from "../../types/sort";
 
 const TOOLBAR_TITLE: Record<SortScreen, string> = {
@@ -37,6 +40,30 @@ const TOOLBAR_SUBTITLE: Partial<Record<SortScreen, string>> = {
 export function SortApp() {
   const [screen, setScreen] = useState<SortScreen>("setup");
   const [settings, setSettings] = useState<SortSettings>(DEFAULT_SETTINGS);
+  const [source, setSource] = useState<ScanSummary | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const [errorToast, setErrorToast] = useState<ToastErrorView | null>(null);
+
+  const handlePickSource = useCallback(async () => {
+    setErrorToast(null);
+
+    try {
+      const path = await pickSourceDir();
+
+      if (path === null) {
+        return;
+      }
+
+      setSource(null);
+      setScanning(true);
+      const summary = await scanSource(path);
+      setSource(summary);
+    } catch (error) {
+      setErrorToast(toAppErrorView(error));
+    } finally {
+      setScanning(false);
+    }
+  }, []);
 
   const subtitle = TOOLBAR_SUBTITLE[screen];
 
@@ -54,7 +81,11 @@ export function SortApp() {
             {screen === "setup" && (
               <SetupScreen
                 rules={DEFAULT_RULES}
-                source={DEFAULT_SOURCE}
+                source={source}
+                scanning={scanning}
+                onPickSource={() => {
+                  void handlePickSource();
+                }}
                 onRun={() => {
                   setScreen("progress");
                 }}
@@ -99,6 +130,18 @@ export function SortApp() {
           </ErrorBoundary>
         </main>
       </div>
+      {errorToast !== null && (
+        <div className="fixed bottom-5 right-5 z-50">
+          <Toast
+            title={errorToast.title}
+            detail={errorToast.detail}
+            tone="error"
+            onDismiss={() => {
+              setErrorToast(null);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
