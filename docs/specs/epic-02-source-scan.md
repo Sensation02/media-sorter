@@ -37,14 +37,37 @@
 
 ## Subtasks
 
-- [ ] Capabilities: `dialog:allow-open` у `capabilities/default.json`
-- [ ] Підключити `tauri-plugin-dialog` як залежність + `.plugin(...)` у `lib.rs`
-- [ ] Команда `pick_source_dir` через `tauri-plugin-dialog` (real, не stub)
-- [ ] Команда `scan_source(path) -> ScanSummary { fileCount, sizeBytes, byKind }`
-- [ ] Repository-обгортка з фільтрами (extensions з `MEDIA_EXTENSIONS`, hidden files, symlinks)
-- [ ] Підключити кнопку Browse у `SetupScreen`
+Backend (PR #4 — open, awaiting verify + merge):
+
+- [x] Capabilities: `dialog:allow-open` у `capabilities/default.json`
+- [x] Підключити `tauri-plugin-dialog` як залежність + `.plugin(...)` у `lib.rs`
+- [x] Команда `pick_source_dir` через `tauri-plugin-dialog` (real, не stub)
+- [x] Команда `scan_source(path) -> ScanSummary { fileCount, sizeBytes, byKind }`
+- [x] Repository-обгортка з фільтрами (`scanning::service` + `scanning::filters` + `domain::extensions`)
+- [x] Unit tests на критичні гілки (класифікація, hidden, flat, symlinks, validation)
+
+UI integration (next session, окремий PR):
+
+- [ ] Підключити кнопку Browse у `SetupScreen` (виклик `pick_source_dir`)
+- [ ] Тригерити `scan_source` після вибору теки
+- [ ] Рендерити `ScanSummary` (fileCount, sizeBytes, byKind) під полем шляху
+- [ ] Loading + error states (toast на `AppError`, спінер під час scan)
 - [ ] Прибрати `DEFAULT_SOURCE` з UI
-- [ ] Loading + error states для scan flow
+
+## Progress notes
+
+**Виконано в PR #4:**
+
+1. Реалізовано весь Rust-шар `pick_source_dir` + `scan_source` за рішеннями зі spec (flat, no symlinks, hardcoded hidden filter, single source).
+2. Створено `domain::extensions::classify_extension` — shared classifier для майбутніх EPIC-05 (planner) та EPIC-06 (FS ops). Винесено в `domain/`, не в `scanning/`, бо це shared concept.
+3. **Inline-рефактор `AppError`** (вийшов поза первісний скоп EPIC-02, але доцільно зробити до того, як error-handling розпорошиться по коду): serde-форма змінена з `{ kind, ...fields }` на `{ code, params: { ... } }` для готовності до i18n у EPIC-10. Фабрики (`internal`, `validation`, `io`) тепер приймають `impl Display`. TS-двійник `AppErrorDto` оновлений.
+4. Sandbox без GTK не дозволив запустити `cargo check` на CI-етапі — code review зроблено ручно, `cargo fmt --check` зелений. Локальна верифікація на Mac в чек-листі PR #4.
+
+**Чого свідомо НЕ робили в цьому PR:**
+
+- UI wiring — окремий PR, бо чистий React/IPC шар; backend стабільний, готовий до підключення.
+- `spawn_blocking` для `scan_directory` — для MVP scan теки <10k файлів блокування одного tokio worker'а прийнятне; винесли як можливу майбутню оптимізацію.
+- Розширення `AppError` варіантами `DirectoryNotReadable / PermissionDenied` тощо — не передбачаємо, додамо за фактом use-case.
 
 ## Resolved questions
 
