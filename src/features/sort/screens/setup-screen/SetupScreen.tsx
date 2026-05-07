@@ -2,16 +2,24 @@ import { useState } from "react";
 import { Button } from "../../components/button";
 import { Card } from "../../components/card";
 import { RuleSelector } from "../../components/rule-selector";
+import { ScanBreakdown } from "../../components/scan-breakdown";
+import { Spinner } from "../../components/spinner";
 import { Tree } from "../../components/tree";
-import type { SortRule, SortRuleId, SortSource } from "../../../../types/sort";
+import { formatBytes } from "../../../../utils";
+import type { ScanSummary } from "../../../../types/ipc";
+import type { SortRule, SortRuleId } from "../../../../types/sort";
+
+const EMPTY_PATH_LABEL = "No folder selected";
 
 export type SetupScreenProps = {
   rules: SortRule[];
-  source: SortSource;
+  source: ScanSummary | null;
+  scanning: boolean;
+  onPickSource: () => void;
   onRun: () => void;
 };
 
-export function SetupScreen({ rules, source, onRun }: SetupScreenProps) {
+export function SetupScreen({ rules, source, scanning, onPickSource, onRun }: SetupScreenProps) {
   const firstRule = rules[0];
 
   if (!firstRule) {
@@ -20,6 +28,7 @@ export function SetupScreen({ rules, source, onRun }: SetupScreenProps) {
 
   const [ruleId, setRuleId] = useState<SortRuleId>(firstRule.id);
   const selected = rules.find((rule) => rule.id === ruleId) ?? firstRule;
+  const canRun = source !== null && !scanning;
 
   return (
     <div className="flex flex-col h-full">
@@ -29,15 +38,29 @@ export function SetupScreen({ rules, source, onRun }: SetupScreenProps) {
             Source folder
           </div>
           <Card className="px-4 py-3 flex items-center gap-3">
-            <span className="text-[var(--color-fg-3)] text-base">{"\u25a3"}</span>
-            <span className="font-mono text-[13px] flex-1">{source.path}</span>
-            <span className="font-mono text-[11px] text-[var(--color-fg-3)]">
-              {source.fileCount.toLocaleString()} files {"\u00b7"} {source.size}
+            <span className="text-[var(--color-fg-3)] text-base">{"▣"}</span>
+            <span
+              className={`font-mono text-[13px] flex-1 truncate ${source === null ? "text-[var(--color-fg-3)]" : ""}`}
+            >
+              {source?.root ?? EMPTY_PATH_LABEL}
             </span>
-            <Button variant="ghost" size="sm">
-              Browse{"\u2026"}
+            {scanning ? (
+              <span className="flex items-center gap-2 font-mono text-[11px] text-[var(--color-fg-3)]">
+                <Spinner size="sm" />
+                Scanning{"…"}
+              </span>
+            ) : (
+              source !== null && (
+                <span className="font-mono text-[11px] text-[var(--color-fg-3)]">
+                  {source.fileCount.toLocaleString()} files {"·"} {formatBytes(source.sizeBytes)}
+                </span>
+              )
+            )}
+            <Button variant="ghost" size="sm" onClick={onPickSource} disabled={scanning}>
+              Browse{"…"}
             </Button>
           </Card>
+          {source !== null && !scanning && <ScanBreakdown summary={source} />}
         </section>
 
         <section>
@@ -62,8 +85,8 @@ export function SetupScreen({ rules, source, onRun }: SetupScreenProps) {
           Save preset
         </Button>
         <div className="ml-auto" />
-        <Button variant="primary" size="md" onClick={onRun}>
-          Run sort {"\u2192"}
+        <Button variant="primary" size="md" onClick={onRun} disabled={!canRun}>
+          Run sort {"→"}
         </Button>
       </footer>
     </div>
