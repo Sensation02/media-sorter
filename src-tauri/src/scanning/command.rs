@@ -23,8 +23,7 @@ pub async fn pick_source_dir(app: AppHandle) -> AppResult<Option<PathBuf>> {
 
 #[tauri::command]
 pub async fn scan_source(request: ScanSourceRequest) -> AppResult<ScanSummary> {
-    let _ = request;
-    Err(AppError::internal("scan_source: not yet implemented"))
+    super::service::scan_directory(&request.path)
 }
 
 #[tauri::command]
