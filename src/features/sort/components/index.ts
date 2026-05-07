@@ -1,13 +1,8 @@
-export { Button } from "./button";
-export { Card } from "./card";
-export { ProgressBar } from "./progress-bar";
+export { ErrorBoundary } from "./error-boundary";
 export { RuleSelector } from "./rule-selector";
 export { ScanBreakdown } from "./scan-breakdown";
 export { Sidebar } from "./sidebar";
-export { Spinner } from "./spinner";
 export { Stat } from "./stat";
 export { StatusDot } from "./status-dot";
-export { Toast } from "./toast";
-export { Toggle } from "./toggle";
 export { Toolbar } from "./toolbar";
 export { Tree } from "./tree";

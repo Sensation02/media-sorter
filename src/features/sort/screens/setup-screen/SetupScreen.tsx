@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Button } from "../../components/button";
-import { Card } from "../../components/card";
+import { Loader2 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
 import { RuleSelector } from "../../components/rule-selector";
 import { ScanBreakdown } from "../../components/scan-breakdown";
-import { Spinner } from "../../components/spinner";
 import { Tree } from "../../components/tree";
 import { formatBytes } from "../../../../utils";
 import type { ScanSummary } from "../../../../types/ipc";
@@ -46,7 +48,7 @@ export function SetupScreen({ rules, source, scanning, onPickSource, onRun }: Se
             </span>
             {scanning ? (
               <span className="flex items-center gap-2 font-mono text-[11px] text-[var(--color-fg-3)]">
-                <Spinner size="sm" />
+                <Loader2 className="w-3 h-3 animate-spin" />
                 Scanning{"…"}
               </span>
             ) : (

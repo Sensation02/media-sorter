@@ -1,6 +1,7 @@
-import { Button } from "../../components/button";
-import { Card } from "../../components/card";
-import { ProgressBar } from "../../components/progress-bar";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+
 import { Stat } from "../../components/stat";
 import type { SortLogLevel, SortProgress } from "../../../../types/sort";
 
@@ -37,7 +38,7 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
               {pct}% {"\u00b7"} {progress.remaining}
             </span>
           </div>
-          <ProgressBar value={progress.processed} max={progress.total} />
+          <Progress value={pct} />
           <div className="mt-3 flex items-center gap-2 font-mono text-[11.5px] text-[var(--color-fg-2)]">
             <span className="text-[var(--color-primary)]">{"\u25b8"}</span>
             <span className="truncate">{progress.current}</span>

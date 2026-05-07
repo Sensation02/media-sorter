@@ -1,5 +1,6 @@
-import { Button } from "../../components/button";
-import { Card } from "../../components/card";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
 import type { SortHistoryItem } from "../../../../types/sort";
 
 export type HistoryScreenProps = {

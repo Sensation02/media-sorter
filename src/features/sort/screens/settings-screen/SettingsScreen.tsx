@@ -1,5 +1,6 @@
-import { Card } from "../../components/card";
-import { Toggle } from "../../components/toggle";
+import { Card } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+
 import type { SortSettings } from "../../../../types/sort";
 
 export type SettingsScreenProps = {
@@ -46,9 +47,9 @@ export function SettingsScreen({ settings, onChange }: SettingsScreenProps) {
                   <div className="text-[13px]">{row.title}</div>
                   <div className="text-[11.5px] text-[var(--color-fg-3)] mt-0.5">{row.hint}</div>
                 </div>
-                <Toggle
+                <Switch
                   checked={settings[row.key]}
-                  onChange={(value) => {
+                  onCheckedChange={(value) => {
                     onChange({ ...settings, [row.key]: value });
                   }}
                 />
