@@ -1,6 +1,7 @@
 pub mod domain;
 pub mod error;
 pub mod history;
+pub mod metadata;
 pub mod scanning;
 pub mod sorting;
 pub mod utils;
