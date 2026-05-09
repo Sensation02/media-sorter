@@ -18,11 +18,11 @@
 
 ## Checklist
 
-- [ ] Types complete — no `any` in TS, no raw `unwrap()`/`expect()` без обґрунтування в Rust
+- [ ] Types complete — no `any` in TS, no raw `unwrap()`/`expect()` without justification in Rust
 - [ ] Error handling — no unhandled promises / silent catches; Rust returns `Result<T, AppError>`
-- [ ] Unit tests added — for new critical business logic (Rust `#[cfg(test)]` або UI tests)
+- [ ] Unit tests added — for new critical business logic (Rust `#[cfg(test)]` or UI tests)
 - [ ] Lint passes — `pnpm lint` + `cargo clippy --all-targets -- -D warnings`
-- [ ] Build passes — `pnpm tauri build` локально на хоча б одній платформі (для значних змін)
-- [ ] User-file safety — будь-які операції з фото/відео користувача мають бути зворотними (dry-run, undo, або лог)
-- [ ] Docs updated — if Tauri IPC contract changed, оновлено типи на обох сторонах
-- [ ] CHANGELOG.md updated — додано user-friendly bullet під `## [Unreleased]` (обов'язково для `feat`/`fix`/`perf`/`revert`; не потрібно для `refactor`/`docs`/`style`/`test`/`build`/`ci`/`chore`)
+- [ ] Build passes — `pnpm tauri build` locally on at least one platform (for significant changes)
+- [ ] User-file safety — any operations on user photos/videos must be reversible (dry-run, undo, or log)
+- [ ] Docs updated — if the Tauri IPC contract changed, types updated on both sides
+- [ ] CHANGELOG.md updated — added a user-friendly bullet under `## [Unreleased]` (required for `feat`/`fix`/`perf`/`revert`; not required for `refactor`/`docs`/`style`/`test`/`build`/`ci`/`chore`)
