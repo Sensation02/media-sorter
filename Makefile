@@ -1,5 +1,9 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup install install-js install-rust dev build build-ui lint lint-js lint-rust fmt fmt-js fmt-rust test test-js test-rust check clean reset
+.PHONY: help setup install install-js install-rust dev build build-ui \
+	typecheck typecheck-js typecheck-rust \
+	lint lint-js lint-rust \
+	fmt fmt-js fmt-rust fmt-check fmt-check-js fmt-check-rust \
+	test test-js test-rust verify check clean reset
 
 PNPM ?= pnpm
 CARGO ?= cargo
@@ -46,6 +50,14 @@ build-ui: ## UI-only production build (Vite)
 # Quality
 # ---------------------------------------------------------------------------
 
+typecheck: typecheck-js typecheck-rust ## Type-check both stacks
+
+typecheck-js: ## TypeScript project build (no emit)
+	$(PNPM) exec tsc -b
+
+typecheck-rust: ## cargo check (compile without codegen)
+	cd $(TAURI_DIR) && $(CARGO) check --all-targets
+
 lint: lint-js lint-rust ## Run all linters
 
 lint-js: ## Run ESLint
@@ -62,6 +74,14 @@ fmt-js: ## Run Prettier
 fmt-rust: ## Run cargo fmt
 	cd $(TAURI_DIR) && $(CARGO) fmt
 
+fmt-check: fmt-check-js fmt-check-rust ## Verify formatting without writing
+
+fmt-check-js: ## Prettier --check
+	$(PNPM) exec prettier --check .
+
+fmt-check-rust: ## cargo fmt --check
+	cd $(TAURI_DIR) && $(CARGO) fmt --check
+
 test: test-js test-rust ## Run all tests
 
 test-js: ## Run UI tests
@@ -70,7 +90,9 @@ test-js: ## Run UI tests
 test-rust: ## Run Rust tests
 	cd $(TAURI_DIR) && $(CARGO) test
 
-check: lint test ## Lint + test (pre-commit gate)
+verify: typecheck lint ## Quick pre-commit gate (typecheck + lint, no tests)
+
+check: verify test ## Full pre-PR gate (verify + tests; run `make fmt-check` separately)
 
 # ---------------------------------------------------------------------------
 # Cleanup
