@@ -1,6 +1,6 @@
 # EPIC-10. Localization (UI + folder names)
 
-**Status:** pending
+**Status:** ⚪ pending
 **Depends on:** EPIC-01
 
 ## Goal

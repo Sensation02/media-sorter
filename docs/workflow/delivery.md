@@ -241,6 +241,51 @@ Before marking a PR as ready or requesting merge:
 
 ---
 
+## Epic Status Tracking
+
+Every epic in `docs/specs/epic-XX-*.md` carries a `Status:` field, and
+`docs/specs/STATUS.md` is the index that aggregates all of them. Both must stay
+in sync — the index is the place humans look first when they want a one-screen
+view of the project.
+
+### Allowed statuses
+
+- ⚪ **pending** — no work started; the spec may still be a draft.
+- 🟡 **in progress** — at least one subtask is under way; a PR is open or
+  partially merged but more work remains in scope.
+- 🟢 **complete** — every in-scope subtask is checked (`[x]`); deferred items
+  have been moved to another epic or struck through with a one-line follow-up
+  note.
+
+The icon prefix is required in both `Status:` fields and `STATUS.md` rows so
+the project state is scannable at a glance.
+
+### When to update
+
+| Trigger                                                                        | Status transition           |
+| ------------------------------------------------------------------------------ | --------------------------- |
+| First subtask of an epic starts                                                | `pending` → `in progress`   |
+| Every in-scope subtask is `[x]`; deferred items moved out                      | `in progress` → `complete`  |
+| Spec needs a rewrite (decisions invalidated)                                   | back to `pending`           |
+
+### Update procedure
+
+When a PR finishes work that crosses a status boundary:
+
+1. Edit the epic's `Status:` and `Last updated:` fields in
+   `docs/specs/epic-XX-*.md`.
+2. Update the matching row in `docs/specs/STATUS.md` and bump
+   `Last reviewed:`.
+3. Include both files in the **same PR** as the work that triggered the change
+   — never a separate "status bump" PR after the fact.
+4. Mention the transition in the PR description (e.g. `Closes EPIC-03 →
+   complete`).
+
+Reviewers reject PRs that close epic subtasks but leave `Status:` stale. The
+index in `STATUS.md` and the per-epic `Status:` field must agree before merge.
+
+---
+
 ## Phase 5: REPORT (Orchestrator)
 
 Orchestrator summarizes:

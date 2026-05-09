@@ -1,6 +1,6 @@
 # EPIC-09. Settings (persisted)
 
-**Status:** pending
+**Status:** ⚪ pending
 **Depends on:** EPIC-01
 
 ## Goal

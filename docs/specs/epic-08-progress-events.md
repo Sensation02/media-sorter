@@ -1,6 +1,6 @@
 # EPIC-08. Real-time progress (events)
 
-**Status:** pending
+**Status:** ⚪ pending
 **Depends on:** EPIC-01, EPIC-06
 
 ## Goal

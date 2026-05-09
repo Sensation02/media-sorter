@@ -1,6 +1,6 @@
 # EPIC-07. History + Undo
 
-**Status:** pending
+**Status:** ⚪ pending
 **Depends on:** EPIC-01, EPIC-06
 
 ## Goal

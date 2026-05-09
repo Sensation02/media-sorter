@@ -1,6 +1,6 @@
 # EPIC-02. Source selection & scanning
 
-**Status:** complete
+**Status:** 🟢 complete
 **Depends on:** EPIC-01
 
 ## Goal
