@@ -6,52 +6,52 @@
 
 ## Question
 
-Який Rust-crate використати для зчитування EXIF (фото) та QuickTime / MP4 metadata (відео) у `metadata::extract` (EPIC-03)?
+Which Rust crate should we use to read EXIF from photos and QuickTime / MP4 metadata from videos in `metadata::extract` (EPIC-03)?
 
 ## Candidates
 
 ### `kamadak-exif`
 
-- **Pros:** найпопулярніший EXIF-crate для Rust, стабільне API, добра документація, велика test-suite.
+- **Pros:** the most popular EXIF crate in the Rust ecosystem, stable API, good documentation, mature test suite.
 - **Cons:**
-  - Тільки фото. Для відео потрібен другий crate / ручний MP4 box-parser.
-  - Не підтримує HEIC out-of-the-box (деякі версії — частково).
-  - API повертає сирі рядкові EXIF-теги — повна відповідальність за парсинг date / GPS лежить на клієнті.
+  - Photos only. Video would require a second crate or a hand-rolled MP4 box parser.
+  - HEIC support is partial / version-dependent.
+  - The API hands back raw EXIF tag strings — the caller is fully responsible for parsing dates and GPS.
 
 ### `little_exif`
 
-- **Pros:** API простіше за kamadak, орієнтований на read+write.
+- **Pros:** simpler API than kamadak, oriented around read + write workflows.
 - **Cons:**
-  - Менш зріла; менше форматів.
-  - Тільки фото; відео взагалі поза сумісністю.
+  - Less mature; fewer formats.
+  - Photos only; video is out of scope entirely.
 
 ### `nom-exif`
 
 - **Pros:**
-  - Єдиний у Rust-екосистемі, що декларує і фото (JPEG / HEIC / HEIF / TIFF / RAW: CR2 / CR3 / NEF / ARW / DNG / RAF), і відео (MP4 / MOV / M4V QuickTime atoms).
-  - Уніфікований API: `MediaParser` + `MediaSource`; `parse::<ExifIter>` для фото, `parse::<TrackInfo>` для відео.
-  - Повертає типізовані значення (`EntryValue`, `chrono::NaiveDateTime + Option<FixedOffset>`).
-  - Вбудований helper `get_gps_info()` для GPS.
-  - Streaming-парсер (для MOV метадані можуть бути в кінці файла — crate робить seek).
+  - The only crate in the Rust ecosystem that declares both photo (JPEG / HEIC / HEIF / TIFF / RAW: CR2 / CR3 / NEF / ARW / DNG / RAF) and video (MP4 / MOV / M4V QuickTime atoms) support.
+  - Unified API: `MediaParser` + `MediaSource`; `parse::<ExifIter>` for photos, `parse::<TrackInfo>` for videos.
+  - Returns typed values (`EntryValue`, `chrono::NaiveDateTime + Option<FixedOffset>`).
+  - Built-in `get_gps_info()` helper.
+  - Streaming parser (for MOV files where metadata sits at the end of the file, the crate seeks rather than reads through).
 - **Cons:**
-  - Менше зірок на GitHub, ніж у kamadak — менший community footprint.
-  - Async API — окрема feature-flag (`async`), у нас sync через `spawn_blocking`, тож ок.
-  - `MediaParser` не `Send` для шерингу між нитками — кожна rayon-нитка створює свій (неважлива деталь, бо overhead алокації мінімальний).
+  - Smaller community footprint compared to kamadak.
+  - Async API is gated behind a feature flag (`async`); we use sync via `spawn_blocking`, so this is fine.
+  - `MediaParser` is not `Send`-safe to share between threads — each rayon worker allocates its own (small overhead, see below).
 
 ## Decision
 
-**`nom-exif` 2.8** — обираємо. Один crate, один контракт помилок, одна стратегія тестування. Якщо в перспективі знадобиться щось специфічне (custom RAW parser, write back), додамо точково.
+**`nom-exif` 2.8** is the pick. One crate, one error contract, one test strategy. If we eventually need something more specific (custom RAW parser, write-back), we'll add it surgically.
 
-## Trade-offs прийняті свідомо
+## Trade-offs accepted deliberately
 
-1. Менший community footprint — компенсується тим, що crate активно розвивається (2.x — стабільна гілка), API чистіший за конкурентів.
-2. RAW підтримка — best-effort. Якщо `nom-exif` не зчитав EXIF з якогось RAW-формату — повертаємо `Metadata::default()`, файл йде в "Без дати". Окремий RAW-парсер не пишемо.
-3. XMP sidecar (`.xmp` поряд із RAW) — поза скопом. Lightroom-flow окрема фіча.
+1. Smaller community footprint — offset by an actively developed 2.x line and a cleaner API than the alternatives.
+2. RAW support is best-effort. If `nom-exif` can't read EXIF from a particular RAW format, we return `Metadata::default()` and the file lands in "no date". We will not write a separate RAW parser.
+3. XMP sidecars (`.xmp` next to RAW) are out of scope. Lightroom-style workflows are a future feature.
 
 ## Alternatives revisited if
 
-- `nom-exif` падає або повільний на реальних бібліотеках (10k+ файлів) — переходимо на `kamadak-exif` для фото + ручний MP4-парсер. Але це задокументоване подвоєння кодової бази.
-- З'являється потреба write-back EXIF — `little_exif`.
+- `nom-exif` proves slow or unstable on real-world libraries (10k+ files) — switch to `kamadak-exif` for photos plus a hand-rolled MP4 parser. This is documented duplication of code we accept only as an escape hatch.
+- We need EXIF write-back — `little_exif`.
 
 ## References
 
