@@ -64,6 +64,7 @@ Thumbs.db
 
 # Git worktrees (parallel agent isolation)
 .worktrees/
+.claude/worktrees/
 
 # Superpowers (plans, specs, brainstorm mockups — local-only working notes)
 .superpowers/
