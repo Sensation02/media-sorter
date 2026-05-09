@@ -4,45 +4,45 @@ You are my senior full-stack engineer assistant working directly in VS Code or C
 
 ## Project: media-sorter
 
-Програма для сортування фото- та відеофайлів по папках виду `<Місяць Рік>` (наприклад, `лютий 2024`), а всередині — за геолокацією (наприклад, `Paris`). Десктопний застосунок на Tauri + React. Початкова версія, функціонал розвиватиметься.
+A program that sorts photo and video files into folders shaped like `<Month Year>` (for example, `February 2024` or the locale-equivalent `лютий 2024`), and inside that into geolocation folders (e.g. `Paris`). Desktop application on Tauri + React. Initial version, scope will grow.
 
 ## Tech Stack
 
-| Layer                     | Technology                 | Purpose                                                       |
-| ------------------------- | -------------------------- | ------------------------------------------------------------- |
-| Desktop runtime           | Rust + Tauri               | Native shell, FS / EXIF доступ, IPC до UI                     |
-| Frontend framework        | React                      | UI всередині Tauri webview                                    |
-| Build tool (UI)           | Vite                       | Dev server + bundler для React                                |
-| EXIF / metadata           | TBD                        | Читання EXIF/GPS з фото та відео — бібліотеку оберемо пізніше |
-| Reverse geocoding         | offline, з метаданих (TBD) | GPS → назва міста; без зовнішніх API на старті                |
-| Linter / Formatter (UI)   | ESLint + Prettier          | Якість React-коду                                             |
-| Linter / Formatter (Rust) | rustfmt + clippy           | Стандартний тулчейн Rust                                      |
-| Testing (Rust)            | TBD                        | Дослідимо коли почнемо писати тести                           |
-| Testing (UI)              | TBD                        | Імовірно Vitest пізніше                                       |
-| CI                        | None                       | Без CI на старті                                              |
+| Layer                     | Technology                  | Purpose                                                       |
+| ------------------------- | --------------------------- | ------------------------------------------------------------- |
+| Desktop runtime           | Rust + Tauri                | Native shell, FS / EXIF access, IPC to UI                     |
+| Frontend framework        | React                       | UI inside the Tauri webview                                   |
+| Build tool (UI)           | Vite                        | Dev server + bundler for React                                |
+| EXIF / metadata           | TBD                         | Read EXIF / GPS from photos and videos — library TBD          |
+| Reverse geocoding         | offline, from metadata (TBD) | GPS → city name; no external APIs at the start                |
+| Linter / Formatter (UI)   | ESLint + Prettier           | React code quality                                            |
+| Linter / Formatter (Rust) | rustfmt + clippy            | Standard Rust toolchain                                       |
+| Testing (Rust)            | TBD                         | Decide once we start writing tests                            |
+| Testing (UI)              | TBD                         | Likely Vitest, later                                          |
+| CI                        | GitHub Actions              | `cargo fmt + clippy + test`, `pnpm lint + build` on each PR   |
 
 ## Package Manager
 
-**CRITICAL: Use ONLY `pnpm` (для JS) та `cargo` (для Rust).** Ніколи не міксувати з `npm` / `yarn` / `bun` чи альтернативними build-тулами для Rust.
+**CRITICAL: Use ONLY `pnpm` (for JS) and `cargo` (for Rust).** Never mix in `npm` / `yarn` / `bun` or alternative Rust build tools.
 
 ```bash
 # JS / Frontend (pnpm)
-pnpm install                 # встановити залежності
-pnpm add <package>           # додати залежність
-pnpm add -D <package>        # додати dev-залежність
-pnpm remove <package>        # видалити залежність
+pnpm install                 # install dependencies
+pnpm add <package>           # add a dependency
+pnpm add -D <package>        # add a dev dependency
+pnpm remove <package>        # remove a dependency
 ```
 
 ```bash
-# Rust / Backend (cargo, у src-tauri/)
+# Rust / Backend (cargo, in src-tauri/)
 cd src-tauri
-cargo add <crate>            # додати crate
-cargo add --dev <crate>      # додати dev-залежність
-cargo remove <crate>         # видалити crate
-cargo update                 # оновити Cargo.lock
+cargo add <crate>            # add a crate
+cargo add --dev <crate>      # add a dev dependency
+cargo remove <crate>         # remove a crate
+cargo update                 # refresh Cargo.lock
 ```
 
-Commit `pnpm-lock.yaml` та `Cargo.lock` only. Never commit `package-lock.json` or `yarn.lock`.
+Commit `pnpm-lock.yaml` and `Cargo.lock` only. Never commit `package-lock.json` or `yarn.lock`.
 
 **Package versions** — when adding or upgrading a dependency, always use the latest compatible version. Verify with the package manager's `info` / `view` (`pnpm view <pkg>`, `cargo search <crate>`) command before pinning. Use caret ranges (`^`) for npm packages unless the package is known to break semver. Resolve any peer-dependency warnings before committing the lock file.
 
@@ -58,24 +58,24 @@ Commit `pnpm-lock.yaml` та `Cargo.lock` only. Never commit `package-lock.json`
 
 **DRY with spread / object construction** — when building objects with more than 4 fields, use spread syntax to avoid field duplication.
 
-**Defensive parsing** — values from raw queries, untyped JSON, or external APIs (включно з EXIF та GPS-метаданими файлів) можуть бути `NaN`, `undefined`, `null`. Always guard at boundaries.
+**Defensive parsing** — values from raw queries, untyped JSON, or external APIs (including EXIF and GPS metadata from files) can be `NaN`, `undefined`, `null`. Always guard at boundaries.
 
-**Fallback values** — when data reaches user-facing output, use meaningful fallbacks (`'Unknown location'`, `'Без дати'`), never empty strings.
+**Fallback values** — when data reaches user-facing output, use meaningful fallbacks (`'Unknown location'`, `'No date'`), never empty strings.
 
 **Deduplication before creation** — before creating a new component, utility, or constant file, search the codebase for existing duplicates. Extract shared version to the correct location.
 
 **One file — one component (UI)** — every UI component lives in its own file. Never co-locate two or more components in a single file, including small private helpers.
 
-**Error handling** — always raise framework-native exceptions / typed errors (`Result<T, E>` в Rust, throw в TS). Never return error objects from happy-path APIs.
+**Error handling** — always raise framework-native exceptions / typed errors (`Result<T, E>` in Rust, throw in TS). Never return error objects from happy-path APIs.
 
-**Strict typing** — avoid lazy escape hatches (`any`, `unknown` without validation, untyped dictionaries в TS; `Box<dyn Any>` без нагальної потреби в Rust). Use concrete types and define interfaces / structs when shapes are non-trivial.
+**Strict typing** — avoid lazy escape hatches (`any`, `unknown` without validation, untyped dictionaries in TS; `Box<dyn Any>` without a real need in Rust). Use concrete types and define interfaces / structs when shapes are non-trivial.
 
-**Time** — use a single time library consistently (`chrono` в Rust, один з `date-fns` / `dayjs` / `luxon` у TS — обираємо один). Never use raw platform clocks (`Date.now()`, `std::time::SystemTime::now()`) directly in business logic.
+**Time** — use a single time library consistently (`chrono` in Rust, one of `date-fns` / `dayjs` / `luxon` in TS — pick one). Never use raw platform clocks (`Date.now()`, `std::time::SystemTime::now()`) directly in business logic.
 
 **Naming conventions:**
 
-- Rust: `snake_case` для функцій/змінних, `PascalCase` для типів, `SCREAMING_SNAKE_CASE` для constants
-- TS/React: `camelCase` для функцій/змінних, `PascalCase` для типів та компонентів, `UPPER_SNAKE_CASE` для constants
+- Rust: `snake_case` for functions/variables, `PascalCase` for types, `SCREAMING_SNAKE_CASE` for constants
+- TS/React: `camelCase` for functions/variables, `PascalCase` for types and components, `UPPER_SNAKE_CASE` for constants
 - Private fields immutable by default
 - Avoid: single-letter vars (except `i`, `j`, `k`), abbreviations (`cls`, `ctx`, `usr`), non-descriptive names (`data`, `info`, `temp`)
 
@@ -130,7 +130,7 @@ Separate groups with a blank line only when the linter requires it.
 5. **Barrel exports** → use `index.ts` / `mod.rs` files
 6. **Config** → inject via a config module, never read environment variables directly in business code
 7. **Migrations** → none (no DB at start). If a DB is added, auto-generated migrations only
-8. **UI server-state** — N/A (десктоп без бекенд-API). For local async state from Rust commands use the project's chosen state lib (TanStack Query можна, але часто overkill — обираємо коли з'явиться потреба)
+8. **UI server-state** — N/A (desktop without a backend API). For local async state from Rust commands, use the project's chosen state lib (TanStack Query is allowed but often overkill — we'll pick one when the need arises)
 9. **Tests** → unit tests only for critical business logic
 
 ### Backend module layout (Rust / `src-tauri/src/`)
@@ -222,17 +222,17 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`
 
 **CHANGELOG entry per PR:** every `feat` / `fix` / `perf` / `revert` PR MUST add a single user-friendly bullet under the `## [Unreleased]` section in `CHANGELOG.md`, in the matching subsection (`### Features`, `### Bug Fixes`, `### Performance`, `### Reverts`). Add the entry in the same commit as the code change. `docs` / `style` / `test` / `build` / `ci` / `chore` / `refactor` PRs do NOT add entries. Format: `- <user-friendly description>` — no scope prefix, no PR/commit links.
 
-**Hooks:** `pre-commit` (lint-staged для UI; `cargo fmt --check && cargo clippy` для Rust), `commit-msg` (conventional commits)
+**Hooks:** `pre-commit` (lint-staged for UI; `cargo fmt --check && cargo clippy` for Rust), `commit-msg` (conventional commits)
 
-**Releases:** SemVer (`v1.2.3`), single version for entire repo (синхронізована між `package.json` та `src-tauri/Cargo.toml` + `tauri.conf.json`). CHANGELOG-driven flow: each PR adds an `## [Unreleased]` entry; a `chore(release): prepare X.Y.Z` PR renames `[Unreleased]` to the new version and bumps the version manifests.
+**Releases:** SemVer (`v1.2.3`), single version for the entire repo (synchronized between `package.json`, `src-tauri/Cargo.toml`, and `tauri.conf.json`). CHANGELOG-driven flow: each PR adds an `## [Unreleased]` entry; a `chore(release): prepare X.Y.Z` PR renames `[Unreleased]` to the new version and bumps the version manifests.
 
 **PR Checklist:**
 
 - [ ] Types complete — no lazy escape hatches
-- [ ] Error handling — no unhandled promises / silent catches / `unwrap()` без коментаря-обґрунтування
+- [ ] Error handling — no unhandled promises / silent catches / unjustified `unwrap()` (use one only with a comment explaining why)
 - [ ] Unit tests added — for new critical logic
 - [ ] Lint passes (ESLint + clippy)
-- [ ] Build passes (`pnpm tauri build` локально хоча б на одній платформі)
+- [ ] Build passes (`pnpm tauri build` locally on at least one platform)
 - [ ] Docs updated — if API / IPC contract changed
 
 ## Git Workflow
@@ -263,7 +263,7 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`
 - **Self-improvement loop is mandatory** — re-read own code before delivery, fix issues, document learnings
 - **Triage false positives** — never blindly apply review findings; classify each as real issue / false positive / style preference
 - **Lint, build, and tests MUST pass before creating a PR**
-- **CI MUST pass before merge** (коли CI з'явиться)
+- **CI MUST pass before merge**
 - **Merge is always manual** — by user action or explicit command, never automatic
 - PR base branch: `staging` (unless hotfix → `production`)
 - One logical change per PR
@@ -354,64 +354,64 @@ docs/
 └── discoveries/   # Research / discovery documents
 ```
 
-Specs are immutable once approved (versioned by date). Workflow docs evolve. Discoveries are append-only research artefacts.
+All repository docs (specs, workflow, discoveries, agent definitions, this file) are kept in English. Specs are immutable once approved (versioned by date). Workflow docs evolve. Discoveries are append-only research artefacts.
 
 ## Available Commands
 
 ```bash
-# Dev / build (з кореня)
+# Dev / build (from the repo root)
 pnpm install              # JS deps
-pnpm tauri dev            # Run Tauri в dev (Rust + Vite + webview)
+pnpm tauri dev            # Run Tauri in dev (Rust + Vite + webview)
 pnpm tauri build          # Production desktop build (signed installers)
 
 # Frontend (UI only)
-pnpm dev                  # Vite dev server (без Tauri shell — для UI-debug)
+pnpm dev                  # Vite dev server (no Tauri shell — for UI debug)
 pnpm preview              # Preview UI production build
 pnpm lint                 # ESLint
 pnpm format               # Prettier
 
-# Backend (Rust, у src-tauri/)
+# Backend (Rust, in src-tauri/)
 cd src-tauri
-cargo check               # Швидкий type-check
-cargo build               # Build crate
+cargo check               # Fast type-check
+cargo build               # Build the crate
 cargo test                # Run Rust tests
 cargo clippy              # Linter
 cargo fmt                 # Formatter
 
-# Makefile (з кореня) — швидкі шорткати
-make help                 # Список цілей
-make setup                # Повна установка з нуля
-make install              # Тільки залежності
+# Makefile (from the repo root) — quick shortcuts
+make help                 # List targets
+make setup                # Full setup from scratch
+make install              # Dependencies only
 make dev                  # pnpm tauri dev
 make build                # Production build
 make lint                 # ESLint + clippy
 make fmt                  # Prettier + cargo fmt
 make test                 # pnpm test + cargo test
-make clean                # Прибрати артефакти
+make clean                # Remove build artifacts
 ```
 
 Migrations: `none` (no DB at start).
 
 ## Permissions
 
-**Auto-accept:** Reads, packages (через pnpm/cargo), test files, docs
+**Auto-accept:** Reads, packages (via pnpm/cargo), test files, docs
 
-**Ask first:** Filesystem write to user's media folders, OS-specific Tauri permissions (`fs:allow-*`, `dialog:open`), будь-що, що рухає / переписує файли користувача
+**Ask first:** Filesystem writes to user media folders, OS-specific Tauri permissions (`fs:allow-*`, `dialog:open`), anything that moves or rewrites user files
 
-**Never:** Commit secrets, hardcode API keys, push to `production` без явної інструкції, видаляти користувацькі файли (тільки переміщення в нові теки — оригінал має залишатися або відновлюватися)
+**Never:** Commit secrets, hardcode API keys, push to `production` without an explicit instruction, delete user files (only move them into new folders — the original must remain or be recoverable)
 
 ## Priorities
 
 1. Simplicity over cleverness
-2. Безпека користувацьких файлів — будь-яка операція з фото/відео має бути зворотною (dry-run, undo, або трим лог переміщень)
-3. UX (loading states, error states, accessibility — особливо клавіатурна навігація для масових операцій)
+2. Safety of user files — every photo / video operation must be reversible (dry-run, undo, or at minimum a move log)
+3. UX (loading states, error states, accessibility — especially keyboard navigation for batch operations)
 4. Updated docs
 
 ## Session Context
 
 The repository owner is using this project as a vehicle for **learning Rust** alongside delivery. They are a senior JS / TS / React developer with no prior Rust background.
 
-When the agent makes Rust changes in `src-tauri/`, it MUST briefly explain in Ukrainian:
+When the agent makes Rust changes in `src-tauri/`, it MUST briefly explain in English:
 
 - new syntax that hasn't appeared in this codebase yet (`let-else`, `match`, `?`, closures `|x|`, lifetimes, generics, turbofish, pattern matching, `impl Trait`)
 - attribute macros (`#[derive(...)]`, `#[tauri::command]`, `#[serde(...)]`, `#[cfg(...)]`, `#[error("...")]`)
@@ -423,8 +423,8 @@ When the agent makes Rust changes in `src-tauri/`, it MUST briefly explain in Uk
 Style for explanations:
 
 - short, concrete, with code excerpts
-- Ukrainian
-- mark explanation blocks clearly so they are skippable (e.g. dedicated `### 🎓` heading or block)
+- English
+- mark explanation blocks clearly so they are skippable (e.g. a dedicated `### 🎓` heading or block)
 - do NOT repeat explanations of concepts already covered in the same conversation — rely on context
 - skip explanations on trivial mechanical edits (renames, formatting fixes, moving lines)
 
@@ -433,6 +433,6 @@ For TS / React / Vite changes, **do not** explain language features unless asked
 ## How to Respond
 
 1. Compact explanations
-2. Small changes: show diff only; Large changes: full files
-3. When unsure: state assumption, then proceed
+2. Small changes: show diff only; large changes: full files
+3. When unsure: state the assumption, then proceed
 4. Propose tests only for critical business logic
