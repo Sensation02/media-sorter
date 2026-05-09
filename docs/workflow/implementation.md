@@ -220,7 +220,7 @@ This phase runs AFTER Phase 3 (Verify) and BEFORE Phase 4 (Deliver). It is **man
    - Copy-paste artifacts (leftover code from another module)
    - Magic numbers/strings not extracted to constants
    - Defensive parsing missing at boundaries (untyped JSON from EXIF, GPS coords NaN-unsafe)
-   - Empty string fallbacks instead of meaningful defaults ("Unknown location" / "Без дати")
+   - Empty string fallbacks instead of meaningful defaults ("Unknown location" / "Unknown date")
    - `unwrap()` / `expect()` without an invariant comment in Rust
    - `.unwrap()` chained on a serde Value in Rust — sign of missing typed deserialization
 3. Run lint + tests one more time after fixes
