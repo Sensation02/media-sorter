@@ -11,15 +11,15 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
-            scanning::pick_source_dir,
-            scanning::scan_source,
-            scanning::reveal_in_os,
-            sorting::preview_plan,
-            sorting::start_sort,
-            sorting::pause_sort,
-            sorting::cancel_sort,
-            history::list_history,
-            history::revert_job,
+            scanning::command::pick_source_dir,
+            scanning::command::scan_source,
+            scanning::command::reveal_in_os,
+            sorting::command::preview_plan,
+            sorting::command::start_sort,
+            sorting::command::pause_sort,
+            sorting::command::cancel_sort,
+            history::command::list_history,
+            history::command::revert_job,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
