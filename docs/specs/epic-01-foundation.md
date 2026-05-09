@@ -5,33 +5,33 @@
 
 ## Goal
 
-Заскелетувати архітектуру до того, як писати логіку. Без цього паралельна робота backend/frontend ламається.
+Skeleton the architecture before writing any logic. Without this, parallel backend/frontend work breaks down.
 
 ## Scope
 
-- Доменні типи (Rust + TS-двійники)
-- `AppError` enum (`thiserror`) за таблицею з `CLAUDE.md`
-- IPC-контракт (Tauri commands input/output)
+- Domain types (Rust + TS counterparts)
+- `AppError` enum (`thiserror`) following the table in `CLAUDE.md`
+- IPC contract (Tauri commands input/output)
 - Capabilities (FS + dialog)
-- Тонкі IPC-обгортки на боці UI
+- Thin IPC wrappers on the UI side
 
 ## Decisions
 
 ### Folder naming (`<Month Year>`)
 
-- Канон: **натуральний формат** — `лютий 2024` (UA), `February 2024` (EN).
-- Локалізація — від UI-language setting (детально в EPIC-10), на старті обидві мови підтримуються в форматтері.
-- Альтернатива на майбутнє (опція в settings): `2024-02 лютий` для хронологічного file-system sort.
+- Canonical form: **natural format** — `лютий 2024` (UA), `February 2024` (EN). The Ukrainian sample is the localized output the app actually produces.
+- Localization is driven by the UI language setting (details in EPIC-10); both languages are supported in the formatter from day one.
+- Future alternative (settings toggle): `2024-02 лютий` for chronological filesystem sort.
 
 ### Path structure
 
 `<destination-root>/<Month Year>/<Location>/<filename>`
 
-Приклад: `~/Pictures/sorted/лютий 2024/Paris/IMG_4821.HEIC`.
+Example: `~/Pictures/sorted/лютий 2024/Paris/IMG_4821.HEIC` (`лютий 2024` is the localized folder name produced by the app — equivalent to `February 2024`).
 
-Сегмент `<Location>` беремо з reverse-geocoding (EPIC-04). Поведінка для файлів без GPS — окреме питання в EPIC-04 (`Unknown location` тека або без піддерева).
+The `<Location>` segment comes from reverse geocoding (EPIC-04). Behavior for files without GPS is decided in EPIC-04 (`Unknown location` folder vs. no sub-tree).
 
-Стратегії, які не використовують локацію (`ByDate`, `ByType`, `ByCamera`), формують 1-рівневу структуру: `<destination-root>/<group>/<filename>` — це визначає planner у EPIC-05.
+Strategies that don't use location (`ByDate`, `ByType`, `ByCamera`) produce a single-level structure: `<destination-root>/<group>/<filename>` — the planner in EPIC-05 owns this.
 
 ### Media file definition (extensions)
 
@@ -39,17 +39,17 @@ Photos: `jpg`, `jpeg`, `png`, `heic`, `heif`, `webp`, `tiff`, `tif`, `bmp`, `gif
 RAW: `raw`, `cr2`, `cr3`, `nef`, `arw`, `dng`, `orf`, `rw2`, `pef`, `srw`, `raf`
 Videos: `mov`, `mp4`, `m4v`, `avi`, `mkv`, `webm`, `mpg`, `mpeg`, `3gp`, `hevc`
 
-Hidden files (`.DS_Store`, `Thumbs.db`, dotfiles) пропускаємо завжди.
+Hidden files (`.DS_Store`, `Thumbs.db`, dotfiles) are always skipped.
 
 ### Primary key for history jobs
 
 **Timestamp-based** (`i64`, UNIX epoch milliseconds at job start).
 
-Підстава: природньо унікальний, sort-friendly, не потребує лічильника, дружній до append-only JSON store.
+Rationale: naturally unique, sort-friendly, no counter required, and fits an append-only JSON store.
 
 ### Backend architecture
 
-Стандартні шари (Clean / hexagonal-light, без надмірних абстракцій):
+Standard layers (Clean / hexagonal-light, no over-abstraction):
 
 ```
 src-tauri/src/
@@ -58,11 +58,11 @@ src-tauri/src/
 ├── domain/             # types: MediaFile, SortPlan, SortJob, ...
 │   └── mod.rs
 ├── error.rs            # AppError (thiserror)
-├── dto/                # serde-сериалізовані IPC payload-и (барель)
+├── dto/                # serde-serialized IPC payloads (barrel)
 │   └── mod.rs
-├── commands/           # тонкі Tauri-команди (без бізнес-логіки)
+├── commands/           # thin Tauri commands (no business logic)
 │   └── mod.rs
-├── services/           # бізнес-логіка (scan, metadata, geo, planner, mover, history)
+├── services/           # business logic (scan, metadata, geo, planner, mover, history)
 │   └── mod.rs
 ├── repositories/       # FS access wrapper (Repository pattern, mockable)
 │   └── mod.rs
@@ -70,13 +70,13 @@ src-tauri/src/
     └── mod.rs
 ```
 
-Frontend дзеркально:
+Frontend mirrors the same shape:
 
 ```
 src/
-├── ipc/                # invoke + listen wrappers, типізовані
-├── types/              # доменні TS-типи (зараз `sort.ts`)
-├── features/sort/      # UI (вже є)
+├── ipc/                # invoke + listen wrappers, typed
+├── types/              # domain TS types (currently `sort.ts`)
+├── features/sort/      # UI (already in place)
 └── utils/
 ```
 
@@ -85,17 +85,17 @@ src/
 - [x] Decide foundation specs (this file)
 - [x] `domain/` types
 - [x] `error.rs` — `AppError` enum
-- [x] `dto/` — serde structs для всіх IPC payload-ів
-- [x] TS-двійники в `src/types/ipc.ts`
-- [x] `commands/` — stubs (повертають `AppError::Internal("not yet implemented")`)
-- [ ] `capabilities/default.json` — додати `dialog:allow-open`, `fs:allow-read-dir`, `fs:scope` (відкладено до EPIC-02 коли підключатимемо `tauri-plugin-dialog`)
-- [x] `src/ipc/` — `invoke` + `listen` обгортки
+- [x] `dto/` — serde structs for every IPC payload
+- [x] TS counterparts in `src/types/ipc.ts`
+- [x] `commands/` — stubs (return `AppError::Internal("not yet implemented")`)
+- [ ] `capabilities/default.json` — add `dialog:allow-open`, `fs:allow-read-dir`, `fs:scope` (deferred to EPIC-02 when `tauri-plugin-dialog` lands)
+- [x] `src/ipc/` — `invoke` + `listen` wrappers
 
 ## IPC contract (draft)
 
 | Command           | Input                  | Output            | Notes                       |
 | ----------------- | ---------------------- | ----------------- | --------------------------- |
-| `pick_source_dir` | —                      | `Option<PathBuf>` | Через `tauri-plugin-dialog` |
+| `pick_source_dir` | —                      | `Option<PathBuf>` | Via `tauri-plugin-dialog`   |
 | `scan_source`     | `{ path }`             | `ScanSummary`     | EPIC-02                     |
 | `preview_plan`    | `{ scanId, rule }`     | `SortPlan`        | EPIC-05                     |
 | `start_sort`      | `{ planId, settings }` | `JobId`           | EPIC-06                     |
@@ -103,7 +103,7 @@ src/
 | `cancel_sort`     | `{ jobId }`            | `()`              |                             |
 | `revert_job`      | `{ jobId }`            | `()`              | EPIC-07                     |
 | `list_history`    | —                      | `HistoryItem[]`   | EPIC-07                     |
-| `reveal_in_os`    | `{ path }`             | `()`              | Через opener                |
+| `reveal_in_os`    | `{ path }`             | `()`              | Via opener                  |
 
 Events (backend → frontend):
 
@@ -116,11 +116,11 @@ Events (backend → frontend):
 
 ## Resolved questions
 
-1. **Folder naming format** — `лютий 2024` / `February 2024`, локалізовано.
+1. **Folder naming format** — `лютий 2024` / `February 2024`, localized.
 2. **Path structure** — `<Month Year>/<Location>/file`.
-3. **Extensions list** — див. вище.
+3. **Extensions list** — see above.
 4. **Primary key** — timestamp-based (`i64` ms).
-5. **Backend architecture** — стандартні шари (domain / dto / commands / services / repositories / utils).
+5. **Backend architecture** — standard layers (domain / dto / commands / services / repositories / utils).
 
 ## Open questions
 
@@ -128,5 +128,5 @@ Events (backend → frontend):
 
 ## Out of scope
 
-- EXIF-витяг, geocoding, planner, FS-операції (окремі епіки).
-- UI-зміни поза підключенням IPC-обгорток.
+- EXIF extraction, geocoding, planner, FS operations (separate epics).
+- UI changes beyond wiring up the IPC helpers.
