@@ -249,6 +249,7 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`
 - [ ] Lint passes (ESLint + clippy)
 - [ ] Build passes (`pnpm tauri build` locally on at least one platform)
 - [ ] Docs updated — if API / IPC contract changed
+- [ ] Epic status synced — if the PR closes a subtask in `docs/specs/epic-XX-*.md`, both that spec and `docs/specs/STATUS.md` are updated in the same PR
 
 ## Git Workflow
 
@@ -365,11 +366,15 @@ After implementation completes, BEFORE delivery:
 ```
 docs/
 ├── specs/         # Design documents per feature
-├── workflow/      # Process docs (anti-patterns, releases, CI/CD)
+│   ├── STATUS.md  # Index of every epic and its current status
+│   └── epic-XX-*.md
+├── workflow/      # Process docs (anti-patterns, releases, CI/CD, epic status tracking)
 └── discoveries/   # Research / discovery documents
 ```
 
 All repository docs (specs, workflow, discoveries, agent definitions, this file) are kept in English. Specs are immutable once approved (versioned by date). Workflow docs evolve. Discoveries are append-only research artefacts.
+
+**Epic status tracking is mandatory.** Every epic spec has a `Status:` field, and `docs/specs/STATUS.md` is the aggregated index. When a PR crosses an epic status boundary (`pending` → `in progress` → `complete`), update both the spec's `Status:` / `Last updated:` fields AND the matching row in `STATUS.md`, in the same PR. Full procedure in `docs/workflow/delivery.md` § _Epic Status Tracking_.
 
 ## Artifacts (HTML for humans)
 
