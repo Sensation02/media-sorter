@@ -5,22 +5,22 @@
 
 ## Goal
 
-Прочитати EXIF із фото, метадані з відео, отримати дату зйомки + make/model + GPS.
+Read EXIF from photos and metadata from videos to extract capture date + make/model + GPS.
 
 ## Subtasks
 
-- [ ] Discovery: обрати crate для фото (кандидати: `kamadak-exif`, `little_exif`, `nom-exif`)
-- [ ] Discovery: підхід для відео (`nom-exif` для QuickTime atoms, парсинг MP4 boxes)
-- [ ] Запис рішення у `docs/discoveries/`
-- [ ] Сервіс `metadata::extract(path) -> Metadata`
-- [ ] Fallback-стратегія коли EXIF немає
-- [ ] Юніт-тести: корумповані файли, відсутні поля, кілька форматів
+- [ ] Discovery: pick a crate for photos (candidates: `kamadak-exif`, `little_exif`, `nom-exif`)
+- [ ] Discovery: approach for video (`nom-exif` for QuickTime atoms, MP4 box parsing)
+- [ ] Record the decision in `docs/discoveries/`
+- [ ] Service `metadata::extract(path) -> Metadata`
+- [ ] Fallback strategy when EXIF is missing
+- [ ] Unit tests: corrupted files, missing fields, multiple formats
 
 ## Open questions
 
-1. **Fallback для дати:** якщо EXIF порожній — брати file `mtime`, `birthtime`, чи позначати як "Без дати" і кидати в окрему теку?
-2. **Часовий пояс:** EXIF дата зазвичай без TZ. Інтерпретувати як локальний час системи, як UTC, чи зчитувати `OffsetTimeOriginal` якщо є?
-3. **Відео — пріоритет:** робимо в MVP чи відкладаємо (тоді відео сортуються тільки по `mtime`)?
-4. **RAW-формати** (CR2, NEF, ARW, DNG) — повноцінний EXIF чи best-effort?
-5. **Sidecar XMP**-файли (RAW + XMP пара) — читати XMP для дати, чи ігнорувати?
-6. **Performance**: відкривати кожен файл синхронно vs паралельно (rayon)?
+1. **Date fallback:** if EXIF is empty — use the file `mtime`, `birthtime`, or mark as "no date" and route to a separate folder?
+2. **Time zone:** EXIF dates usually have no TZ. Interpret as system local, as UTC, or read `OffsetTimeOriginal` when present?
+3. **Video — priority:** ship in MVP or defer (in which case videos sort by `mtime` only)?
+4. **RAW formats** (CR2, NEF, ARW, DNG) — full EXIF support or best-effort?
+5. **XMP sidecar** files (RAW + XMP pair) — read XMP for the date, or ignore?
+6. **Performance:** open each file synchronously vs. in parallel (rayon)?

@@ -5,75 +5,75 @@
 
 ## Goal
 
-Користувач обирає теку → ми рахуємо, що в ній є → показуємо preview перед запуском.
+User picks a folder → we count what's in it → we show a preview before launching anything.
 
 ## Decisions
 
 ### Scan depth — **flat (top-level only)**
 
-Скануємо тільки безпосередній вміст вибраної теки, у підпапки не заходимо. Recursive scan відкладено як майбутнє покращення (окрема фіча).
+We scan only the immediate contents of the selected folder; we do not descend into sub-folders. Recursive scan is deferred as a future enhancement (separate feature).
 
 ### Symlinks — **ignore**
 
-Не слідуємо за symlink'ами. Захищає від циклів і виходу за межі вибраного scope. Опція follow-symlinks — на потім.
+We do not follow symlinks. This guards against cycles and against escaping the selected scope. A follow-symlinks toggle is future work.
 
 ### Hidden files — **hardcoded skip**
 
-`.DS_Store`, `Thumbs.db`, всі dotfiles (`^\.`), macOS metadata sidecars (`._*`) пропускаються завжди, без UI-опції.
+`.DS_Store`, `Thumbs.db`, every dotfile (`^\.`), and macOS metadata sidecars (`._*`) are always skipped, with no UI toggle.
 
 ### Multi-source — **single source only**
 
-Користувач за один прогін вибирає одну теку. Multi-source — окрема фіча на потім.
+The user picks exactly one folder per run. Multi-source is a separate feature for later.
 
 ### Cache — **fresh scan every time**
 
-Без кешу між сесіями. Якщо вимірювання покажуть, що scan повільний на великих бібліотеках — зробимо нормальний кеш зі smart-інвалідацією окремим епіком.
+No cache between sessions. If measurement shows scanning is slow on large libraries, we'll add a proper cache with smart invalidation as its own epic.
 
 ### Capabilities required
 
-- `dialog:allow-open` — для `pick_source_dir`
-- `core:default` — вже є
-- FS-доступ — Tauri дозволяє читати теку, яку користувач явно вибрав через dialog (drag-and-drop / dialog scope), без додаткових `fs:*` permissions для read-only top-level scan. Якщо в реалізації виявиться, що потрібен `fs:allow-read-dir`, додамо тоді.
+- `dialog:allow-open` — for `pick_source_dir`
+- `core:default` — already in place
+- FS access — Tauri lets us read a folder the user explicitly selected via dialog (drag-and-drop / dialog scope) without extra `fs:*` permissions for a read-only top-level scan. If implementation reveals we need `fs:allow-read-dir`, we'll add it then.
 
 ## Subtasks
 
 Backend (PR #4 — open, awaiting verify + merge):
 
-- [x] Capabilities: `dialog:allow-open` у `capabilities/default.json`
-- [x] Підключити `tauri-plugin-dialog` як залежність + `.plugin(...)` у `lib.rs`
-- [x] Команда `pick_source_dir` через `tauri-plugin-dialog` (real, не stub)
-- [x] Команда `scan_source(path) -> ScanSummary { fileCount, sizeBytes, byKind }`
-- [x] Repository-обгортка з фільтрами (`scanning::service` + `scanning::filters` + `domain::extensions`)
-- [x] Unit tests на критичні гілки (класифікація, hidden, flat, symlinks, validation)
+- [x] Capabilities: `dialog:allow-open` in `capabilities/default.json`
+- [x] Wire `tauri-plugin-dialog` as a dependency + `.plugin(...)` in `lib.rs`
+- [x] Command `pick_source_dir` via `tauri-plugin-dialog` (real, not stub)
+- [x] Command `scan_source(path) -> ScanSummary { fileCount, sizeBytes, byKind }`
+- [x] Repository wrapper with filters (`scanning::service` + `scanning::filters` + `domain::extensions`)
+- [x] Unit tests on the critical branches (classification, hidden, flat, symlinks, validation)
 
 UI integration (PR — current branch):
 
-- [x] Підключити кнопку Browse у `SetupScreen` (виклик `pick_source_dir`)
-- [x] Тригерити `scan_source` після вибору теки
-- [x] Рендерити `ScanSummary` (fileCount, sizeBytes, byKind) під полем шляху
-- [x] Loading + error states (toast на `AppError`, спінер під час scan)
-- [x] Прибрати `DEFAULT_SOURCE` з UI
+- [x] Wire the Browse button in `SetupScreen` (call `pick_source_dir`)
+- [x] Trigger `scan_source` after the user picks a folder
+- [x] Render `ScanSummary` (fileCount, sizeBytes, byKind) below the path field
+- [x] Loading + error states (toast on `AppError`, spinner during scan)
+- [x] Drop `DEFAULT_SOURCE` from the UI
 
 ## Progress notes
 
-**Виконано в PR #4:**
+**Done in PR #4:**
 
-1. Реалізовано весь Rust-шар `pick_source_dir` + `scan_source` за рішеннями зі spec (flat, no symlinks, hardcoded hidden filter, single source).
-2. Створено `domain::extensions::classify_extension` — shared classifier для майбутніх EPIC-05 (planner) та EPIC-06 (FS ops). Винесено в `domain/`, не в `scanning/`, бо це shared concept.
-3. **Inline-рефактор `AppError`** (вийшов поза первісний скоп EPIC-02, але доцільно зробити до того, як error-handling розпорошиться по коду): serde-форма змінена з `{ kind, ...fields }` на `{ code, params: { ... } }` для готовності до i18n у EPIC-10. Фабрики (`internal`, `validation`, `io`) тепер приймають `impl Display`. TS-двійник `AppErrorDto` оновлений.
-4. Sandbox без GTK не дозволив запустити `cargo check` на CI-етапі — code review зроблено ручно, `cargo fmt --check` зелений. Локальна верифікація на Mac в чек-листі PR #4.
+1. Implemented the full Rust layer of `pick_source_dir` + `scan_source` per the decisions in this spec (flat, no symlinks, hardcoded hidden filter, single source).
+2. Created `domain::extensions::classify_extension` — a shared classifier for the upcoming EPIC-05 (planner) and EPIC-06 (FS ops). Placed in `domain/`, not in `scanning/`, because it's a shared concept.
+3. **Inline `AppError` refactor** (extends past the original EPIC-02 scope, but worth doing before error-handling code spreads): the serde shape changed from `{ kind, ...fields }` to `{ code, params: { ... } }` to be ready for i18n in EPIC-10. Factories (`internal`, `validation`, `io`) now accept `impl Display`. The TS counterpart `AppErrorDto` was updated.
+4. The sandbox without GTK didn't allow running `cargo check` during the CI step — code review was done by hand, `cargo fmt --check` is green. Local verification on Mac is in the PR #4 checklist.
 
-**Чого свідомо НЕ робили в цьому PR:**
+**Deliberately NOT done in this PR:**
 
-- UI wiring — окремий PR, бо чистий React/IPC шар; backend стабільний, готовий до підключення.
-- `spawn_blocking` для `scan_directory` — для MVP scan теки <10k файлів блокування одного tokio worker'а прийнятне; винесли як можливу майбутню оптимізацію.
-- Розширення `AppError` варіантами `DirectoryNotReadable / PermissionDenied` тощо — не передбачаємо, додамо за фактом use-case.
+- UI wiring — separate PR, since it's a clean React/IPC layer; the backend is stable and ready to be plugged in.
+- `spawn_blocking` for `scan_directory` — for an MVP scan of a folder with <10k files, blocking a single tokio worker is acceptable; logged as a possible future optimization.
+- Extending `AppError` with `DirectoryNotReadable / PermissionDenied` and similar variants — not anticipated; we'll add them when a concrete use case appears.
 
 ## Resolved questions
 
-1. **Recursive чи flat?** → flat (top-level only).
+1. **Recursive or flat?** → flat (top-level only).
 2. **Symlinks** → ignore.
-3. **Hidden files** → hardcoded skip, без UI-опції.
+3. **Hidden files** → hardcoded skip, no UI toggle.
 4. **Multi-source** → single source only.
 5. **Cache** → fresh scan every time.
 
@@ -83,8 +83,8 @@ UI integration (PR — current branch):
 
 ## Out of scope
 
-- Recursive scan (фіча на потім)
-- Multi-source (фіча на потім)
-- Scan cache (фіча на потім, якщо буде потреба)
+- Recursive scan (future feature)
+- Multi-source (future feature)
+- Scan cache (future feature, only if needed)
 - EXIF / metadata extraction (EPIC-03)
-- Tree preview UI з expand/collapse (EPIC-05 у складі planner)
+- Tree preview UI with expand/collapse (EPIC-05, part of the planner)

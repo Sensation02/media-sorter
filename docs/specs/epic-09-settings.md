@@ -5,19 +5,19 @@
 
 ## Goal
 
-`SortSettings` зберігається між запусками.
+`SortSettings` persists across app launches.
 
 ## Subtasks
 
-- [ ] Persist у app config dir (`tauri-plugin-store` або власний JSON)
-- [ ] Hydrate на старті
-- [ ] Підключити чекбокси у `SettingsScreen` до реальних значень
-- [ ] Validation на load (forward-compat: невідомі поля ігноруємо)
+- [ ] Persist to the app config dir (`tauri-plugin-store` or our own JSON)
+- [ ] Hydrate at startup
+- [ ] Wire the `SettingsScreen` checkboxes to real values
+- [ ] Validation on load (forward-compatible: ignore unknown fields)
 
 ## Open questions
 
-1. **Watch source folder** (`watchSource: false` у `DEFAULT_SETTINGS`) — це auto-sort при появі нових файлів? Якщо так, це окремий епік (вимагає file watcher), не settings-toggle.
-2. **Write report** — формат: TXT, CSV, JSON? Куди зберігати — поряд з destination, чи в `app_data_dir`?
-3. **Default destination folder:** запам'ятовувати останню обрану, чи завжди питати?
-4. **Default sort rule:** запам'ятовувати останню, чи фіксована?
-5. **Reset to defaults** — є кнопка в UI?
+1. **Watch source folder** (`watchSource: false` in `DEFAULT_SETTINGS`) — is this auto-sort when new files appear? If so, that's a separate epic (requires a file watcher), not a settings toggle.
+2. **Write report** — format: TXT, CSV, JSON? Where to save it — alongside the destination, or in `app_data_dir`?
+3. **Default destination folder:** remember the last one chosen, or always prompt?
+4. **Default sort rule:** remember the last one used, or keep a fixed default?
+5. **Reset to defaults** — is there a button in the UI?

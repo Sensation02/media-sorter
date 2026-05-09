@@ -5,20 +5,20 @@
 
 ## Goal
 
-UI бачить, що відбувається, без polling.
+The UI sees what's happening without polling.
 
 ## Subtasks
 
 - [ ] Events: `sort:progress`, `sort:log`, `sort:done`, `sort:error`
-- [ ] Backend емітить через `app.emit`
-- [ ] Frontend: hook `useSortJob` з `listen()` та автоочищенням
-- [ ] Throttle подій (≤ ~10/сек) щоб не задушити webview
-- [ ] Підставити в `ProgressScreen` (зараз `DEFAULT_PROGRESS`)
+- [ ] Backend emits via `app.emit`
+- [ ] Frontend: `useSortJob` hook with `listen()` and auto-cleanup
+- [ ] Throttle events (~10/sec max) so the webview isn't overwhelmed
+- [ ] Wire into `ProgressScreen` (currently `DEFAULT_PROGRESS`)
 
 ## Open questions
 
-1. **Гранулярність log-у:** кожен файл, чи семплінг (1 з N) для великих job?
-2. **Estimate remaining time:** проста екстраполяція по середньому, чи складніша моделька?
-3. **Поведінка коли вікно згорнуте:** продовжуємо емітити чи паузимось?
-4. **Backpressure:** якщо UI повільний — drop events чи буферизувати?
-5. **Persistence log-у після завершення:** тримаємо в пам'яті, чи пишемо у файл (для звіту)?
+1. **Log granularity:** every file, or sampling (1 of N) for large jobs?
+2. **Estimated time remaining:** simple extrapolation from the running average, or a more elaborate model?
+3. **Behavior when the window is minimized:** keep emitting or pause?
+4. **Backpressure:** if the UI is slow — drop events or buffer them?
+5. **Log persistence after completion:** keep in memory, or write to a file (for the report)?
