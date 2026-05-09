@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug Fixes
 
+- "Browse…" no longer freezes the app on macOS when picking a source folder
+
 ### Performance
 
 ### Reverts

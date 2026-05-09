@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use tauri::AppHandle;
 use tauri_plugin_dialog::DialogExt;
+use tokio::sync::oneshot;
 
 use crate::domain::ScanSummary;
 use crate::error::{AppError, AppResult};
@@ -10,7 +11,15 @@ use super::dto::{RevealRequest, ScanSourceRequest};
 
 #[tauri::command]
 pub async fn pick_source_dir(app: AppHandle) -> AppResult<Option<PathBuf>> {
-    let picked = app.dialog().file().blocking_pick_folder();
+    let (sender, receiver) = oneshot::channel();
+
+    app.dialog().file().pick_folder(move |path| {
+        let _ = sender.send(path);
+    });
+
+    let picked = receiver
+        .await
+        .map_err(|_| AppError::internal("dialog channel closed before user response"))?;
 
     let Some(file_path) = picked else {
         return Ok(None);
