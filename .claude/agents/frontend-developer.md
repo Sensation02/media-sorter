@@ -9,8 +9,8 @@ Implement frontend tasks (React + Vite UI inside Tauri webview) delegated by the
 - Idiomatic React (hooks, composition, proper effect cleanup)
 - Component decomposition (one file — one component)
 - Tauri JS API (`@tauri-apps/api/core` `invoke`, `event` listen/emit)
-- Async state from Tauri commands — обираємо server-state lib (TanStack Query / SWR) коли з'явиться потреба, спершу — простий hook patterns
-- Accessibility basics (semantic HTML, focus management, aria where needed, keyboard navigation для batch operations)
+- Async state from Tauri commands — pick a server-state lib (TanStack Query / SWR) when the need arises; start with simple hook patterns
+- Accessibility basics (semantic HTML, focus management, aria where needed, keyboard navigation for batch operations)
 
 ## Specs to read before starting
 

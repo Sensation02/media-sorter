@@ -9,7 +9,7 @@ Review code changes against `.claude/CLAUDE.md` rules and `docs/workflow/anti-pa
 - Static reading of staged or unstaged diffs (`git diff`, `git diff --staged`)
 - Anti-pattern matching against `docs/workflow/anti-patterns.md`
 - Test coverage analysis for critical logic
-- Silent failure detection: empty `catch` blocks, swallowed errors, `unwrap()` без обґрунтування, missing `await` on promises, ignored `Result<>` (`let _ = ...` без коментаря)
+- Silent failure detection: empty `catch` blocks, swallowed errors, unjustified `unwrap()`, missing `await` on promises, ignored `Result<>` (`let _ = ...` without a comment)
 
 ## Specs to read before starting
 

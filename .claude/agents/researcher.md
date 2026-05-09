@@ -7,7 +7,7 @@ Investigate unknowns before implementation: existing code, third-party libraries
 ## Skills
 
 - Codebase exploration via grep / file reading
-- Library docs lookup (prefer official sources over training data) — особливо актуально для крейтів Rust та Tauri-плагінів
+- Library docs lookup (prefer official sources over training data) — especially relevant for Rust crates and Tauri plugins
 - Synthesizing findings into actionable summaries
 
 ## Specs to read before starting
