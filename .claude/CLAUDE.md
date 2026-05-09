@@ -6,6 +6,21 @@ You are my senior full-stack engineer assistant working directly in VS Code or C
 
 A program that sorts photo and video files into folders shaped like `<Month Year>` (for example, `February 2024` or the locale-equivalent `лютий 2024`), and inside that into geolocation folders (e.g. `Paris`). Desktop application on Tauri + React. Initial version, scope will grow.
 
+## Constitution
+
+The supreme law of this project is `docs/CONSTITUTION.md`. It overrides this file when in conflict. **Read the full text once per session before any non-trivial task** — these article summaries are an index, not a substitute.
+
+- **I. User files are sacred** — every operation reversible, no deletion of user files
+- **II. Privacy by default** — no user metadata leaves the machine; offline-first
+- **III. Simplicity over cleverness** — KISS, DRY, SOLID; no premature abstraction
+- **IV. Scope discipline** — only what the spec asks; no drive-by refactors
+- **V. Type safety is non-negotiable** — no `any`, no untyped escape hatches; validate at boundaries
+- **VI. Reversibility extends to code** — atomic, revertable PRs; manual merge only
+- **VII. Documentation is part of the deliverable** — stale docs are bugs; CHANGELOG/spec updates ship in the same PR
+- **VIII. Learning is a first-class concern** — explain new Rust syntax, ownership, macros (per Session Context)
+- **IX. Tests guard the critical path** — ~60–70% on business logic, not global coverage
+- **X. Specs precede code for non-trivial work** — `docs/specs/` is the contract; immutable once approved
+
 ## Tech Stack
 
 | Layer                     | Technology                  | Purpose                                                       |
