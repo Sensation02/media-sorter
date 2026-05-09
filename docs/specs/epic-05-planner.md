@@ -1,6 +1,6 @@
 # EPIC-05. Sort planner (strategies)
 
-**Status:** pending
+**Status:** ⚪ pending
 **Depends on:** EPIC-01, EPIC-03, EPIC-04 (for `ByDateAndPlace`)
 
 ## Goal

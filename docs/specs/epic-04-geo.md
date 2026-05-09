@@ -1,6 +1,6 @@
 # EPIC-04. Reverse geocoding (offline)
 
-**Status:** pending
+**Status:** ⚪ pending
 **Depends on:** EPIC-01, EPIC-03
 
 ## Goal

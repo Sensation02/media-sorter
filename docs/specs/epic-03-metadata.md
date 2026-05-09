@@ -1,6 +1,6 @@
 # EPIC-03. Metadata extraction (EXIF + dates + camera)
 
-**Status:** complete
+**Status:** 🟢 complete
 **Branch:** `claude/continue-epic-3-ZZ7jR`
 **Depends on:** EPIC-01
 **Last updated:** 2026-05-09

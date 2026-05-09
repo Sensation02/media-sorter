@@ -1,6 +1,6 @@
 # EPIC-06. File operations + dry-run + conflict resolution
 
-**Status:** pending
+**Status:** ⚪ pending
 **Depends on:** EPIC-01, EPIC-05
 
 ## Goal

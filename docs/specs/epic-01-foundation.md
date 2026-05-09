@@ -1,6 +1,6 @@
 # EPIC-01. Foundation: domain, IPC contract, capabilities
 
-**Status:** complete
+**Status:** 🟢 complete
 **Branch:** `claude/core-functionality-lu8lu`
 **Last updated:** 2026-05-09
 
