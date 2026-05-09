@@ -1,8 +1,9 @@
 # EPIC-03. Metadata extraction (EXIF + dates + camera)
 
-**Status:** in progress
+**Status:** complete
 **Branch:** `claude/continue-epic-3-ZZ7jR`
 **Depends on:** EPIC-01
+**Last updated:** 2026-05-09
 
 ## Goal
 
@@ -60,7 +61,7 @@ Batch extract runs in parallel via rayon: `files.par_iter().map(|f| extract(&f.p
 - [x] Service `metadata::extract(path, kind) -> Metadata`
 - [x] Batch variant via rayon
 - [x] Unit tests: corrupt files, unsupported, missing fields
-- [ ] Integration with planner (EPIC-05) — out of scope for this epic
+- ~~Integration with planner — moved to EPIC-05 scope~~
 
 ## Resolved questions
 

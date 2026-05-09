@@ -1,7 +1,8 @@
 # EPIC-01. Foundation: domain, IPC contract, capabilities
 
-**Status:** in progress
+**Status:** complete
 **Branch:** `claude/core-functionality-lu8lu`
+**Last updated:** 2026-05-09
 
 ## Goal
 
@@ -88,7 +89,7 @@ src/
 - [x] `dto/` — serde structs for every IPC payload
 - [x] TS counterparts in `src/types/ipc.ts`
 - [x] `commands/` — stubs (return `AppError::Internal("not yet implemented")`)
-- [ ] `capabilities/default.json` — add `dialog:allow-open`, `fs:allow-read-dir`, `fs:scope` (deferred to EPIC-02 when `tauri-plugin-dialog` lands)
+- [x] `capabilities/default.json` — add `dialog:allow-open` (delivered in EPIC-02; `fs:*` scopes still TBD when an epic actually needs them)
 - [x] `src/ipc/` — `invoke` + `listen` wrappers
 
 ## IPC contract (draft)
