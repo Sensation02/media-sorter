@@ -2,9 +2,9 @@ name: "CI"
 
 on:
   push:
-    branches: [staging, production]
+    branches: [main, staging, production]
   pull_request:
-    branches: [staging, production]
+    branches: [main, staging, production]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -12,7 +12,7 @@ concurrency:
 
 env:
   NODE_VERSION: "22"
-  PNPM_VERSION: "9"
+  PNPM_VERSION: "10"
   RUST_TOOLCHAIN: "stable"
   CARGO_TERM_COLOR: "always"
 
@@ -46,7 +46,7 @@ jobs:
 
       - name: Test
         run: pnpm test
-        if: ${{ hashFiles('vitest.config.*', 'src/**/*.test.*') != '' }}
+        if: ${{ hashFiles('src/**/*.test.*', 'src/**/*.spec.*') != '' }}
 
   rust-quality:
     name: Rust — fmt, clippy, test
