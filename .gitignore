@@ -73,6 +73,10 @@ docs/superpowers/
 # Personal local-only notes (onboarding, learning material)
 .notes/
 
+# Ephemeral HTML artifacts for human consumption (PR explainers, design
+# explorations, research summaries) — see docs/workflow/artifacts.md
+.artifacts/
+
 # Tauri signing / private update keys (NEVER commit)
 *.tauri-signing-key
 *.tauri-signing-key.pub
