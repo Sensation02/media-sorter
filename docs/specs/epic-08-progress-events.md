@@ -1,6 +1,7 @@
 # EPIC-08. Real-time progress (events)
 
-**Status:** ⚪ pending
+**Status:** 🟢 complete
+**Last updated:** 2026-05-10
 **Depends on:** EPIC-01, EPIC-06
 
 ## Goal
@@ -9,11 +10,11 @@ The UI sees what's happening without polling.
 
 ## Subtasks
 
-- [ ] Events: `sort:progress`, `sort:log`, `sort:done`, `sort:error`
-- [ ] Backend emits via `app.emit`
-- [ ] Frontend: `useSortJob` hook with `listen()` and auto-cleanup
-- [ ] Throttle events (~10/sec max) so the webview isn't overwhelmed
-- [ ] Wire into `ProgressScreen` (currently `DEFAULT_PROGRESS`)
+- [x] Events: `sort:progress`, `sort:log`, `sort:done`, `sort:error`
+- [x] Backend emits via `app.emit`
+- [x] Frontend: `useSortJob` hook with `listen()` and auto-cleanup
+- [x] Throttle events (~10/sec max) so the webview isn't overwhelmed
+- [x] Wire into `ProgressScreen` (currently `DEFAULT_PROGRESS`)
 
 ## Open questions
 
