@@ -11,7 +11,8 @@ use crate::utils::now_ms;
 
 use super::dto::{JobIdRequest, PreviewPlanRequest, StartSortRequest, StartSortResponse};
 use super::planner::build_plan;
-use super::runner::emitter::{ProgressEmitter, TauriEmitter};
+use super::runner::constants::THROTTLE_INTERVAL_MS;
+use super::runner::emitter::{ProgressEmitter, TauriEmitter, ThrottledEmitter};
 use super::runner::fs_repo::RealFsRepo;
 use super::runner::job;
 use super::runner::service::{run_sort, JobOutcome, RunInput};
@@ -32,7 +33,9 @@ pub async fn start_sort(app: AppHandle, request: StartSortRequest) -> AppResult<
     let destination_root = request.plan.root.clone();
     let dry_run = request.dry_run;
     let control = job::register(job_id)?;
-    let emitter: Arc<dyn ProgressEmitter> = Arc::new(TauriEmitter::new(app.clone()));
+    let tauri_emitter: Arc<dyn ProgressEmitter> = Arc::new(TauriEmitter::new(app.clone()));
+    let emitter: Arc<dyn ProgressEmitter> =
+        Arc::new(ThrottledEmitter::new(tauri_emitter, THROTTLE_INTERVAL_MS));
 
     let input = RunInput {
         job_id,
