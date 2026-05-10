@@ -68,11 +68,19 @@ impl ThrottledEmitter {
     }
 
     fn flush_pending(&self) {
-        let pending = self.state.lock().expect("throttle mutex").pending.take();
+        let pending = {
+            let mut state = self.state.lock().expect("throttle mutex");
+            let pending = state.pending.take();
+
+            if pending.is_some() {
+                state.last_emit_at = Some(Instant::now());
+            }
+
+            pending
+        };
 
         if let Some(progress) = pending {
             self.inner.emit_progress(&progress);
-            self.state.lock().expect("throttle mutex").last_emit_at = Some(Instant::now());
         }
     }
 }
