@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -379,8 +380,6 @@ fn elapsed_ms(started_at: i64) -> u64 {
 }
 
 fn count_folders(items: &[SortPlanItem]) -> u64 {
-    use std::collections::HashSet;
-
     let mut folders: HashSet<&Path> = HashSet::new();
 
     for item in items {
