@@ -74,7 +74,7 @@ const EMPTY_PROGRESS: SortProgress = {
  * on unmount and on `jobId` change.
  */
 export function useSortJob(jobId: JobId | null): UseSortJobResult {
-  const [state, dispatch] = useReducer(reduce, jobId, initialState);
+  const [state, dispatch] = useReducer(reduce, IDLE_STATE);
   const [tickNow, setTickNow] = useState<number>(() => Date.now());
 
   useEffect(() => {
@@ -155,14 +155,6 @@ export function useSortJob(jobId: JobId | null): UseSortJobResult {
     done: state.done,
     error: state.error,
   };
-}
-
-function initialState(jobId: JobId | null): SortJobState {
-  if (jobId === null) {
-    return IDLE_STATE;
-  }
-
-  return { ...IDLE_STATE, jobId, startedAtMs: Date.now(), status: "running" };
 }
 
 function reduce(state: SortJobState, action: SortJobAction): SortJobState {
