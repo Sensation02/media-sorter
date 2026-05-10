@@ -9,7 +9,7 @@ import { RuleSelector } from "../../components/rule-selector";
 import { ScanBreakdown } from "../../components/scan-breakdown";
 import { usePlanPreview } from "../../use-plan-preview";
 import { formatBytes } from "../../../../utils";
-import type { ScanId, ScanSummary } from "../../../../types/ipc";
+import type { ScanId, ScanSummary, SortPlan } from "../../../../types/ipc";
 import type { SortRule, SortRuleId } from "../../../../types/sort";
 
 const EMPTY_PATH_LABEL = "No folder selected";
@@ -20,7 +20,7 @@ export type SetupScreenProps = {
   scanId: ScanId | null;
   scanning: boolean;
   onPickSource: () => void;
-  onRun: () => void;
+  onRun: (plan: SortPlan) => void;
 };
 
 export function SetupScreen({
@@ -40,6 +40,15 @@ export function SetupScreen({
   const [ruleId, setRuleId] = useState<SortRuleId>(firstRule.id);
   const previewState = usePlanPreview(scanId, ruleId);
   const canRun = source !== null && !scanning && previewState.status === "success";
+  const plan = previewState.status === "success" ? previewState.plan : null;
+
+  const handleRun = () => {
+    if (plan === null) {
+      return;
+    }
+
+    onRun(plan);
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -96,7 +105,7 @@ export function SetupScreen({
           Save preset
         </Button>
         <div className="ml-auto" />
-        <Button variant="primary" size="md" onClick={onRun} disabled={!canRun}>
+        <Button variant="primary" size="md" onClick={handleRun} disabled={!canRun}>
           Run sort {"→"}
         </Button>
       </footer>

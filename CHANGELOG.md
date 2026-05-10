@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Job history backend records every completed sort with how many files were moved, skipped, errored and how long it took; `Revert` reverses every move from a chosen job back to its source path, skips conflicts safely (never overwrites a manually-restored or replaced file) and cleans up empty folders the sort created (HistoryScreen wiring lands in a follow-up release)
 - History screen now lists real completed sorts from disk with a Revert button per row; clicking Revert reverses the job and shows a toast with how many files were restored, skipped or errored, and the row updates to show "Reverted" so it can't be undone twice by mistake
 - Live progress and activity log during a sort run
+- Real-time progress screen during sort runs
 
 ### Bug Fixes
 
