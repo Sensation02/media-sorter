@@ -7,16 +7,11 @@ import { ErrorBoundary } from "./components/error-boundary";
 import { Sidebar } from "./components/sidebar";
 import { Toolbar } from "./components/toolbar";
 import { DoneScreen, HistoryScreen, ProgressScreen, SettingsScreen, SetupScreen } from "./screens";
-import {
-  DEFAULT_DONE,
-  DEFAULT_HISTORY,
-  DEFAULT_PROGRESS,
-  DEFAULT_RULES,
-  DEFAULT_SETTINGS,
-} from "./constants";
+import { DEFAULT_DONE, DEFAULT_PROGRESS, DEFAULT_RULES, DEFAULT_SETTINGS } from "./constants";
+import { useHistory } from "./use-history";
 import { pickSourceDir, scanSource } from "../../ipc";
 import { toAppErrorView } from "../../utils";
-import type { ScanId, ScanSummary } from "../../types/ipc";
+import type { JobId, ScanId, ScanSummary } from "../../types/ipc";
 import type { SortScreen, SortSettings, SortStatus } from "../../types/sort";
 
 const TOOLBAR_TITLE: Record<SortScreen, string> = {
@@ -46,6 +41,7 @@ export function SortApp() {
   const [source, setSource] = useState<ScanSummary | null>(null);
   const [scanId, setScanId] = useState<ScanId | null>(null);
   const [scanning, setScanning] = useState(false);
+  const history = useHistory();
 
   const handlePickSource = useCallback(async () => {
     try {
@@ -68,6 +64,21 @@ export function SortApp() {
       setScanning(false);
     }
   }, []);
+
+  const handleRevert = useCallback(
+    async (jobId: JobId) => {
+      try {
+        const outcome = await history.revert(jobId);
+        toast.success("Revert complete", {
+          description: revertSummary(outcome.restored, outcome.skipped, outcome.errors),
+        });
+      } catch (error) {
+        const view = toAppErrorView(error);
+        toast.error(view.title, { description: view.detail });
+      }
+    },
+    [history],
+  );
 
   const subtitle = TOOLBAR_SUBTITLE[screen];
 
@@ -124,11 +135,11 @@ export function SortApp() {
             )}
             {screen === "history" && (
               <HistoryScreen
-                history={DEFAULT_HISTORY}
+                state={history.state}
                 onRevert={(id) => {
-                  // TODO(IPC): wire to a Tauri command that reverts the sort job by id
-                  console.warn("[SortApp] onRevert not yet wired to Tauri", { id });
+                  void handleRevert(id);
                 }}
+                onRetry={history.refresh}
               />
             )}
             {screen === "settings" && <SettingsScreen settings={settings} onChange={setSettings} />}
@@ -138,4 +149,16 @@ export function SortApp() {
       <Toaster />
     </div>
   );
+}
+
+function revertSummary(restored: number, skipped: number, errors: number): string {
+  const parts = [`${restored} restored`];
+  if (skipped > 0) {
+    parts.push(`${skipped} skipped`);
+  }
+  if (errors > 0) {
+    parts.push(`${errors} errors`);
+  }
+
+  return parts.join(", ");
 }

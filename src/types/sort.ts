@@ -41,15 +41,6 @@ export type SortDone = {
   destination: string;
 };
 
-export type SortHistoryItem = {
-  id: number;
-  name: string;
-  date: string;
-  duration: string;
-  moved: number;
-  skipped: number;
-};
-
 export type SortStatus = "idle" | "running" | "paused" | "warning" | "error";
 
 export type SortScreen = "setup" | "progress" | "done" | "history" | "settings";
