@@ -23,7 +23,7 @@
 | [EPIC-03](epic-03-metadata.md)        | 🟢 complete | EXIF / video metadata extraction (date, GPS, camera)         |
 | [EPIC-04](epic-04-geo.md)             | 🟢 complete | Offline reverse geocoding (GPS → city / place name)          |
 | [EPIC-05](epic-05-planner.md)         | 🟢 complete | Sort planner — turn a rule + scan into a move plan           |
-| [EPIC-06](epic-06-fs-operations.md)   | ⚪ pending  | Filesystem operations (move / copy with undo log)            |
+| [EPIC-06](epic-06-fs-operations.md)   | 🟡 in progress | Filesystem operations (move / copy with undo log)         |
 | [EPIC-07](epic-07-history-undo.md)    | ⚪ pending  | Job history and undo / revert                                |
 | [EPIC-08](epic-08-progress-events.md) | ⚪ pending  | Progress events (Tauri event channel from sort runner to UI) |
 | [EPIC-09](epic-09-settings.md)        | ⚪ pending  | Settings persistence and defaults                            |
