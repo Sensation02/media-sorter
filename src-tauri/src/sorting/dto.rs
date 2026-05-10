@@ -1,12 +1,11 @@
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 
-use crate::domain::{JobId, SortPlan, SortRuleId, SortSettings};
+use crate::domain::{JobId, ScanId, SortPlan, SortRuleId, SortSettings};
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PreviewPlanRequest {
-    pub root: PathBuf,
+    pub scan_id: ScanId,
     pub rule: SortRuleId,
 }
 
