@@ -117,6 +117,7 @@ pub struct SortPlan {
 }
 
 pub type JobId = i64;
+pub type ScanId = i64;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
