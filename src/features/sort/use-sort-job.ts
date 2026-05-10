@@ -11,7 +11,11 @@ import type {
 } from "../../types/ipc";
 import type { SortLogEntry, SortLogLevel, SortProgress } from "../../types/sort";
 
-import { ELAPSED_TICK_MS, UI_LOG_BUFFER_CAP } from "./use-sort-job-constants";
+import {
+  ELAPSED_TICK_MS,
+  SUBSCRIBE_ERROR_MESSAGE,
+  UI_LOG_BUFFER_CAP,
+} from "./use-sort-job-constants";
 import { formatElapsed, formatEta } from "./progress-format";
 
 export type SortJobStatus = "idle" | "running" | "paused" | "done" | "error";
@@ -39,8 +43,7 @@ type SortJobAction =
   | { type: "progress"; jobId: JobId; payload: SortProgressDto }
   | { type: "log"; jobId: JobId; payload: SortLogEntryDto }
   | { type: "done"; jobId: JobId; payload: SortDoneDto }
-  | { type: "error"; jobId: JobId; payload: AppErrorDto }
-  | { type: "subscribeError"; jobId: JobId };
+  | { type: "error"; jobId: JobId; payload: AppErrorDto };
 
 const IDLE_STATE: SortJobState = {
   jobId: null,
@@ -104,25 +107,35 @@ export function useSortJob(jobId: JobId | null): UseSortJobResult {
       }),
     ];
 
-    Promise.all(subscriptions)
-      .then((fns) => {
-        if (cancelled) {
-          fns.forEach((fn) => {
-            fn();
-          });
+    void Promise.allSettled(subscriptions).then((results) => {
+      const fulfilled = results.flatMap((result) =>
+        result.status === "fulfilled" ? [result.value] : [],
+      );
+      const anyRejected = results.some((result) => result.status === "rejected");
 
-          return;
-        }
+      if (cancelled) {
+        fulfilled.forEach((fn) => {
+          fn();
+        });
 
-        unlisteners.push(...fns);
-      })
-      .catch(() => {
-        if (cancelled) {
-          return;
-        }
+        return;
+      }
 
-        dispatch({ type: "subscribeError", jobId });
-      });
+      if (anyRejected) {
+        fulfilled.forEach((fn) => {
+          fn();
+        });
+        dispatch({
+          type: "error",
+          jobId,
+          payload: { code: "internal", params: { message: SUBSCRIBE_ERROR_MESSAGE } },
+        });
+
+        return;
+      }
+
+      unlisteners.push(...fulfilled);
+    });
 
     return () => {
       cancelled = true;
@@ -194,12 +207,6 @@ function reduce(state: SortJobState, action: SortJobAction): SortJobState {
       }
 
       return { ...state, error: action.payload, status: "error" };
-    case "subscribeError":
-      if (state.jobId !== action.jobId) {
-        return state;
-      }
-
-      return { ...state, status: "error" };
   }
 }
 
