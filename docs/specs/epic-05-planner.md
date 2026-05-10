@@ -1,7 +1,7 @@
 # EPIC-05. Sort planner (strategies)
 
-**Status:** 🟡 in progress
-**Branch:** `feat/epic-05-planner-strategies` (PR1 of 3)
+**Status:** 🟢 complete
+**Branch:** `feat/epic-05-ui-preview` (PR3 of 3)
 **Depends on:** EPIC-01, EPIC-03, EPIC-04
 **Last updated:** 2026-05-10
 
@@ -103,31 +103,31 @@ PR1 ships only the pure `build_plan` function. PR2 adds the `ScanSession { files
 ### PR1
 
 - [x] Lock decisions in this spec
-- [ ] `SortStrategy` trait
-- [ ] `ByDate`, `ByDateAndPlace`, `ByType`, `ByCamera` impls
-- [ ] `format_month_year`, `format_place`, `format_camera` helpers
-- [ ] `build_plan` orchestrator
-- [ ] Per-strategy unit tests
-- [ ] `build_plan` integration test
-- [ ] STATUS.md row → 🟡 in progress
+- [x] `SortStrategy` trait
+- [x] `ByDate`, `ByDateAndPlace`, `ByType`, `ByCamera` impls
+- [x] `format_month_year`, `format_place`, `format_camera` helpers
+- [x] `build_plan` orchestrator
+- [x] Per-strategy unit tests
+- [x] `build_plan` integration test
+- [x] STATUS.md row → 🟡 in progress
 
 ### PR2
 
-- [ ] `ScanId` domain type
-- [ ] `ScanSession` cache
-- [ ] `scan_source` returns `{ scanId, summary }`
-- [ ] `preview_plan` IPC implementation
-- [ ] Frontend IPC types + wrapper
-- [ ] Stale-session pruning
+- [x] `ScanId` domain type
+- [x] `ScanSession` cache
+- [x] `scan_source` returns `{ scanId, summary }`
+- [x] `preview_plan` IPC implementation
+- [x] Frontend IPC types + wrapper
+- [x] Stale-session pruning
 
 ### PR3
 
-- [ ] `usePlanPreview` hook
-- [ ] `PreviewTree` component from `SortPlan.items`
-- [ ] Default rule → `ByDateAndPlace`
-- [ ] Remove static `DEFAULT_RULES.preview`
-- [ ] UI snapshot tests
-- [ ] STATUS.md row → 🟢 complete
+- [x] `usePlanPreview` hook
+- [x] `PreviewTree` component from `SortPlan.items`
+- [x] Default rule → `ByDateAndPlace`
+- [x] Remove static `DEFAULT_RULES.preview`
+- [x] Vitest tests for `planToTree` adapter
+- [x] STATUS.md row → 🟢 complete
 
 ## Resolved questions
 
