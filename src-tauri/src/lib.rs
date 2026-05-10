@@ -1,5 +1,6 @@
 pub mod domain;
 pub mod error;
+pub mod geo;
 pub mod history;
 pub mod metadata;
 pub mod scanning;

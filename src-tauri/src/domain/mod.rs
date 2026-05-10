@@ -47,7 +47,7 @@ pub struct GeoPoint {
     pub longitude: f64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Place {
     pub name: String,
