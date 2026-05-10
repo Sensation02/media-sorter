@@ -18,7 +18,7 @@ import {
 } from "./use-sort-job-constants";
 import { formatElapsed, formatEta } from "./progress-format";
 
-export type SortJobStatus = "idle" | "running" | "paused" | "done" | "error";
+export type SortJobStatus = "idle" | "running" | "done" | "error";
 
 export type UseSortJobResult = {
   progress: SortProgress;
