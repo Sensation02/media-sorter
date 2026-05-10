@@ -1,4 +1,6 @@
-export type SortRuleId = "by-date" | "by-type" | "by-camera";
+export type { SortRuleId } from "./ipc";
+
+import type { SortRuleId } from "./ipc";
 
 export type SortTreeNode =
   | { kind: "folder"; label: string; muted?: boolean; children: SortTreeNode[] }
@@ -9,7 +11,6 @@ export type SortRule = {
   name: string;
   hint: string;
   description: string;
-  preview: SortTreeNode[];
 };
 
 export type SortLogLevel = "ok" | "warn" | "error";

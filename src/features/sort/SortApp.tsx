@@ -44,7 +44,7 @@ export function SortApp() {
   const [screen, setScreen] = useState<SortScreen>("setup");
   const [settings, setSettings] = useState<SortSettings>(DEFAULT_SETTINGS);
   const [source, setSource] = useState<ScanSummary | null>(null);
-  const [, setScanId] = useState<ScanId | null>(null);
+  const [scanId, setScanId] = useState<ScanId | null>(null);
   const [scanning, setScanning] = useState(false);
 
   const handlePickSource = useCallback(async () => {
@@ -86,6 +86,7 @@ export function SortApp() {
               <SetupScreen
                 rules={DEFAULT_RULES}
                 source={source}
+                scanId={scanId}
                 scanning={scanning}
                 onPickSource={() => {
                   void handlePickSource();
