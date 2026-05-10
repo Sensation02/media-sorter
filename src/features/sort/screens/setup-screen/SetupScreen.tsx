@@ -4,11 +4,12 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+import { PreviewTree } from "../../components/preview-tree";
 import { RuleSelector } from "../../components/rule-selector";
 import { ScanBreakdown } from "../../components/scan-breakdown";
-import { Tree } from "../../components/tree";
+import { usePlanPreview } from "../../use-plan-preview";
 import { formatBytes } from "../../../../utils";
-import type { ScanSummary } from "../../../../types/ipc";
+import type { ScanId, ScanSummary } from "../../../../types/ipc";
 import type { SortRule, SortRuleId } from "../../../../types/sort";
 
 const EMPTY_PATH_LABEL = "No folder selected";
@@ -16,12 +17,20 @@ const EMPTY_PATH_LABEL = "No folder selected";
 export type SetupScreenProps = {
   rules: SortRule[];
   source: ScanSummary | null;
+  scanId: ScanId | null;
   scanning: boolean;
   onPickSource: () => void;
   onRun: () => void;
 };
 
-export function SetupScreen({ rules, source, scanning, onPickSource, onRun }: SetupScreenProps) {
+export function SetupScreen({
+  rules,
+  source,
+  scanId,
+  scanning,
+  onPickSource,
+  onRun,
+}: SetupScreenProps) {
   const firstRule = rules[0];
 
   if (!firstRule) {
@@ -29,8 +38,8 @@ export function SetupScreen({ rules, source, scanning, onPickSource, onRun }: Se
   }
 
   const [ruleId, setRuleId] = useState<SortRuleId>(firstRule.id);
-  const selected = rules.find((rule) => rule.id === ruleId) ?? firstRule;
-  const canRun = source !== null && !scanning;
+  const previewState = usePlanPreview(scanId, ruleId);
+  const canRun = source !== null && !scanning && previewState.status === "success";
 
   return (
     <div className="flex flex-col h-full">
@@ -77,7 +86,7 @@ export function SetupScreen({ rules, source, scanning, onPickSource, onRun }: Se
             Output preview
           </div>
           <Card className="px-4 py-4">
-            <Tree nodes={selected.preview} />
+            <PreviewTree state={previewState} />
           </Card>
         </section>
       </div>
