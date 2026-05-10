@@ -187,4 +187,41 @@ describe("useSortJob", () => {
       expect(unlistenError).toHaveBeenCalled();
     });
   });
+
+  it("ignores events from a previous jobId after switching", async () => {
+    const initialProps: { id: number | null } = { id: 1 };
+    const { result, rerender } = renderHook(({ id }: { id: number | null }) => useSortJob(id), {
+      initialProps,
+    });
+
+    await waitFor(() => {
+      expect(progressHandlers).toHaveLength(1);
+    });
+
+    const stalePreviousHandler = progressHandlers[0];
+    if (stalePreviousHandler === undefined) {
+      throw new Error("expected first progress handler to be registered");
+    }
+
+    rerender({ id: 2 });
+
+    await waitFor(() => {
+      expect(progressHandlers).toHaveLength(2);
+    });
+
+    act(() => {
+      stalePreviousHandler({
+        total: 100,
+        processed: 42,
+        moved: 40,
+        skipped: 2,
+        folders: 5,
+        current: "stale.jpg",
+      });
+    });
+
+    expect(result.current.progress.processed).toBe(0);
+    expect(result.current.progress.total).toBe(0);
+    expect(result.current.progress.current).toBe("");
+  });
 });
