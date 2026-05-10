@@ -4,7 +4,14 @@ export type SortRuleId = "by-date" | "by-date-and-place" | "by-type" | "by-camer
 
 export type DateSource = "exif" | "mtime" | "unknown";
 
-export type JobStatus = "idle" | "running" | "paused" | "done" | "cancelled" | "failed";
+export type JobStatus =
+  | "idle"
+  | "running"
+  | "paused"
+  | "done"
+  | "cancelled"
+  | "failed"
+  | "reverted";
 
 export type GeoPoint = {
   latitude: number;
@@ -87,10 +94,20 @@ export type SortSettingsDto = {
 export type HistoryItemDto = {
   id: JobId;
   name: string;
+  destinationRoot: string;
   startedAtMs: number;
   durationMs: number;
   moved: number;
   skipped: number;
+  errors: number;
+  state: JobStatus;
+};
+
+export type RevertOutcomeDto = {
+  jobId: JobId;
+  restored: number;
+  skipped: number;
+  errors: number;
 };
 
 export type AppErrorCode = "io" | "validation" | "forbidden" | "conflict" | "internal";
