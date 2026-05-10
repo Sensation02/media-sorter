@@ -11,6 +11,7 @@ use crate::utils::now_ms;
 
 use super::dto::{JobIdRequest, PreviewPlanRequest, StartSortRequest, StartSortResponse};
 use super::planner::build_plan;
+use super::runner::emitter::{ProgressEmitter, TauriEmitter};
 use super::runner::fs_repo::RealFsRepo;
 use super::runner::job;
 use super::runner::service::{run_sort, JobOutcome, RunInput};
@@ -31,6 +32,7 @@ pub async fn start_sort(app: AppHandle, request: StartSortRequest) -> AppResult<
     let destination_root = request.plan.root.clone();
     let dry_run = request.dry_run;
     let control = job::register(job_id)?;
+    let emitter: Arc<dyn ProgressEmitter> = Arc::new(TauriEmitter::new(app.clone()));
 
     let input = RunInput {
         job_id,
@@ -40,6 +42,7 @@ pub async fn start_sort(app: AppHandle, request: StartSortRequest) -> AppResult<
         fs_repo: Arc::new(RealFsRepo::new()),
         log_path,
         control,
+        emitter,
     };
 
     tauri::async_runtime::spawn_blocking(move || {

@@ -44,7 +44,6 @@ impl ProgressEmitter for TauriEmitter {
 }
 
 #[cfg(test)]
-#[allow(dead_code)]
 pub(crate) mod testing {
     use std::sync::Mutex;
 

@@ -7,6 +7,8 @@ use crate::error::{AppError, AppResult};
 use crate::utils::now_ms;
 
 use super::conflict::unique_target;
+use super::dto::{SortDoneDto, SortLogEntryDto, SortLogLevelDto, SortProgressDto};
+use super::emitter::ProgressEmitter;
 use super::fingerprint::Fingerprint;
 use super::fs_repo::FsRepo;
 use super::job::JobControl;
@@ -21,6 +23,7 @@ pub struct RunInput {
     pub fs_repo: Arc<dyn FsRepo>,
     pub log_path: PathBuf,
     pub control: Arc<JobControl>,
+    pub emitter: Arc<dyn ProgressEmitter>,
 }
 
 #[derive(Debug, Clone)]
@@ -37,32 +40,36 @@ pub fn run_sort(input: RunInput) -> JobOutcome {
     let started_at = now_ms();
     let mut counters = Counters::default();
 
-    if let Err(_err) = run_preflight(&input) {
-        return finalize(&input, JobStatus::Failed, counters, started_at);
+    if let Err(error) = run_preflight(&input) {
+        return finalize(&input, JobStatus::Failed, counters, started_at, Some(error));
     }
 
     let mut log_writer = match open_log_writer(&input) {
         Ok(writer) => writer,
-        Err(_err) => return finalize(&input, JobStatus::Failed, counters, started_at),
+        Err(error) => {
+            return finalize(&input, JobStatus::Failed, counters, started_at, Some(error));
+        }
     };
+
+    let total = input.plan.items.len() as u64;
 
     for item in &input.plan.items {
         if input.control.is_cancelled() {
-            return finalize(&input, JobStatus::Cancelled, counters, started_at);
+            return finalize(&input, JobStatus::Cancelled, counters, started_at, None);
         }
 
         if input.control.is_paused() {
-            return finalize(&input, JobStatus::Paused, counters, started_at);
+            return finalize(&input, JobStatus::Paused, counters, started_at, None);
         }
 
-        match process_item(item, &input, log_writer.as_mut()) {
-            ItemOutcome::Moved => counters.moved += 1,
-            ItemOutcome::Skipped => counters.skipped += 1,
-            ItemOutcome::Failed => counters.errors += 1,
-        }
+        let outcome = process_item(item, &input, log_writer.as_mut());
+
+        apply_counters(&mut counters, &outcome);
+        emit_item_log(&input, item, &outcome, started_at);
+        emit_progress(&input, &counters, total, item);
     }
 
-    finalize(&input, JobStatus::Done, counters, started_at)
+    finalize(&input, JobStatus::Done, counters, started_at, None)
 }
 
 #[derive(Debug, Default)]
@@ -70,6 +77,12 @@ struct Counters {
     moved: u64,
     skipped: u64,
     errors: u64,
+}
+
+impl Counters {
+    fn processed(&self) -> u64 {
+        self.moved + self.skipped + self.errors
+    }
 }
 
 #[derive(Debug)]
@@ -242,23 +255,145 @@ fn is_cross_device(error: &io::Error) -> bool {
     error.kind() == io::ErrorKind::CrossesDevices
 }
 
-fn finalize(input: &RunInput, state: JobStatus, counters: Counters, started_at: i64) -> JobOutcome {
-    let duration_ms = u64::try_from(now_ms() - started_at).unwrap_or(0);
+fn apply_counters(counters: &mut Counters, outcome: &ItemOutcome) {
+    match outcome {
+        ItemOutcome::Moved => counters.moved += 1,
+        ItemOutcome::Skipped => counters.skipped += 1,
+        ItemOutcome::Failed => counters.errors += 1,
+    }
+}
 
-    JobOutcome {
+fn emit_item_log(input: &RunInput, item: &SortPlanItem, outcome: &ItemOutcome, started_at: i64) {
+    let level = match outcome {
+        ItemOutcome::Moved => SortLogLevelDto::Ok,
+        ItemOutcome::Skipped => SortLogLevelDto::Warn,
+        ItemOutcome::Failed => SortLogLevelDto::Error,
+    };
+
+    let entry = SortLogEntryDto {
+        time: format_log_time(elapsed_ms(started_at)),
+        level,
+        text: format_current(item, &input.plan.root),
+    };
+
+    input.emitter.emit_log(&entry);
+}
+
+fn emit_progress(input: &RunInput, counters: &Counters, total: u64, item: &SortPlanItem) {
+    let progress = SortProgressDto {
+        total,
+        processed: counters.processed(),
+        moved: counters.moved,
+        skipped: counters.skipped,
+        folders: count_folders(&input.plan.items),
+        current: format_current(item, &input.plan.root),
+    };
+
+    input.emitter.emit_progress(&progress);
+}
+
+fn finalize(
+    input: &RunInput,
+    state: JobStatus,
+    counters: Counters,
+    started_at: i64,
+    error: Option<AppError>,
+) -> JobOutcome {
+    let duration_ms = elapsed_ms(started_at);
+
+    let outcome = JobOutcome {
         job_id: input.job_id,
         state,
         moved: counters.moved,
         skipped: counters.skipped,
         errors: counters.errors,
         duration_ms,
+    };
+
+    emit_terminal_event(input, &outcome, error);
+
+    outcome
+}
+
+fn emit_terminal_event(input: &RunInput, outcome: &JobOutcome, error: Option<AppError>) {
+    if matches!(outcome.state, JobStatus::Failed) {
+        if let Some(error) = error {
+            input.emitter.emit_error(&error);
+        }
+
+        return;
     }
+
+    let done = SortDoneDto {
+        job_id: outcome.job_id,
+        duration_ms: outcome.duration_ms,
+        moved: outcome.moved,
+        skipped: outcome.skipped,
+        folders: count_folders(&input.plan.items),
+        destination: input.plan.root.display().to_string(),
+    };
+
+    input.emitter.emit_done(&done);
+}
+
+fn elapsed_ms(started_at: i64) -> u64 {
+    u64::try_from(now_ms() - started_at).unwrap_or(0)
+}
+
+fn count_folders(items: &[SortPlanItem]) -> u64 {
+    use std::collections::HashSet;
+
+    let mut folders: HashSet<&Path> = HashSet::new();
+
+    for item in items {
+        if let Some(parent) = item.target.parent() {
+            folders.insert(parent);
+        }
+    }
+
+    folders.len() as u64
+}
+
+fn format_log_time(elapsed_ms: u64) -> String {
+    let total_tenths = elapsed_ms / 100;
+    let minutes = total_tenths / 600;
+    let seconds = (total_tenths / 10) % 60;
+    let tenths = total_tenths % 10;
+
+    format!("{minutes:02}:{seconds:02}.{tenths}")
+}
+
+fn format_current(item: &SortPlanItem, root: &Path) -> String {
+    let source_name = item
+        .source
+        .file_name()
+        .map(|name| name.to_string_lossy().into_owned())
+        .unwrap_or_else(|| item.source.display().to_string());
+
+    let target_dir = item
+        .target
+        .parent()
+        .map(|parent| {
+            parent
+                .strip_prefix(root)
+                .unwrap_or(parent)
+                .display()
+                .to_string()
+        })
+        .unwrap_or_default();
+
+    if target_dir.is_empty() {
+        return source_name;
+    }
+
+    format!("{source_name} → {target_dir}")
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::domain::{SortRuleId, SortSettings};
+    use crate::sorting::runner::emitter::testing::RecordingEmitter;
     use crate::sorting::runner::fs_repo::RealFsRepo;
     use std::fs::{self, File};
     use std::io::Write;
@@ -306,11 +441,12 @@ mod tests {
         }
     }
 
-    fn input(
+    fn input_with_emitter(
         fixture: &Fixture,
         items: Vec<SortPlanItem>,
         settings: SortSettings,
         dry_run: bool,
+        emitter: Arc<dyn ProgressEmitter>,
     ) -> RunInput {
         RunInput {
             job_id: 42,
@@ -324,7 +460,18 @@ mod tests {
             fs_repo: Arc::new(RealFsRepo::new()),
             log_path: fixture.log_path.clone(),
             control: Arc::new(JobControl::new()),
+            emitter,
         }
+    }
+
+    fn input(
+        fixture: &Fixture,
+        items: Vec<SortPlanItem>,
+        settings: SortSettings,
+        dry_run: bool,
+    ) -> RunInput {
+        let emitter: Arc<dyn ProgressEmitter> = Arc::new(RecordingEmitter::default());
+        input_with_emitter(fixture, items, settings, dry_run, emitter)
     }
 
     #[test]
@@ -566,5 +713,163 @@ mod tests {
         assert_eq!(outcome.moved, 0);
         assert!(source.exists());
         assert!(!escaping_target.exists());
+    }
+
+    #[test]
+    fn moved_item_emits_ok_log_progress_and_done() {
+        let fixture = fixture();
+        let source = fixture.source_dir.join("a.jpg");
+        let target = fixture.dest_root.join("Month").join("a.jpg");
+        write_file(&source, b"hello");
+
+        let recorder = Arc::new(RecordingEmitter::default());
+        let emitter: Arc<dyn ProgressEmitter> = recorder.clone();
+
+        run_sort(input_with_emitter(
+            &fixture,
+            vec![SortPlanItem {
+                source: source.clone(),
+                target: target.clone(),
+            }],
+            settings(false, true),
+            false,
+            emitter,
+        ));
+
+        let logs = recorder.logs();
+        assert_eq!(logs.len(), 1);
+        assert_eq!(logs[0].level, SortLogLevelDto::Ok);
+        assert!(logs[0].text.contains("a.jpg"));
+
+        assert_eq!(recorder.progress().len(), 1);
+        assert_eq!(recorder.done().len(), 1);
+        assert_eq!(recorder.errors().len(), 0);
+    }
+
+    #[test]
+    fn skipped_item_emits_warn_log() {
+        let fixture = fixture();
+        let source = fixture.source_dir.join("a.jpg");
+        let target = fixture.dest_root.join("a.jpg");
+        let bytes = b"identical";
+        write_file(&source, bytes);
+        write_file(&target, bytes);
+
+        let recorder = Arc::new(RecordingEmitter::default());
+        let emitter: Arc<dyn ProgressEmitter> = recorder.clone();
+
+        run_sort(input_with_emitter(
+            &fixture,
+            vec![SortPlanItem {
+                source: source.clone(),
+                target: target.clone(),
+            }],
+            settings(false, true),
+            false,
+            emitter,
+        ));
+
+        let logs = recorder.logs();
+        assert_eq!(logs.len(), 1);
+        assert_eq!(logs[0].level, SortLogLevelDto::Warn);
+    }
+
+    #[test]
+    fn failed_item_emits_error_log() {
+        let fixture = fixture();
+        let missing_source = fixture.source_dir.join("missing.jpg");
+        let target = fixture.dest_root.join("missing.jpg");
+
+        let recorder = Arc::new(RecordingEmitter::default());
+        let emitter: Arc<dyn ProgressEmitter> = recorder.clone();
+
+        run_sort(input_with_emitter(
+            &fixture,
+            vec![SortPlanItem {
+                source: missing_source,
+                target,
+            }],
+            settings(false, true),
+            false,
+            emitter,
+        ));
+
+        let logs = recorder.logs();
+        assert_eq!(logs.len(), 1);
+        assert_eq!(logs[0].level, SortLogLevelDto::Error);
+    }
+
+    #[test]
+    fn preflight_failure_emits_error_event_not_done() {
+        let fixture = fixture();
+        let source = fixture.source_dir.join("a.jpg");
+        let escaping_target = fixture._root_keepalive.path().join("escape.jpg");
+        write_file(&source, b"data");
+
+        let recorder = Arc::new(RecordingEmitter::default());
+        let emitter: Arc<dyn ProgressEmitter> = recorder.clone();
+
+        run_sort(input_with_emitter(
+            &fixture,
+            vec![SortPlanItem {
+                source: source.clone(),
+                target: escaping_target,
+            }],
+            settings(false, true),
+            false,
+            emitter,
+        ));
+
+        assert_eq!(recorder.done().len(), 0);
+        assert_eq!(recorder.errors().len(), 1);
+        assert!(matches!(recorder.errors()[0], AppError::Validation { .. }));
+    }
+
+    #[test]
+    fn cancelled_run_emits_done_event() {
+        let fixture = fixture();
+        let source = fixture.source_dir.join("a.jpg");
+        let target = fixture.dest_root.join("a.jpg");
+        write_file(&source, b"hello");
+
+        let recorder = Arc::new(RecordingEmitter::default());
+        let emitter: Arc<dyn ProgressEmitter> = recorder.clone();
+
+        let run = input_with_emitter(
+            &fixture,
+            vec![SortPlanItem {
+                source: source.clone(),
+                target,
+            }],
+            settings(false, true),
+            false,
+            emitter,
+        );
+        run.control.request_cancel();
+
+        let outcome = run_sort(run);
+
+        assert!(matches!(outcome.state, JobStatus::Cancelled));
+        assert_eq!(recorder.done().len(), 1);
+        assert_eq!(recorder.errors().len(), 0);
+    }
+
+    #[test]
+    fn format_log_time_uses_minutes_seconds_tenths() {
+        assert_eq!(format_log_time(0), "00:00.0");
+        assert_eq!(format_log_time(1_500), "00:01.5");
+        assert_eq!(format_log_time(65_400), "01:05.4");
+        assert_eq!(format_log_time(3_600_000), "60:00.0");
+    }
+
+    #[test]
+    fn format_current_renders_filename_and_relative_dir() {
+        let item = SortPlanItem {
+            source: PathBuf::from("/src/photos/IMG_0001.jpg"),
+            target: PathBuf::from("/dest/2024-01/IMG_0001.jpg"),
+        };
+        let root = Path::new("/dest");
+
+        assert_eq!(format_current(&item, root), "IMG_0001.jpg → 2024-01");
     }
 }
