@@ -1,7 +1,7 @@
 # EPIC-06. Filesystem operations + dry-run + conflict resolution
 
-**Status:** 🟡 in progress
-**Branch:** `feat/epic-06-mover` (PR1 of 2)
+**Status:** 🟢 complete
+**Branch:** `feat/epic-06-runner` (PR2 of 2 — final)
 **Depends on:** EPIC-01, EPIC-05
 **Last updated:** 2026-05-10
 
@@ -75,7 +75,7 @@ EPIC-07 (revert) and EPIC-08 (live progress).
 
 ## Scope
 
-### PR1 (`feat/epic-06-mover`) — `feat(fs)`: mover module, no IPC wiring
+### PR1 (`feat/epic-06-mover`) — `feat(fs)`: mover module, no IPC wiring [merged in #24]
 
 - New module `src-tauri/src/sorting/runner/`:
   - `mod.rs` — barrel.
@@ -220,28 +220,28 @@ ship in EPIC-08.
 
 ### PR1 — mover module
 
-- [ ] Lock decisions in this spec
-- [ ] Add `sha2` to `src-tauri/Cargo.toml`
-- [ ] `runner/mod.rs` barrel
-- [ ] `runner/fs_repo.rs` — trait + `RealFsRepo`
-- [ ] `runner/fingerprint.rs` — head/tail SHA-256 helper
-- [ ] `runner/conflict.rs` — auto-rename helper
-- [ ] `runner/log.rs` — append-only JSON-Lines writer
-- [ ] `runner/preflight.rs` — disk space + path containment
-- [ ] Unit tests per module
-- [ ] `cargo fmt` + `cargo clippy` + `cargo test` clean
-- [ ] STATUS.md row → 🟡 in progress
+- [x] Lock decisions in this spec
+- [x] Add `sha2` to `src-tauri/Cargo.toml`
+- [x] `runner/mod.rs` barrel
+- [x] `runner/fs_repo.rs` — trait + `RealFsRepo`
+- [x] `runner/fingerprint.rs` — head/tail SHA-256 helper
+- [x] `runner/conflict.rs` — auto-rename helper
+- [x] `runner/log.rs` — append-only JSON-Lines writer
+- [x] `runner/preflight.rs` — disk space + path containment
+- [x] Unit tests per module
+- [x] `cargo fmt` + `cargo clippy` + `cargo test` clean
+- [x] STATUS.md row → 🟡 in progress
 
 ### PR2 — runner + IPC commands
 
-- [ ] `runner/job.rs` — `JobRegistry` + `JobControl`
-- [ ] `runner/service.rs` — orchestrator
-- [ ] `sorting/dto.rs` — `StartSortRequest.dryRun`
-- [ ] `sorting/command.rs` — fill `start_sort` / `pause_sort` / `cancel_sort`
-- [ ] TS `StartSortRequest.dryRun`
-- [ ] Integration tests in tmpdir
-- [ ] CHANGELOG entry under `### Features`
-- [ ] STATUS.md row → 🟢 complete
+- [x] `runner/job.rs` — `JobRegistry` + `JobControl`
+- [x] `runner/service.rs` — orchestrator
+- [x] `sorting/dto.rs` — `StartSortRequest.dryRun`
+- [x] `sorting/command.rs` — fill `start_sort` / `pause_sort` / `cancel_sort`
+- [x] TS `StartSortRequest.dryRun`
+- [x] Integration tests in tmpdir
+- [x] CHANGELOG entry under `### Features`
+- [x] STATUS.md row → 🟢 complete
 
 ## Out of scope
 
