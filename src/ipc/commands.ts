@@ -2,7 +2,8 @@ import { invoke } from "@tauri-apps/api/core";
 import type {
   HistoryItemDto,
   JobId,
-  ScanSummary,
+  ScanId,
+  ScanResponse,
   SortPlan,
   SortRuleId,
   SortSettingsDto,
@@ -12,12 +13,12 @@ export function pickSourceDir(): Promise<string | null> {
   return invoke<string | null>("pick_source_dir");
 }
 
-export function scanSource(path: string): Promise<ScanSummary> {
-  return invoke<ScanSummary>("scan_source", { request: { path } });
+export function scanSource(path: string): Promise<ScanResponse> {
+  return invoke<ScanResponse>("scan_source", { request: { path } });
 }
 
-export function previewPlan(root: string, rule: SortRuleId): Promise<SortPlan> {
-  return invoke<SortPlan>("preview_plan", { request: { root, rule } });
+export function previewPlan(scanId: ScanId, rule: SortRuleId): Promise<SortPlan> {
+  return invoke<SortPlan>("preview_plan", { request: { scanId, rule } });
 }
 
 export function startSort(plan: SortPlan, settings: SortSettingsDto): Promise<{ jobId: JobId }> {

@@ -51,6 +51,13 @@ export type ScanSummary = {
   byKind: ByKind;
 };
 
+export type ScanId = number;
+
+export type ScanResponse = {
+  scanId: ScanId;
+  summary: ScanSummary;
+};
+
 export type SortPlanItem = {
   source: string;
   target: string;
