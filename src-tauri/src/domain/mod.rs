@@ -38,6 +38,7 @@ pub enum JobStatus {
     Done,
     Cancelled,
     Failed,
+    Reverted,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -141,8 +142,11 @@ pub struct SortSettings {
 pub struct HistoryItem {
     pub id: JobId,
     pub name: String,
+    pub destination_root: PathBuf,
     pub started_at_ms: i64,
     pub duration_ms: u64,
     pub moved: u64,
     pub skipped: u64,
+    pub errors: u64,
+    pub state: JobStatus,
 }

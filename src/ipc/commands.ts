@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import type {
   HistoryItemDto,
   JobId,
+  RevertOutcomeDto,
   ScanId,
   ScanResponse,
   SortPlan,
@@ -37,8 +38,8 @@ export async function cancelSort(jobId: JobId): Promise<void> {
   await invoke("cancel_sort", { request: { jobId } });
 }
 
-export async function revertJob(jobId: JobId): Promise<void> {
-  await invoke("revert_job", { request: { jobId } });
+export function revertJob(jobId: JobId): Promise<RevertOutcomeDto> {
+  return invoke<RevertOutcomeDto>("revert_job", { request: { jobId } });
 }
 
 export function listHistory(): Promise<HistoryItemDto[]> {
