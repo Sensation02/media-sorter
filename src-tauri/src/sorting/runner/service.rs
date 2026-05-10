@@ -53,6 +53,7 @@ pub fn run_sort(input: RunInput) -> JobOutcome {
     };
 
     let total = input.plan.items.len() as u64;
+    let folders = count_folders(&input.plan.items);
 
     for item in &input.plan.items {
         if input.control.is_cancelled() {
@@ -74,7 +75,7 @@ pub fn run_sort(input: RunInput) -> JobOutcome {
             total,
             counters.processed(),
         );
-        emit_progress(&input, &counters, total, item);
+        emit_progress(&input, &counters, total, folders, item);
     }
 
     finalize(&input, JobStatus::Done, counters, started_at, None)
@@ -310,13 +311,19 @@ fn should_emit_log(level: SortLogLevelDto, total: u64, processed: u64) -> bool {
     processed.is_multiple_of(LARGE_JOB_SAMPLE_RATE)
 }
 
-fn emit_progress(input: &RunInput, counters: &Counters, total: u64, item: &SortPlanItem) {
+fn emit_progress(
+    input: &RunInput,
+    counters: &Counters,
+    total: u64,
+    folders: u64,
+    item: &SortPlanItem,
+) {
     let progress = SortProgressDto {
         total,
         processed: counters.processed(),
         moved: counters.moved,
         skipped: counters.skipped,
-        folders: count_folders(&input.plan.items),
+        folders,
         current: format_current(item, &input.plan.root),
     };
 
