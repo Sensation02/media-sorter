@@ -99,7 +99,7 @@ impl Counters {
 enum ItemOutcome {
     Moved,
     Skipped,
-    Failed,
+    Failed(AppError),
 }
 
 fn run_preflight(input: &RunInput) -> AppResult<()> {
@@ -149,7 +149,7 @@ fn process_item(
 ) -> ItemOutcome {
     let action = match resolve_action(item, &input.settings, input.fs_repo.as_ref()) {
         Ok(action) => action,
-        Err(_) => return ItemOutcome::Failed,
+        Err(error) => return ItemOutcome::Failed(error),
     };
 
     match action {
@@ -205,21 +205,18 @@ fn execute_move(
     log_writer: Option<&mut MoveLogWriter>,
 ) -> ItemOutcome {
     if let Some(parent) = final_target.parent() {
-        if input.fs_repo.create_dir_all(parent).is_err() {
-            return ItemOutcome::Failed;
+        if let Err(error) = input.fs_repo.create_dir_all(parent) {
+            return ItemOutcome::Failed(AppError::from(error));
         }
     }
 
     if let Some(writer) = log_writer {
-        if writer
-            .append(&MoveOp {
-                from: item.source.clone(),
-                to: final_target.to_path_buf(),
-                at_ms: now_ms(),
-            })
-            .is_err()
-        {
-            return ItemOutcome::Failed;
+        if let Err(error) = writer.append(&MoveOp {
+            from: item.source.clone(),
+            to: final_target.to_path_buf(),
+            at_ms: now_ms(),
+        }) {
+            return ItemOutcome::Failed(AppError::from(error));
         }
     }
 
@@ -238,17 +235,17 @@ fn run_move(item: &SortPlanItem, final_target: &Path, input: &RunInput) -> ItemO
     match input.fs_repo.rename(&item.source, final_target) {
         Ok(_) => ItemOutcome::Moved,
         Err(error) if is_cross_device(&error) => fallback_move(item, final_target, input),
-        Err(_) => ItemOutcome::Failed,
+        Err(error) => ItemOutcome::Failed(AppError::from(error)),
     }
 }
 
 fn fallback_move(item: &SortPlanItem, final_target: &Path, input: &RunInput) -> ItemOutcome {
-    if input.fs_repo.copy(&item.source, final_target).is_err() {
-        return ItemOutcome::Failed;
+    if let Err(error) = input.fs_repo.copy(&item.source, final_target) {
+        return ItemOutcome::Failed(AppError::from(error));
     }
 
-    if input.fs_repo.remove_file(&item.source).is_err() {
-        return ItemOutcome::Failed;
+    if let Err(error) = input.fs_repo.remove_file(&item.source) {
+        return ItemOutcome::Failed(AppError::from(error));
     }
 
     ItemOutcome::Moved
@@ -257,7 +254,7 @@ fn fallback_move(item: &SortPlanItem, final_target: &Path, input: &RunInput) -> 
 fn run_copy(item: &SortPlanItem, final_target: &Path, input: &RunInput) -> ItemOutcome {
     match input.fs_repo.copy(&item.source, final_target) {
         Ok(_) => ItemOutcome::Moved,
-        Err(_) => ItemOutcome::Failed,
+        Err(error) => ItemOutcome::Failed(AppError::from(error)),
     }
 }
 
@@ -269,7 +266,7 @@ fn apply_counters(counters: &mut Counters, outcome: &ItemOutcome) {
     match outcome {
         ItemOutcome::Moved => counters.moved += 1,
         ItemOutcome::Skipped => counters.skipped += 1,
-        ItemOutcome::Failed => counters.errors += 1,
+        ItemOutcome::Failed(_) => counters.errors += 1,
     }
 }
 
@@ -284,20 +281,31 @@ fn emit_item_log(
     let level = match outcome {
         ItemOutcome::Moved => SortLogLevelDto::Ok,
         ItemOutcome::Skipped => SortLogLevelDto::Warn,
-        ItemOutcome::Failed => SortLogLevelDto::Error,
+        ItemOutcome::Failed(_) => SortLogLevelDto::Error,
     };
 
     if !should_emit_log(level, total, processed) {
         return;
     }
 
+    let text = build_log_text(item, &input.plan.root, outcome);
+
     let entry = SortLogEntryDto {
         time: format_log_time(elapsed_ms(started_at)),
         level,
-        text: format_current(item, &input.plan.root),
+        text,
     };
 
     input.emitter.emit_log(&entry);
+}
+
+fn build_log_text(item: &SortPlanItem, root: &Path, outcome: &ItemOutcome) -> String {
+    let current = format_current(item, root);
+
+    match outcome {
+        ItemOutcome::Failed(error) => format!("{current} — {error}"),
+        _ => current,
+    }
 }
 
 fn should_emit_log(level: SortLogLevelDto, total: u64, processed: u64) -> bool {
@@ -838,6 +846,43 @@ mod tests {
     }
 
     #[test]
+    fn failed_item_log_text_includes_underlying_error_message() {
+        let fixture = fixture();
+        let missing_source = fixture.source_dir.join("missing.jpg");
+        let target = fixture.dest_root.join("Month").join("missing.jpg");
+
+        let recorder = Arc::new(RecordingEmitter::default());
+        let emitter: Arc<dyn ProgressEmitter> = recorder.clone();
+
+        run_sort(input_with_emitter(
+            &fixture,
+            vec![SortPlanItem {
+                source: missing_source,
+                target,
+            }],
+            settings(false, true),
+            false,
+            emitter,
+        ));
+
+        let logs = recorder.logs();
+        assert_eq!(logs.len(), 1);
+        assert_eq!(logs[0].level, SortLogLevelDto::Error);
+
+        let text_lower = logs[0].text.to_lowercase();
+        assert!(
+            text_lower.contains("no such file") || text_lower.contains("not found"),
+            "expected error text to mention missing file, got: {}",
+            logs[0].text
+        );
+        assert!(
+            logs[0].text.contains(" — "),
+            "expected error log text to include separator before the error message, got: {}",
+            logs[0].text
+        );
+    }
+
+    #[test]
     fn preflight_failure_emits_error_event_not_done() {
         let fixture = fixture();
         let source = fixture.source_dir.join("a.jpg");
@@ -904,10 +949,7 @@ mod tests {
 
         run_sort(input_with_emitter(
             &fixture,
-            vec![SortPlanItem {
-                source,
-                target,
-            }],
+            vec![SortPlanItem { source, target }],
             settings(false, true),
             false,
             emitter,
