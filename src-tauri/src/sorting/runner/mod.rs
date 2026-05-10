@@ -4,3 +4,4 @@ pub mod fs_repo;
 pub mod job;
 pub mod log;
 pub mod preflight;
+pub mod service;
