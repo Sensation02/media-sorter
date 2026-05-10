@@ -1,7 +1,7 @@
 # EPIC-07. History &amp; Undo
 
-**Status:** 🟡 in progress
-**Branch:** `feat/epic-07-history` (PR1 of 2)
+**Status:** 🟢 complete
+**Branch:** `feat/epic-07-history-ui` (PR2 of 2 — final)
 **Depends on:** EPIC-01, EPIC-06
 **Last updated:** 2026-05-10
 
@@ -186,28 +186,28 @@ pub struct HistoryItem {
 
 ### PR1 — backend
 
-- [ ] Lock decisions in this spec
-- [ ] `JobStatus::Reverted` + `HistoryItem` extension
-- [ ] `history/summary.rs` atomic writer
-- [ ] `history/repository.rs` list + read
-- [ ] `history/empty_dirs.rs` leaf-up cleanup
-- [ ] `history/service.rs` revert orchestrator
-- [ ] `history/dto.rs` `RevertOutcome`
-- [ ] `sorting/command.rs::start_sort` writes summary at outcome
-- [ ] `history/command.rs` fills in `list_history` and `revert_job`
-- [ ] TS `HistoryItemDto` + `RevertOutcomeDto`; `revertJob` wrapper
-- [ ] Integration tests in tmpdir
-- [ ] STATUS.md row → 🟡 in progress
-- [ ] CHANGELOG entry
+- [x] Lock decisions in this spec
+- [x] `JobStatus::Reverted` + `HistoryItem` extension
+- [x] `history/summary.rs` atomic writer
+- [x] `history/repository.rs` list + read
+- [x] `history/empty_dirs.rs` leaf-up cleanup
+- [x] `history/service.rs` revert orchestrator
+- [x] `history/dto.rs` `RevertOutcome`
+- [x] `sorting/command.rs::start_sort` writes summary at outcome
+- [x] `history/command.rs` fills in `list_history` and `revert_job`
+- [x] TS `HistoryItemDto` + `RevertOutcomeDto`; `revertJob` wrapper
+- [x] Integration tests in tmpdir
+- [x] STATUS.md row → 🟡 in progress
+- [x] CHANGELOG entry
 
 ### PR2 — UI
 
-- [ ] `useHistory()` hook
-- [ ] `HistoryScreen` consumes real list
-- [ ] Revert button + toast with outcome
-- [ ] Empty / loading / error states
-- [ ] Vitest tests for hook + screen
-- [ ] STATUS.md row → 🟢 complete
+- [x] `useHistory()` hook
+- [x] `HistoryScreen` consumes real list
+- [x] Revert button + toast with outcome
+- [x] Empty / loading / error states
+- [x] Vitest tests for hook + screen
+- [x] STATUS.md row → 🟢 complete
 
 ## Out of scope
 

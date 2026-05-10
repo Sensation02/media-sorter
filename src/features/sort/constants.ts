@@ -1,10 +1,4 @@
-import type {
-  SortDone,
-  SortHistoryItem,
-  SortProgress,
-  SortRule,
-  SortSettings,
-} from "../../types/sort";
+import type { SortDone, SortProgress, SortRule, SortSettings } from "../../types/sort";
 
 export const DEFAULT_RULES: SortRule[] = [
   {
@@ -59,33 +53,6 @@ export const DEFAULT_DONE: SortDone = {
   duration: "02:18",
   destination: "~/Pictures/Imports/2024-vacation → sorted by date",
 };
-
-export const DEFAULT_HISTORY: SortHistoryItem[] = [
-  {
-    id: 1,
-    name: "2024-vacation",
-    date: "Today, 14:32",
-    moved: 1236,
-    skipped: 11,
-    duration: "02:18",
-  },
-  {
-    id: 2,
-    name: "iphone-backup-mar",
-    date: "Mar 14, 09:11",
-    moved: 4218,
-    skipped: 0,
-    duration: "06:54",
-  },
-  {
-    id: 3,
-    name: "drone-shoot-feb",
-    date: "Feb 28, 19:02",
-    moved: 312,
-    skipped: 4,
-    duration: "00:48",
-  },
-];
 
 export const DEFAULT_SETTINGS: SortSettings = {
   copy: false,
