@@ -138,6 +138,7 @@ export type SortProgressDto = {
 
 export type SortDoneDto = {
   jobId: JobId;
+  state: JobStatus;
   durationMs: number;
   moved: number;
   skipped: number;

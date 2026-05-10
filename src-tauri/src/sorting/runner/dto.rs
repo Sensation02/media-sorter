@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::domain::JobId;
+use crate::domain::{JobId, JobStatus};
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -33,6 +33,7 @@ pub struct SortLogEntryDto {
 #[serde(rename_all = "camelCase")]
 pub struct SortDoneDto {
     pub job_id: JobId,
+    pub state: JobStatus,
     pub duration_ms: u64,
     pub moved: u64,
     pub skipped: u64,

@@ -199,6 +199,7 @@ mod tests {
 
     use super::testing::RecordingEmitter;
     use super::*;
+    use crate::domain::JobStatus;
     use crate::sorting::runner::dto::SortLogLevelDto;
 
     const TEST_INTERVAL_MS: u64 = 50;
@@ -225,6 +226,7 @@ mod tests {
     fn sample_done() -> SortDoneDto {
         SortDoneDto {
             job_id: 1,
+            state: JobStatus::Done,
             duration_ms: 0,
             moved: 1,
             skipped: 0,

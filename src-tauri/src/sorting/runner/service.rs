@@ -365,6 +365,7 @@ fn emit_terminal_event(input: &RunInput, outcome: &JobOutcome, error: Option<App
 
     let done = SortDoneDto {
         job_id: outcome.job_id,
+        state: outcome.state,
         duration_ms: outcome.duration_ms,
         moved: outcome.moved,
         skipped: outcome.skipped,
@@ -889,6 +890,84 @@ mod tests {
         assert!(matches!(outcome.state, JobStatus::Cancelled));
         assert_eq!(recorder.done().len(), 1);
         assert_eq!(recorder.errors().len(), 0);
+    }
+
+    #[test]
+    fn done_event_carries_terminal_state_done() {
+        let fixture = fixture();
+        let source = fixture.source_dir.join("a.jpg");
+        let target = fixture.dest_root.join("Month").join("a.jpg");
+        write_file(&source, b"hello");
+
+        let recorder = Arc::new(RecordingEmitter::default());
+        let emitter: Arc<dyn ProgressEmitter> = recorder.clone();
+
+        run_sort(input_with_emitter(
+            &fixture,
+            vec![SortPlanItem {
+                source,
+                target,
+            }],
+            settings(false, true),
+            false,
+            emitter,
+        ));
+
+        let done = recorder.done();
+        assert_eq!(done.len(), 1);
+        assert!(matches!(done[0].state, JobStatus::Done));
+    }
+
+    #[test]
+    fn done_event_carries_terminal_state_cancelled() {
+        let fixture = fixture();
+        let source = fixture.source_dir.join("a.jpg");
+        let target = fixture.dest_root.join("a.jpg");
+        write_file(&source, b"hello");
+
+        let recorder = Arc::new(RecordingEmitter::default());
+        let emitter: Arc<dyn ProgressEmitter> = recorder.clone();
+
+        let run = input_with_emitter(
+            &fixture,
+            vec![SortPlanItem { source, target }],
+            settings(false, true),
+            false,
+            emitter,
+        );
+        run.control.request_cancel();
+
+        run_sort(run);
+
+        let done = recorder.done();
+        assert_eq!(done.len(), 1);
+        assert!(matches!(done[0].state, JobStatus::Cancelled));
+    }
+
+    #[test]
+    fn done_event_carries_terminal_state_paused() {
+        let fixture = fixture();
+        let source = fixture.source_dir.join("a.jpg");
+        let target = fixture.dest_root.join("a.jpg");
+        write_file(&source, b"hello");
+
+        let recorder = Arc::new(RecordingEmitter::default());
+        let emitter: Arc<dyn ProgressEmitter> = recorder.clone();
+
+        let run = input_with_emitter(
+            &fixture,
+            vec![SortPlanItem { source, target }],
+            settings(false, true),
+            false,
+            emitter,
+        );
+        run.control.request_pause();
+
+        run_sort(run);
+
+        let done = recorder.done();
+        assert_eq!(done.len(), 1);
+        assert!(matches!(done[0].state, JobStatus::Paused));
     }
 
     #[test]
