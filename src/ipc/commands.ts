@@ -21,8 +21,12 @@ export function previewPlan(scanId: ScanId, rule: SortRuleId): Promise<SortPlan>
   return invoke<SortPlan>("preview_plan", { request: { scanId, rule } });
 }
 
-export function startSort(plan: SortPlan, settings: SortSettingsDto): Promise<{ jobId: JobId }> {
-  return invoke<{ jobId: JobId }>("start_sort", { request: { plan, settings } });
+export function startSort(
+  plan: SortPlan,
+  settings: SortSettingsDto,
+  dryRun = false,
+): Promise<{ jobId: JobId }> {
+  return invoke<{ jobId: JobId }>("start_sort", { request: { plan, settings, dryRun } });
 }
 
 export async function pauseSort(jobId: JobId): Promise<void> {

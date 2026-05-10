@@ -14,6 +14,8 @@ pub struct PreviewPlanRequest {
 pub struct StartSortRequest {
     pub plan: SortPlan,
     pub settings: SortSettings,
+    #[serde(default)]
+    pub dry_run: bool,
 }
 
 #[derive(Debug, Clone, Deserialize)]

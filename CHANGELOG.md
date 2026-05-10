@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sort planner core: builds a deterministic folder layout for each photo and video based on date, date and place, file type or camera, with "Misc" for files missing the chosen grouping (UI preview and execution wiring land in follow-up releases)
 - Folder scan now extracts photo and video metadata up front and caches the result on the app side, so previewing a sort layout is instant when switching between rules; the visual preview tree lands in a follow-up release
 - Setup screen now shows a real preview tree of the chosen sorting layout for the scanned folder, with file counts per destination directory; "By date and place" is the new default rule and matches the project's headline use case
+- Sort engine moves photos and videos into the planned folders with a per-job log written before every move so a future revert can roll the job back; same-name collisions get a `(1)`, `(2)` suffix automatically, identical files are detected by name, size and content fingerprint when "Skip duplicates" is on, and a one-off "Dry run" flag lets the engine rehearse a job without touching any file (UI wiring lands in a follow-up release)
 
 ### Bug Fixes
 
