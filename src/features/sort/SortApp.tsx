@@ -16,7 +16,7 @@ import {
 } from "./constants";
 import { pickSourceDir, scanSource } from "../../ipc";
 import { toAppErrorView } from "../../utils";
-import type { ScanSummary } from "../../types/ipc";
+import type { ScanId, ScanSummary } from "../../types/ipc";
 import type { SortScreen, SortSettings, SortStatus } from "../../types/sort";
 
 const TOOLBAR_TITLE: Record<SortScreen, string> = {
@@ -44,6 +44,7 @@ export function SortApp() {
   const [screen, setScreen] = useState<SortScreen>("setup");
   const [settings, setSettings] = useState<SortSettings>(DEFAULT_SETTINGS);
   const [source, setSource] = useState<ScanSummary | null>(null);
+  const [, setScanId] = useState<ScanId | null>(null);
   const [scanning, setScanning] = useState(false);
 
   const handlePickSource = useCallback(async () => {
@@ -55,9 +56,11 @@ export function SortApp() {
       }
 
       setSource(null);
+      setScanId(null);
       setScanning(true);
-      const summary = await scanSource(path);
-      setSource(summary);
+      const response = await scanSource(path);
+      setSource(response.summary);
+      setScanId(response.scanId);
     } catch (error) {
       const view = toAppErrorView(error);
       toast.error(view.title, { description: view.detail });

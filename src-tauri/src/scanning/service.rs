@@ -2,28 +2,36 @@ use std::fs::DirEntry;
 use std::path::Path;
 
 use crate::domain::extensions::classify_extension;
-use crate::domain::{ByKind, MediaKind, ScanSummary};
+use crate::domain::{ByKind, MediaFile, MediaKind, ScanSummary};
 use crate::error::{AppError, AppResult};
 
 use super::filters::is_hidden;
 
-/// Scans the top-level entries of `path` and returns aggregate counts
-/// of recognised media files. Subdirectories, symlinks, hidden files and
-/// non-media extensions are skipped.
-pub fn scan_directory(path: &Path) -> AppResult<ScanSummary> {
+#[derive(Debug, Clone)]
+pub struct ScanResult {
+    pub summary: ScanSummary,
+    pub files: Vec<MediaFile>,
+}
+
+/// Scans the top-level entries of `path` and returns the aggregate counts
+/// alongside the matching `MediaFile` records. Subdirectories, symlinks,
+/// hidden files and non-media extensions are skipped.
+pub fn scan_directory(path: &Path) -> AppResult<ScanResult> {
     validate_directory(path)?;
 
     let mut summary = empty_summary(path);
+    let mut files = Vec::new();
 
     for entry in std::fs::read_dir(path)? {
         let entry = entry?;
 
-        if let Some((kind, size)) = classify_entry(&entry)? {
-            accumulate(&mut summary, kind, size);
+        if let Some(media) = classify_entry(&entry)? {
+            accumulate(&mut summary, media.kind, media.size_bytes);
+            files.push(media);
         }
     }
 
-    Ok(summary)
+    Ok(ScanResult { summary, files })
 }
 
 fn validate_directory(path: &Path) -> AppResult<()> {
@@ -53,7 +61,7 @@ fn empty_summary(path: &Path) -> ScanSummary {
     }
 }
 
-fn classify_entry(entry: &DirEntry) -> AppResult<Option<(MediaKind, u64)>> {
+fn classify_entry(entry: &DirEntry) -> AppResult<Option<MediaFile>> {
     let file_type = entry.file_type()?;
 
     if file_type.is_symlink() || !file_type.is_file() {
@@ -76,9 +84,13 @@ fn classify_entry(entry: &DirEntry) -> AppResult<Option<(MediaKind, u64)>> {
         return Ok(None);
     };
 
-    let size = entry.metadata()?.len();
+    let size_bytes = entry.metadata()?.len();
 
-    Ok(Some((kind, size)))
+    Ok(Some(MediaFile {
+        path,
+        size_bytes,
+        kind,
+    }))
 }
 
 fn accumulate(summary: &mut ScanSummary, kind: MediaKind, size: u64) {
@@ -117,12 +129,26 @@ mod tests {
         write_file(temp.path(), "c.cr3", b"x");
         write_file(temp.path(), "d.MP4", b"x");
 
-        let summary = scan_directory(temp.path()).unwrap();
+        let result = scan_directory(temp.path()).unwrap();
 
-        assert_eq!(summary.file_count, 4);
-        assert_eq!(summary.by_kind.photos, 2);
-        assert_eq!(summary.by_kind.raw, 1);
-        assert_eq!(summary.by_kind.videos, 1);
+        assert_eq!(result.summary.file_count, 4);
+        assert_eq!(result.summary.by_kind.photos, 2);
+        assert_eq!(result.summary.by_kind.raw, 1);
+        assert_eq!(result.summary.by_kind.videos, 1);
+        assert_eq!(result.files.len(), 4);
+    }
+
+    #[test]
+    fn collects_media_files_with_kind_and_size() {
+        let temp = TempDir::new().unwrap();
+        write_file(temp.path(), "a.jpg", &[0u8; 100]);
+
+        let result = scan_directory(temp.path()).unwrap();
+
+        let file = result.files.first().expect("one file");
+        assert_eq!(file.kind, MediaKind::Photo);
+        assert_eq!(file.size_bytes, 100);
+        assert!(file.path.ends_with("a.jpg"));
     }
 
     #[test]
@@ -134,9 +160,10 @@ mod tests {
         write_file(temp.path(), "Thumbs.db", b"x");
         write_file(temp.path(), "desktop.ini", b"x");
 
-        let summary = scan_directory(temp.path()).unwrap();
+        let result = scan_directory(temp.path()).unwrap();
 
-        assert_eq!(summary.file_count, 1);
+        assert_eq!(result.summary.file_count, 1);
+        assert_eq!(result.files.len(), 1);
     }
 
     #[test]
@@ -148,9 +175,9 @@ mod tests {
         std::fs::create_dir(&nested).unwrap();
         write_file(&nested, "deep.jpg", b"x");
 
-        let summary = scan_directory(temp.path()).unwrap();
+        let result = scan_directory(temp.path()).unwrap();
 
-        assert_eq!(summary.file_count, 1);
+        assert_eq!(result.summary.file_count, 1);
     }
 
     #[test]
@@ -161,9 +188,9 @@ mod tests {
         write_file(temp.path(), "notes.txt", b"x");
         write_file(temp.path(), "no_extension", b"x");
 
-        let summary = scan_directory(temp.path()).unwrap();
+        let result = scan_directory(temp.path()).unwrap();
 
-        assert_eq!(summary.file_count, 1);
+        assert_eq!(result.summary.file_count, 1);
     }
 
     #[test]
@@ -172,9 +199,9 @@ mod tests {
         write_file(temp.path(), "a.jpg", &[0u8; 100]);
         write_file(temp.path(), "b.jpg", &[0u8; 250]);
 
-        let summary = scan_directory(temp.path()).unwrap();
+        let result = scan_directory(temp.path()).unwrap();
 
-        assert_eq!(summary.size_bytes, 350);
+        assert_eq!(result.summary.size_bytes, 350);
     }
 
     #[test]
@@ -201,8 +228,8 @@ mod tests {
         let target = write_file(temp.path(), "target.jpg", b"x");
         symlink(&target, temp.path().join("link.jpg")).unwrap();
 
-        let summary = scan_directory(temp.path()).unwrap();
+        let result = scan_directory(temp.path()).unwrap();
 
-        assert_eq!(summary.file_count, 1);
+        assert_eq!(result.summary.file_count, 1);
     }
 }
