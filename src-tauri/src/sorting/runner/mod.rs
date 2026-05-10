@@ -1,4 +1,8 @@
 pub mod conflict;
+pub mod constants;
+pub mod dto;
+pub mod emitter;
+pub mod events;
 pub mod fingerprint;
 pub mod fs_repo;
 pub mod job;
