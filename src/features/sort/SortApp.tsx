@@ -138,6 +138,9 @@ export function SortApp() {
 
     const view = toAppErrorView(job.error);
     toast.error(view.title, { description: view.detail });
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- terminal job error must reset screen and jobId together with the toast side effect
+    setScreen("setup");
+    setJobId(null);
   }, [job.status, job.error]);
 
   const effectiveScreen = resolveScreen(screen, job.status);
