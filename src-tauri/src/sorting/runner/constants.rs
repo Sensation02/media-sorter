@@ -1,0 +1,5 @@
+pub const THROTTLE_INTERVAL_MS: u64 = 100;
+
+pub const LARGE_JOB_SAMPLE_THRESHOLD: u64 = 500;
+
+pub const LARGE_JOB_SAMPLE_RATE: u64 = 25;
