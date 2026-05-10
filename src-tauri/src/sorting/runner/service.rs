@@ -7,6 +7,7 @@ use crate::error::{AppError, AppResult};
 use crate::utils::now_ms;
 
 use super::conflict::unique_target;
+use super::constants::{LARGE_JOB_SAMPLE_RATE, LARGE_JOB_SAMPLE_THRESHOLD};
 use super::dto::{SortDoneDto, SortLogEntryDto, SortLogLevelDto, SortProgressDto};
 use super::emitter::ProgressEmitter;
 use super::fingerprint::Fingerprint;
@@ -65,7 +66,14 @@ pub fn run_sort(input: RunInput) -> JobOutcome {
         let outcome = process_item(item, &input, log_writer.as_mut());
 
         apply_counters(&mut counters, &outcome);
-        emit_item_log(&input, item, &outcome, started_at);
+        emit_item_log(
+            &input,
+            item,
+            &outcome,
+            started_at,
+            total,
+            counters.processed(),
+        );
         emit_progress(&input, &counters, total, item);
     }
 
@@ -263,12 +271,23 @@ fn apply_counters(counters: &mut Counters, outcome: &ItemOutcome) {
     }
 }
 
-fn emit_item_log(input: &RunInput, item: &SortPlanItem, outcome: &ItemOutcome, started_at: i64) {
+fn emit_item_log(
+    input: &RunInput,
+    item: &SortPlanItem,
+    outcome: &ItemOutcome,
+    started_at: i64,
+    total: u64,
+    processed: u64,
+) {
     let level = match outcome {
         ItemOutcome::Moved => SortLogLevelDto::Ok,
         ItemOutcome::Skipped => SortLogLevelDto::Warn,
         ItemOutcome::Failed => SortLogLevelDto::Error,
     };
+
+    if !should_emit_log(level, total, processed) {
+        return;
+    }
 
     let entry = SortLogEntryDto {
         time: format_log_time(elapsed_ms(started_at)),
@@ -277,6 +296,18 @@ fn emit_item_log(input: &RunInput, item: &SortPlanItem, outcome: &ItemOutcome, s
     };
 
     input.emitter.emit_log(&entry);
+}
+
+fn should_emit_log(level: SortLogLevelDto, total: u64, processed: u64) -> bool {
+    if level != SortLogLevelDto::Ok {
+        return true;
+    }
+
+    if total <= LARGE_JOB_SAMPLE_THRESHOLD {
+        return true;
+    }
+
+    processed.is_multiple_of(LARGE_JOB_SAMPLE_RATE)
 }
 
 fn emit_progress(input: &RunInput, counters: &Counters, total: u64, item: &SortPlanItem) {
@@ -871,5 +902,78 @@ mod tests {
         let root = Path::new("/dest");
 
         assert_eq!(format_current(&item, root), "IMG_0001.jpg → 2024-01");
+    }
+
+    #[test]
+    fn should_emit_log_always_emits_warn_and_error_even_in_large_jobs() {
+        let total = LARGE_JOB_SAMPLE_THRESHOLD + 1;
+
+        for processed in 1..=10 {
+            assert!(should_emit_log(SortLogLevelDto::Warn, total, processed));
+            assert!(should_emit_log(SortLogLevelDto::Error, total, processed));
+        }
+    }
+
+    #[test]
+    fn should_emit_log_emits_every_ok_when_total_within_threshold() {
+        let total = LARGE_JOB_SAMPLE_THRESHOLD;
+
+        for processed in 1..=total {
+            assert!(should_emit_log(SortLogLevelDto::Ok, total, processed));
+        }
+    }
+
+    #[test]
+    fn should_emit_log_samples_ok_at_rate_for_large_total() {
+        let total = LARGE_JOB_SAMPLE_THRESHOLD + 1;
+
+        let emitted = (1..=LARGE_JOB_SAMPLE_RATE * 4)
+            .filter(|processed| should_emit_log(SortLogLevelDto::Ok, total, *processed))
+            .count();
+
+        assert_eq!(emitted, 4);
+    }
+
+    #[test]
+    fn large_plan_samples_ok_logs_and_keeps_all_warn_logs() {
+        let fixture = fixture();
+        let total = 1_000_u64;
+        let mut items = Vec::with_capacity(total as usize);
+
+        for index in 0..total {
+            let source = fixture.source_dir.join(format!("img_{index:04}.jpg"));
+            let target = fixture
+                .dest_root
+                .join("Month")
+                .join(format!("img_{index:04}.jpg"));
+            write_file(&source, b"data");
+            items.push(SortPlanItem { source, target });
+        }
+
+        let recorder = Arc::new(RecordingEmitter::default());
+        let emitter: Arc<dyn ProgressEmitter> = recorder.clone();
+
+        run_sort(input_with_emitter(
+            &fixture,
+            items,
+            settings(false, true),
+            false,
+            emitter,
+        ));
+
+        let logs = recorder.logs();
+        let ok_count = logs
+            .iter()
+            .filter(|entry| entry.level == SortLogLevelDto::Ok)
+            .count();
+        let non_ok_count = logs
+            .iter()
+            .filter(|entry| entry.level != SortLogLevelDto::Ok)
+            .count();
+
+        let expected_ok = (total / LARGE_JOB_SAMPLE_RATE) as usize;
+
+        assert_eq!(ok_count, expected_ok);
+        assert_eq!(non_ok_count, 0);
     }
 }
