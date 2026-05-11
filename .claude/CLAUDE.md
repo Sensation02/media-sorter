@@ -21,6 +21,15 @@ The supreme law of this project is `docs/CONSTITUTION.md`. It overrides this fil
 - **IX. Tests guard the critical path** — ~60–70% on business logic, not global coverage
 - **X. Specs precede code for non-trivial work** — `docs/specs/` is the contract; immutable once approved
 
+## Working Protocol
+
+These four imperatives govern HOW the agent works on every task, before any project-specific rule applies. They are testable — Pattern Guard and Reviewer may flag violations.
+
+1. **State assumptions, never guess silently** — if the spec, file path, type, or expected behaviour is ambiguous, write the assumption explicitly in your reply (or ask via `AskUserQuestion`) before editing. No silent inference applied as code.
+2. **Minimum code, nothing speculative** — implement exactly what the task asks. No defensive code for impossible paths, no drive-by additions, no abstractions for hypothetical future needs.
+3. **Surgical changes, don't refactor adjacent code** — touch only the lines required for the task. Rename, reformat, and reorganize unrelated code in a separate PR.
+4. **Define success, loop until verified** — name the success criterion (lint passes, test green, command output matches X) and verify it with a concrete command before reporting done. "Should work" is not done.
+
 ## Tech Stack
 
 | Layer                     | Technology                  | Purpose                                                       |
