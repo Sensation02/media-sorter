@@ -1,4 +1,4 @@
-import type { SortRule } from "../../types/sort";
+import type { SortRule } from "../../../types/sort";
 
 export const DEFAULT_RULES: SortRule[] = [
     {

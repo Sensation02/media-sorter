@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Sidebar } from "./components/sidebar";
 import { Toolbar } from "./components/toolbar";
-import { DEFAULT_RULES } from "./constants";
+import { DEFAULT_RULES } from "./constants/rules";
 import { SORT_SCREEN, TOOLBAR_STATUS, TOOLBAR_SUBTITLE, TOOLBAR_TITLE } from "./constants/screens";
 import { useSortOrchestration } from "./hooks/use-sort-orchestration";
 import { preferredDefaultRule } from "./mappers/preferred-rule";

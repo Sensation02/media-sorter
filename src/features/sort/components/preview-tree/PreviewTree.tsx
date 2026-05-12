@@ -1,7 +1,7 @@
 import { ICON } from "../../constants/icons";
 import { Tree } from "../tree";
-import { planToTree } from "../../plan-tree";
-import type { PlanPreviewState } from "../../use-plan-preview";
+import { planToTree } from "../../mappers/plan-tree";
+import type { PlanPreviewState } from "../../hooks/use-plan-preview";
 import { Placeholder } from "./Placeholder";
 
 const Loader = ICON.loader;

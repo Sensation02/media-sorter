@@ -6,9 +6,9 @@ import type { JobId, ScanId, ScanSummary, SortPlan, SortSettingsDto } from "../.
 import { toAppErrorView } from "../../../utils";
 import { SORT_SCREEN, type SortScreen } from "../constants/screens";
 import { revertSummary } from "../mappers/revert-summary";
-import { useHistory, type HistoryHook } from "../use-history";
-import { useSettings, type SettingsHook } from "../use-settings";
-import { useSortJob, type UseSortJobResult } from "../use-sort-job";
+import { useHistory, type HistoryHook } from "./use-history";
+import { useSettings, type SettingsHook } from "./use-settings";
+import { useSortJob, type UseSortJobResult } from "./use-sort-job";
 
 const IMMUTABLE_SORT_FLAGS: SortSettingsDto = {
     copy: false,

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 import type { JobId } from "../../../../types/ipc";
-import type { HistoryHookState } from "../../use-history";
+import type { HistoryHookState } from "../../hooks/use-history";
 import { Centered } from "./Centered";
 import { HistoryRow } from "./HistoryRow";
 

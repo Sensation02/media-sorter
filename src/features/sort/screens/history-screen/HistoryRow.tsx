@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 
 import { ICON } from "../../constants/icons";
-import { formatHistoryDate, formatHistoryDuration } from "../../history-format";
+import { formatHistoryDate, formatHistoryDuration } from "../../mappers/history-format";
 import type { HistoryItemDto, JobId } from "../../../../types/ipc";
 import { HistoryStats } from "./HistoryStats";
 

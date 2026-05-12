@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 
 import type { AppSettingsDto } from "../../../../types/ipc";
-import type { SettingsHookState } from "../../use-settings";
+import type { SettingsHookState } from "../../hooks/use-settings";
 import { SettingsForm } from "./SettingsForm";
 
 export type SettingsScreenProps = {

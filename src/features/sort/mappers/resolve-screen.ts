@@ -1,5 +1,5 @@
 import { SORT_SCREEN, type SortScreen } from "../constants/screens";
-import type { SortJobStatus } from "../use-sort-job";
+import type { SortJobStatus } from "../hooks/use-sort-job";
 
 export function resolveScreen(screen: SortScreen, jobStatus: SortJobStatus): SortScreen {
     if (screen !== SORT_SCREEN.progress) {

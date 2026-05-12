@@ -12,7 +12,7 @@ import { RuleSelector } from "../../components/rule-selector";
 import { ScanBreakdown } from "../../components/scan-breakdown";
 import { ScreenFrame } from "../../components/screen-frame";
 import { ICON } from "../../constants/icons";
-import { usePlanPreview } from "../../use-plan-preview";
+import { usePlanPreview } from "../../hooks/use-plan-preview";
 
 const Loader = ICON.loader;
 const Folder = ICON.folder;
