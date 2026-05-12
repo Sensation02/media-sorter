@@ -13,6 +13,7 @@ import { ScanBreakdown } from "../../components/scan-breakdown";
 import { ScreenFrame } from "../../components/screen-frame";
 import { ICON } from "../../constants/icons";
 import { usePlanPreview } from "../../hooks/use-plan-preview";
+import { resolveDefaultRule } from "../../mappers/resolve-default-rule";
 
 const Loader = ICON.loader;
 const Folder = ICON.folder;
@@ -123,20 +124,4 @@ export function SetupScreen({
             </section>
         </ScreenFrame>
     );
-}
-
-function resolveDefaultRule(
-    preferred: SortRuleId | null | undefined,
-    rules: SortRule[],
-    fallback: SortRuleId,
-): SortRuleId {
-    if (preferred === null || preferred === undefined) {
-        return fallback;
-    }
-
-    if (!rules.some((rule) => rule.id === preferred)) {
-        return fallback;
-    }
-
-    return preferred;
 }
