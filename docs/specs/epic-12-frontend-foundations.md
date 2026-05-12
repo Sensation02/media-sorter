@@ -116,6 +116,8 @@ The PR ships as a single branch with the following atomic commits. Each maps to 
 - [x] **C24** — `refactor(sort): rename LEGACY_SORT_SETTINGS to IMMUTABLE_SORT_FLAGS`
 - [x] **C25** — `refactor(sort): move hooks/mappers/constants into subdirectories; update imports`
 - [x] **C26** — `chore(specs): mark EPIC-12 done; update STATUS`
+- [x] **C27** — `feat(sort): centralize JOB_STATUS constants and replace cross-file magic`
+- [x] **C28** — `feat(sort): centralize LOG_LEVEL and SORT_STATUS constants`
 
 ## Out of scope
 
