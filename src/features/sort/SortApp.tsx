@@ -7,9 +7,10 @@ import { ErrorBoundary } from "./components/error-boundary";
 import { Sidebar } from "./components/sidebar";
 import { Toolbar } from "./components/toolbar";
 import { DoneScreen, HistoryScreen, ProgressScreen, SettingsScreen, SetupScreen } from "./screens";
-import { DEFAULT_RULES, DEFAULT_SETTINGS } from "./constants";
+import { DEFAULT_RULES } from "./constants";
 import { formatHistoryDuration } from "./history-format";
 import { useHistory } from "./use-history";
+import { useSettings } from "./use-settings";
 import { useSortJob, type SortJobStatus } from "./use-sort-job";
 import { cancelSort, pauseSort, pickSourceDir, scanSource, startSort } from "../../ipc";
 import { toAppErrorView } from "../../utils";
@@ -21,7 +22,7 @@ import type {
   SortPlan,
   SortSettingsDto,
 } from "../../types/ipc";
-import type { SortDone, SortScreen, SortSettings, SortStatus } from "../../types/sort";
+import type { SortDone, SortScreen, SortStatus } from "../../types/sort";
 
 const TOOLBAR_TITLE: Record<SortScreen, string> = {
   setup: "New sort",
@@ -44,15 +45,22 @@ const TOOLBAR_SUBTITLE: Partial<Record<SortScreen, string>> = {
   done: "completed",
 };
 
+const LEGACY_SORT_SETTINGS: SortSettingsDto = {
+  copy: false,
+  skipDuplicates: true,
+  watchSource: false,
+  writeReport: true,
+};
+
 export function SortApp() {
   const [screen, setScreen] = useState<SortScreen>("setup");
-  const [settings, setSettings] = useState<SortSettings>(DEFAULT_SETTINGS);
   const [source, setSource] = useState<ScanSummary | null>(null);
   const [scanId, setScanId] = useState<ScanId | null>(null);
   const [scanning, setScanning] = useState(false);
   const [jobId, setJobId] = useState<JobId | null>(null);
   const job = useSortJob(jobId);
   const history = useHistory();
+  const settings = useSettings();
 
   const handlePickSource = useCallback(async () => {
     try {
@@ -76,19 +84,16 @@ export function SortApp() {
     }
   }, []);
 
-  const handleRun = useCallback(
-    async (plan: SortPlan) => {
-      try {
-        const response = await startSort(plan, toSortSettingsDto(settings));
-        setJobId(response.jobId);
-        setScreen("progress");
-      } catch (error) {
-        const view = toAppErrorView(error);
-        toast.error(view.title, { description: view.detail });
-      }
-    },
-    [settings],
-  );
+  const handleRun = useCallback(async (plan: SortPlan) => {
+    try {
+      const response = await startSort(plan, LEGACY_SORT_SETTINGS);
+      setJobId(response.jobId);
+      setScreen("progress");
+    } catch (error) {
+      const view = toAppErrorView(error);
+      toast.error(view.title, { description: view.detail });
+    }
+  }, []);
 
   const handlePause = useCallback(async () => {
     if (jobId === null) {
@@ -208,7 +213,12 @@ export function SortApp() {
               />
             )}
             {effectiveScreen === "settings" && (
-              <SettingsScreen settings={settings} onChange={setSettings} />
+              <SettingsScreen
+                state={settings.state}
+                onSave={settings.save}
+                onReset={settings.reset}
+                onRetry={settings.refresh}
+              />
             )}
           </ErrorBoundary>
         </main>
@@ -232,15 +242,6 @@ function resolveScreen(screen: SortScreen, jobStatus: SortJobStatus): SortScreen
   }
 
   return "progress";
-}
-
-function toSortSettingsDto(settings: SortSettings): SortSettingsDto {
-  return {
-    copy: settings.copy,
-    skipDuplicates: settings.skipDuplicates,
-    watchSource: settings.watchSource,
-    writeReport: settings.writeReport,
-  };
 }
 
 function toSortDone(dto: SortDoneDto): SortDone {

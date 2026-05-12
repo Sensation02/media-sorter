@@ -1,7 +1,7 @@
 # EPIC-09. Settings (persisted)
 
 **Status:** 🟡 in progress
-**Branch:** `feat/epic-09-settings-*` (5 PRs — PR1 of 5 in flight)
+**Branch:** `feat/epic-09-settings-*` (5 PRs — PR2 of 5 in flight, stacked on PR1)
 **Depends on:** EPIC-01, EPIC-05, EPIC-06, EPIC-07
 **Last updated:** 2026-05-12
 
@@ -312,14 +312,14 @@ export type SessionMemoDto = {
 
 ### PR2 — UI wiring
 
-- [ ] `useSettings()` hook
-- [ ] `SettingsScreen` reads real values, exposes reset button
-- [ ] `SortApp` switches from `DEFAULT_SETTINGS` to `useSettings()`
-- [ ] Locale-aware placeholder for unknown-date folder input
-- [ ] Disabled language dropdown with EPIC-10 hint
-- [ ] Empty / loading / error states
-- [ ] Vitest tests for hook + screen
-- [ ] CHANGELOG entry
+- [x] `useSettings()` hook with discriminated state (loading / success / error)
+- [x] `SettingsScreen` rebuilt for AppSettings shape, exposes reset button
+- [x] `SortApp` switches from `useState(DEFAULT_SETTINGS)` to `useSettings()`; `LEGACY_SORT_SETTINGS` constant bridges to `startSort` until PR3 removes `SortSettingsDto`
+- [x] Locale-aware placeholder for unknown-date folder input (Misc / Різне)
+- [x] Disabled language hint "Available in EPIC-10" with current language native name
+- [x] Loading and error states; reset preserves memo on the backend
+- [x] Vitest: 5 tests on `useSettings` + 7 tests on `SettingsScreen`
+- [x] CHANGELOG entry
 
 ### PR3 — memo behaviour
 

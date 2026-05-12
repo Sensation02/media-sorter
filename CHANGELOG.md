@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Live progress and activity log during a sort run
 - Real-time progress screen during sort runs
 - Settings persistence engine remembers your last sort rule, destination folder, unknown-date folder name and history retention window across app launches; on first launch the app detects the language from your operating system (English or Ukrainian today), with the settings UI and runtime language switching landing in follow-up releases
+- Settings screen now reads and writes real persisted values: toggles for "Remember last sort rule" and "Remember last destination", an editable Unknown-date folder name (with locale-aware placeholder), a History retention number input (7-365 days), a language indicator (switching arrives with EPIC-10), and a Reset to defaults button that preserves your last sort rule and destination
 
 ### Bug Fixes
 
