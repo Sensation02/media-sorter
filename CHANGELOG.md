@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - History screen now lists real completed sorts from disk with a Revert button per row; clicking Revert reverses the job and shows a toast with how many files were restored, skipped or errored, and the row updates to show "Reverted" so it can't be undone twice by mistake
 - Live progress and activity log during a sort run
 - Real-time progress screen during sort runs
+- Settings persistence engine remembers your last sort rule, destination folder, unknown-date folder name and history retention window across app launches; on first launch the app detects the language from your operating system (English or Ukrainian today), with the settings UI and runtime language switching landing in follow-up releases
 
 ### Bug Fixes
 

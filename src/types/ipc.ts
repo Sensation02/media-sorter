@@ -145,3 +145,19 @@ export type SortDoneDto = {
   folders: number;
   destination: string;
 };
+
+export type LanguageCode = string;
+
+export type SessionMemoDto = {
+  lastSortRule: SortRuleId | null;
+  lastDestination: string | null;
+};
+
+export type AppSettingsDto = {
+  rememberLastSortRule: boolean;
+  rememberLastDestination: boolean;
+  unknownDateFolderName: string | null;
+  historyRetentionDays: number;
+  uiLanguage: LanguageCode;
+  memo: SessionMemoDto;
+};

@@ -1,10 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
 import type {
+  AppSettingsDto,
   HistoryItemDto,
   JobId,
   RevertOutcomeDto,
   ScanId,
   ScanResponse,
+  SessionMemoDto,
   SortPlan,
   SortRuleId,
   SortSettingsDto,
@@ -48,4 +50,24 @@ export function listHistory(): Promise<HistoryItemDto[]> {
 
 export async function revealInOs(path: string): Promise<void> {
   await invoke("reveal_in_os", { request: { path } });
+}
+
+export function getSettings(): Promise<AppSettingsDto> {
+  return invoke<AppSettingsDto>("get_settings");
+}
+
+export function setSettings(settings: AppSettingsDto): Promise<AppSettingsDto> {
+  return invoke<AppSettingsDto>("set_settings", { request: { settings } });
+}
+
+export function resetSettings(): Promise<AppSettingsDto> {
+  return invoke<AppSettingsDto>("reset_settings");
+}
+
+export function getMemo(): Promise<SessionMemoDto> {
+  return invoke<SessionMemoDto>("get_memo");
+}
+
+export async function setMemo(memo: SessionMemoDto): Promise<void> {
+  await invoke("set_memo", { request: { memo } });
 }
