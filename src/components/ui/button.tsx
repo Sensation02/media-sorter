@@ -5,14 +5,17 @@ import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center gap-1.5 font-medium tracking-tight whitespace-nowrap transition-colors disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+    "inline-flex items-center justify-center gap-1.5 font-medium tracking-tight whitespace-nowrap transition-colors disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     {
         variants: {
             variant: {
-                primary: "bg-primary text-primary-foreground hover:opacity-85",
-                secondary: "border border-border-strong text-fg-1 hover:bg-surface-2",
-                ghost: "text-fg-2 hover:text-fg-1 hover:bg-hover-soft",
-                cautious: "border border-warning/30 text-warning hover:bg-warning/10",
+                primary:
+                    "bg-primary text-primary-foreground hover:opacity-85 disabled:bg-surface-2 disabled:text-fg-3",
+                secondary:
+                    "border border-border-strong text-fg-1 hover:bg-surface-2 disabled:opacity-50",
+                ghost: "text-fg-2 hover:text-fg-1 hover:bg-hover-soft disabled:opacity-50",
+                cautious:
+                    "border border-warning/30 text-warning hover:bg-warning/10 disabled:opacity-50",
             },
             size: {
                 sm: "h-7 px-2.5 text-meta rounded-[5px]",
