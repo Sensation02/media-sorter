@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 
 import { ICON } from "../../constants/icons";
 import { Eyebrow } from "../../components/eyebrow";
+import { ScreenFrame } from "../../components/screen-frame";
 import type { ScanId, ScanSummary, SortPlan } from "../../../../types/ipc";
 import type { SortRule, SortRuleId } from "../../../../types/sort";
 import { formatBytes } from "../../../../utils";
@@ -65,63 +66,62 @@ export function SetupScreen({
     };
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto px-7 py-7 space-y-7">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
-                    <section>
-                        <Eyebrow className="mb-2.5">Source folder</Eyebrow>
-                        <Card className="px-4 py-3 flex items-center gap-3">
-                            <Folder className="h-4 w-4 text-fg-3" aria-hidden />
-                            <span
-                                className={`font-mono text-body flex-1 truncate ${source === null ? "text-fg-3" : ""}`}
-                            >
-                                {source?.root ?? EMPTY_PATH_LABEL}
-                            </span>
-                            {scanning ? (
-                                <span className="flex items-center gap-2 font-mono text-meta-sm text-fg-3">
-                                    <Loader className="w-3 h-3 animate-spin" aria-hidden />
-                                    Scanning…
-                                </span>
-                            ) : (
-                                source !== null && (
-                                    <span className="font-mono text-meta-sm text-fg-3">
-                                        {source.fileCount.toLocaleString()} files {"·"}{" "}
-                                        {formatBytes(source.sizeBytes)}
-                                    </span>
-                                )
-                            )}
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={onPickSource}
-                                disabled={scanning}
-                            >
-                                Browse{"…"}
-                            </Button>
-                        </Card>
-                        {source !== null && !scanning && <ScanBreakdown summary={source} />}
-                    </section>
-
-                    <section>
-                        <Eyebrow className="mb-2.5">Sorting rule</Eyebrow>
-                        <RuleSelector rules={rules} value={ruleId} onChange={setRuleId} />
-                    </section>
-                </div>
-
-                <section>
-                    <Eyebrow className="mb-2.5">Output preview</Eyebrow>
-                    <Card className="px-4 py-4">
-                        <PreviewTree state={previewState} />
-                    </Card>
-                </section>
-            </div>
-
-            <footer className="h-12 border-t border-border px-2.5 flex items-center justify-end bg-surface-1">
+        <ScreenFrame
+            footerPadding="tight"
+            footer={
                 <Button variant="primary" size="md" onClick={handleRun} disabled={!canRun}>
                     Run sort <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                 </Button>
-            </footer>
-        </div>
+            }
+        >
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
+                <section>
+                    <Eyebrow className="mb-2.5">Source folder</Eyebrow>
+                    <Card className="px-4 py-3 flex items-center gap-3">
+                        <Folder className="h-4 w-4 text-fg-3" aria-hidden />
+                        <span
+                            className={`font-mono text-body flex-1 truncate ${source === null ? "text-fg-3" : ""}`}
+                        >
+                            {source?.root ?? EMPTY_PATH_LABEL}
+                        </span>
+                        {scanning ? (
+                            <span className="flex items-center gap-2 font-mono text-meta-sm text-fg-3">
+                                <Loader className="w-3 h-3 animate-spin" aria-hidden />
+                                Scanning…
+                            </span>
+                        ) : (
+                            source !== null && (
+                                <span className="font-mono text-meta-sm text-fg-3">
+                                    {source.fileCount.toLocaleString()} files {"·"}{" "}
+                                    {formatBytes(source.sizeBytes)}
+                                </span>
+                            )
+                        )}
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={onPickSource}
+                            disabled={scanning}
+                        >
+                            Browse{"…"}
+                        </Button>
+                    </Card>
+                    {source !== null && !scanning && <ScanBreakdown summary={source} />}
+                </section>
+
+                <section>
+                    <Eyebrow className="mb-2.5">Sorting rule</Eyebrow>
+                    <RuleSelector rules={rules} value={ruleId} onChange={setRuleId} />
+                </section>
+            </div>
+
+            <section>
+                <Eyebrow className="mb-2.5">Output preview</Eyebrow>
+                <Card className="px-4 py-4">
+                    <PreviewTree state={previewState} />
+                </Card>
+            </section>
+        </ScreenFrame>
     );
 }
 

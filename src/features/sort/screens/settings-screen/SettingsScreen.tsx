@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 
+import { ScreenFrame } from "../../components/screen-frame";
 import type { AppSettingsDto } from "../../../../types/ipc";
 import type { SettingsHookState } from "../../use-settings";
 
@@ -107,101 +108,99 @@ function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
         LANGUAGE_NATIVE_NAME[settings.uiLanguage] ?? settings.uiLanguage.toUpperCase();
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto px-7 py-7 space-y-5">
-                <Card className="overflow-hidden">
-                    <ul className="divide-y divide-divider-soft">
-                        <li className="px-4 py-3.5 flex items-center gap-4">
-                            <div className="flex-1">
-                                <div className="text-body">Remember last sort rule</div>
-                                <div className="text-meta text-fg-3 mt-0.5">
-                                    Start each session with the rule you used last time.
-                                </div>
+        <ScreenFrame bodyClassName="space-y-5">
+            <Card className="overflow-hidden">
+                <ul className="divide-y divide-divider-soft">
+                    <li className="px-4 py-3.5 flex items-center gap-4">
+                        <div className="flex-1">
+                            <div className="text-body">Remember last sort rule</div>
+                            <div className="text-meta text-fg-3 mt-0.5">
+                                Start each session with the rule you used last time.
                             </div>
-                            <Switch
-                                checked={settings.rememberLastSortRule}
-                                onCheckedChange={(value) => {
-                                    handleToggle("rememberLastSortRule", value);
-                                }}
-                            />
-                        </li>
-                        <li className="px-4 py-3.5 flex items-center gap-4">
-                            <div className="flex-1">
-                                <div className="text-body">Remember last destination</div>
-                                <div className="text-meta text-fg-3 mt-0.5">
-                                    Preselect the destination folder from the last sort.
-                                </div>
+                        </div>
+                        <Switch
+                            checked={settings.rememberLastSortRule}
+                            onCheckedChange={(value) => {
+                                handleToggle("rememberLastSortRule", value);
+                            }}
+                        />
+                    </li>
+                    <li className="px-4 py-3.5 flex items-center gap-4">
+                        <div className="flex-1">
+                            <div className="text-body">Remember last destination</div>
+                            <div className="text-meta text-fg-3 mt-0.5">
+                                Preselect the destination folder from the last sort.
                             </div>
-                            <Switch
-                                checked={settings.rememberLastDestination}
-                                onCheckedChange={(value) => {
-                                    handleToggle("rememberLastDestination", value);
-                                }}
-                            />
-                        </li>
-                    </ul>
-                </Card>
+                        </div>
+                        <Switch
+                            checked={settings.rememberLastDestination}
+                            onCheckedChange={(value) => {
+                                handleToggle("rememberLastDestination", value);
+                            }}
+                        />
+                    </li>
+                </ul>
+            </Card>
 
-                <Card className="overflow-hidden">
-                    <ul className="divide-y divide-divider-soft">
-                        <li className="px-4 py-3.5 flex items-center gap-4">
-                            <div className="flex-1">
-                                <div className="text-body">Unknown-date folder name</div>
-                                <div className="text-meta text-fg-3 mt-0.5">
-                                    Files without a capture date land here. Leave empty for the
-                                    locale default.
-                                </div>
+            <Card className="overflow-hidden">
+                <ul className="divide-y divide-divider-soft">
+                    <li className="px-4 py-3.5 flex items-center gap-4">
+                        <div className="flex-1">
+                            <div className="text-body">Unknown-date folder name</div>
+                            <div className="text-meta text-fg-3 mt-0.5">
+                                Files without a capture date land here. Leave empty for the locale
+                                default.
                             </div>
-                            <input
-                                type="text"
-                                value={folderDraft}
-                                placeholder={placeholder}
-                                maxLength={64}
-                                onChange={(event) => {
-                                    setFolderDraft(event.target.value);
-                                }}
-                                onBlur={handleFolderBlur}
-                                className="w-44 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-body outline-none focus:border-fg-2"
-                            />
-                        </li>
-                        <li className="px-4 py-3.5 flex items-center gap-4">
-                            <div className="flex-1">
-                                <div className="text-body">History retention (days)</div>
-                                <div className="text-meta text-fg-3 mt-0.5">
-                                    Undo logs older than this are cleared at startup. Min{" "}
-                                    {MIN_RETENTION_DAYS}, max {MAX_RETENTION_DAYS}.
-                                </div>
+                        </div>
+                        <input
+                            type="text"
+                            value={folderDraft}
+                            placeholder={placeholder}
+                            maxLength={64}
+                            onChange={(event) => {
+                                setFolderDraft(event.target.value);
+                            }}
+                            onBlur={handleFolderBlur}
+                            className="w-44 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-body outline-none focus:border-fg-2"
+                        />
+                    </li>
+                    <li className="px-4 py-3.5 flex items-center gap-4">
+                        <div className="flex-1">
+                            <div className="text-body">History retention (days)</div>
+                            <div className="text-meta text-fg-3 mt-0.5">
+                                Undo logs older than this are cleared at startup. Min{" "}
+                                {MIN_RETENTION_DAYS}, max {MAX_RETENTION_DAYS}.
                             </div>
-                            <input
-                                type="number"
-                                value={retentionDraft}
-                                min={MIN_RETENTION_DAYS}
-                                max={MAX_RETENTION_DAYS}
-                                onChange={(event) => {
-                                    setRetentionDraft(event.target.value);
-                                }}
-                                onBlur={handleRetentionBlur}
-                                className="w-24 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-body outline-none focus:border-fg-2"
-                            />
-                        </li>
-                        <li className="px-4 py-3.5 flex items-center gap-4">
-                            <div className="flex-1">
-                                <div className="text-body">Language</div>
-                                <div className="text-meta text-fg-3 mt-0.5">
-                                    Available in a follow-up release (EPIC-10).
-                                </div>
+                        </div>
+                        <input
+                            type="number"
+                            value={retentionDraft}
+                            min={MIN_RETENTION_DAYS}
+                            max={MAX_RETENTION_DAYS}
+                            onChange={(event) => {
+                                setRetentionDraft(event.target.value);
+                            }}
+                            onBlur={handleRetentionBlur}
+                            className="w-24 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-body outline-none focus:border-fg-2"
+                        />
+                    </li>
+                    <li className="px-4 py-3.5 flex items-center gap-4">
+                        <div className="flex-1">
+                            <div className="text-body">Language</div>
+                            <div className="text-meta text-fg-3 mt-0.5">
+                                Available in a follow-up release (EPIC-10).
                             </div>
-                            <div className="text-body text-fg-3">{languageDisplay}</div>
-                        </li>
-                    </ul>
-                </Card>
+                        </div>
+                        <div className="text-body text-fg-3">{languageDisplay}</div>
+                    </li>
+                </ul>
+            </Card>
 
-                <div className="flex justify-end">
-                    <Button variant="secondary" size="sm" onClick={() => void onReset()}>
-                        Reset to defaults
-                    </Button>
-                </div>
+            <div className="flex justify-end">
+                <Button variant="secondary" size="sm" onClick={() => void onReset()}>
+                    Reset to defaults
+                </Button>
             </div>
-        </div>
+        </ScreenFrame>
     );
 }
