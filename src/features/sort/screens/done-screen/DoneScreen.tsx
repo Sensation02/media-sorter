@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+import { ICON } from "../../constants/icons";
 import { Stat } from "../../components/stat";
 import { StatusDot } from "../../components/status-dot";
 import type { SortDone } from "../../../../types/sort";
+
+const Undo = ICON.undo;
 
 export type DoneScreenProps = {
     done: SortDone;
@@ -60,7 +63,7 @@ export function DoneScreen({ done, onUndo, onNewSort, onReveal }: DoneScreenProp
 
             <footer className="h-12 border-t border-border px-5 flex items-center gap-2 bg-surface-1">
                 <Button variant="ghost" size="md" onClick={onUndo}>
-                    {"\u21b6"} Undo last sort
+                    <Undo className="h-3.5 w-3.5" aria-hidden /> Undo last sort
                 </Button>
                 <div className="ml-auto flex gap-2">
                     <Button variant="secondary" size="md" onClick={onReveal}>

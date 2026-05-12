@@ -1,9 +1,12 @@
+import { ICON } from "../../constants/icons";
 import type { SortTreeNode } from "../../../../types/sort";
 
 export type TreeProps = {
     nodes: SortTreeNode[];
     depth?: number;
 };
+
+const ChevronRight = ICON.chevronRight;
 
 export function Tree({ nodes, depth = 0 }: TreeProps) {
     const className = depth === 0 ? "font-mono text-caption space-y-0.5" : "ml-4 space-y-0.5";
@@ -17,9 +20,13 @@ export function Tree({ nodes, depth = 0 }: TreeProps) {
                             node.muted ? "text-fg-3" : ""
                         }`}
                     >
-                        <span className="text-fg-3">
-                            {node.kind === "folder" ? "\u25b8" : "\u00b7"}
-                        </span>
+                        {node.kind === "folder" ? (
+                            <ChevronRight className="h-3 w-3 text-fg-3" aria-hidden />
+                        ) : (
+                            <span className="text-fg-3" aria-hidden>
+                                \u00b7
+                            </span>
+                        )}
                         <span className={node.muted ? "text-fg-3" : "text-fg-1"}>{node.label}</span>
                     </div>
                     {node.kind === "folder" && node.children.length > 0 && (

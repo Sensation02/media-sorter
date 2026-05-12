@@ -3,9 +3,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+import { ICON } from "../../constants/icons";
 import type { HistoryItemDto, JobId } from "../../../../types/ipc";
 import type { HistoryHookState } from "../../use-history";
 import { formatHistoryDate, formatHistoryDuration } from "../../history-format";
+
+const Undo = ICON.undo;
 
 const REVERTABLE_STATES = new Set(["done", "cancelled", "failed"]);
 
@@ -87,7 +90,13 @@ function HistoryRow({ job, nowMs, onRevert }: HistoryRowProps) {
                     onRevert(job.id);
                 }}
             >
-                {job.state === "reverted" ? "Reverted" : `↶ Revert`}
+                {job.state === "reverted" ? (
+                    "Reverted"
+                ) : (
+                    <>
+                        <Undo className="h-3.5 w-3.5" aria-hidden /> Revert
+                    </>
+                )}
             </Button>
         </li>
     );

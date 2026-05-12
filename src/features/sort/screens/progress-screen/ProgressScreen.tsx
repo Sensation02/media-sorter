@@ -2,8 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
+import { ICON } from "../../constants/icons";
 import { Stat } from "../../components/stat";
 import type { SortLogLevel, SortProgress } from "../../../../types/sort";
+
+const ChevronRight = ICON.chevronRight;
 
 const PERCENT_BASE = 100;
 
@@ -40,7 +43,7 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
                     </div>
                     <Progress value={pct} />
                     <div className="mt-3 flex items-center gap-2 font-mono text-meta text-fg-2">
-                        <span className="text-primary">{"\u25b8"}</span>
+                        <ChevronRight className="h-3 w-3 text-primary" aria-hidden />
                         <span className="truncate">{progress.current}</span>
                     </div>
                 </section>

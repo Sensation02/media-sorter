@@ -1,9 +1,9 @@
-import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+import { ICON } from "../../constants/icons";
 import type { ScanId, ScanSummary, SortPlan } from "../../../../types/ipc";
 import type { SortRule, SortRuleId } from "../../../../types/sort";
 import { formatBytes } from "../../../../utils";
@@ -11,6 +11,10 @@ import { PreviewTree } from "../../components/preview-tree";
 import { RuleSelector } from "../../components/rule-selector";
 import { ScanBreakdown } from "../../components/scan-breakdown";
 import { usePlanPreview } from "../../use-plan-preview";
+
+const Loader = ICON.loader;
+const Folder = ICON.folder;
+const ArrowRight = ICON.arrowRight;
 
 const EMPTY_PATH_LABEL = "No folder selected";
 
@@ -68,7 +72,7 @@ export function SetupScreen({
                             Source folder
                         </div>
                         <Card className="px-4 py-3 flex items-center gap-3">
-                            <span className="text-fg-3 text-base">{"▣"}</span>
+                            <Folder className="h-4 w-4 text-fg-3" aria-hidden />
                             <span
                                 className={`font-mono text-body flex-1 truncate ${source === null ? "text-fg-3" : ""}`}
                             >
@@ -76,8 +80,8 @@ export function SetupScreen({
                             </span>
                             {scanning ? (
                                 <span className="flex items-center gap-2 font-mono text-meta-sm text-fg-3">
-                                    <Loader2 className="w-3 h-3 animate-spin" />
-                                    Scanning{"…"}
+                                    <Loader className="w-3 h-3 animate-spin" aria-hidden />
+                                    Scanning…
                                 </span>
                             ) : (
                                 source !== null && (
@@ -119,7 +123,7 @@ export function SetupScreen({
 
             <footer className="h-12 border-t border-border px-2.5 flex items-center justify-end bg-surface-1">
                 <Button variant="primary" size="md" onClick={handleRun} disabled={!canRun}>
-                    Run sort {"→"}
+                    Run sort <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                 </Button>
             </footer>
         </div>

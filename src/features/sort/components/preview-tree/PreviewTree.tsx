@@ -1,8 +1,9 @@
-import { Loader2 } from "lucide-react";
-
+import { ICON } from "../../constants/icons";
 import { Tree } from "../tree";
 import { planToTree } from "../../plan-tree";
 import type { PlanPreviewState } from "../../use-plan-preview";
+
+const Loader = ICON.loader;
 
 const IDLE_LABEL = "Pick a source folder to see the layout";
 const LOADING_LABEL = "Building preview…";
@@ -21,7 +22,7 @@ export function PreviewTree({ state }: PreviewTreeProps) {
         return (
             <Placeholder>
                 <span className="flex items-center gap-2">
-                    <Loader2 className="w-3 h-3 animate-spin" />
+                    <Loader className="w-3 h-3 animate-spin" aria-hidden />
                     {LOADING_LABEL}
                 </span>
             </Placeholder>
