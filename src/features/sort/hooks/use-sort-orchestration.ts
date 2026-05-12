@@ -8,7 +8,7 @@ import { SORT_SCREEN, type SortScreen } from "../constants/screens";
 import { revertSummary } from "../mappers/revert-summary";
 import { useHistory, type HistoryHook } from "./use-history";
 import { useSettings, type SettingsHook } from "./use-settings";
-import { useSortJob, type UseSortJobResult } from "./use-sort-job";
+import { JOB_STATUS, useSortJob, type UseSortJobResult } from "./use-sort-job";
 
 const IMMUTABLE_SORT_FLAGS: SortSettingsDto = {
     copy: false,
@@ -156,7 +156,7 @@ export function useSortOrchestration(): SortOrchestration {
     }, []);
 
     useEffect(() => {
-        if (job.status !== "error" || job.error === null) {
+        if (job.status !== JOB_STATUS.error || job.error === null) {
             return;
         }
 

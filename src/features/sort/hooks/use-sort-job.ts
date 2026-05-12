@@ -14,7 +14,14 @@ import type { SortLogEntry, SortLogLevel, SortProgress } from "../../../types/so
 import { ELAPSED_TICK_MS, SUBSCRIBE_ERROR_MESSAGE, UI_LOG_BUFFER_CAP } from "../constants/sort-job";
 import { formatElapsed, formatEta } from "../mappers/progress-format";
 
-export type SortJobStatus = "idle" | "running" | "done" | "error";
+export const JOB_STATUS = {
+    idle: "idle",
+    running: "running",
+    done: "done",
+    error: "error",
+} as const;
+
+export type SortJobStatus = (typeof JOB_STATUS)[keyof typeof JOB_STATUS];
 
 export type UseSortJobResult = {
     progress: SortProgress;
@@ -46,7 +53,7 @@ const IDLE_STATE: SortJobState = {
     startedAtMs: null,
     snapshot: null,
     log: [],
-    status: "idle",
+    status: JOB_STATUS.idle,
     done: null,
     error: null,
 };
@@ -142,7 +149,7 @@ export function useSortJob(jobId: JobId | null): UseSortJobResult {
     }, [jobId]);
 
     useEffect(() => {
-        if (state.status !== "running") {
+        if (state.status !== JOB_STATUS.running) {
             return;
         }
 
@@ -177,7 +184,7 @@ function reduce(state: SortJobState, action: SortJobAction): SortJobState {
                 ...IDLE_STATE,
                 jobId: action.jobId,
                 startedAtMs: action.startedAtMs,
-                status: "running",
+                status: JOB_STATUS.running,
             };
         case "progress":
             if (state.jobId !== action.jobId) {
@@ -202,7 +209,7 @@ function reduce(state: SortJobState, action: SortJobAction): SortJobState {
                 return state;
             }
 
-            return { ...state, error: action.payload, status: "error" };
+            return { ...state, error: action.payload, status: JOB_STATUS.error };
     }
 }
 
@@ -252,5 +259,5 @@ function toProgress(
 }
 
 function statusFromDone(payload: SortDoneDto): SortJobStatus {
-    return payload.state === "failed" ? "error" : "done";
+    return payload.state === "failed" ? JOB_STATUS.error : JOB_STATUS.done;
 }
