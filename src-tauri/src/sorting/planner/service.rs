@@ -11,6 +11,7 @@ pub fn build_plan(
     rule: SortRuleId,
     files: &[MediaFile],
     metadata: &[Metadata],
+    unknown_folder: &str,
 ) -> AppResult<SortPlan> {
     if files.len() != metadata.len() {
         return Err(AppError::validation(format!(
@@ -26,7 +27,16 @@ pub fn build_plan(
     let items = files
         .iter()
         .zip(metadata.iter())
-        .map(|(file, meta)| build_item(root, strategy.as_ref(), file, meta, &mut geo))
+        .map(|(file, meta)| {
+            build_item(
+                root,
+                strategy.as_ref(),
+                file,
+                meta,
+                &mut geo,
+                unknown_folder,
+            )
+        })
         .collect();
 
     Ok(SortPlan {
@@ -51,8 +61,9 @@ fn build_item(
     file: &MediaFile,
     metadata: &Metadata,
     geo: &mut GeoCache,
+    unknown_folder: &str,
 ) -> SortPlanItem {
-    let segments = strategy.folder_segments(file, metadata, geo);
+    let segments = strategy.folder_segments(file, metadata, geo, unknown_folder);
     let target = build_target(root, &segments, &file.path);
 
     SortPlanItem {
@@ -116,14 +127,21 @@ mod tests {
         let files = vec![photo("IMG_001.jpg")];
         let metadata: Vec<Metadata> = vec![];
 
-        let result = build_plan(Path::new("/dest"), SortRuleId::ByDate, &files, &metadata);
+        let result = build_plan(
+            Path::new("/dest"),
+            SortRuleId::ByDate,
+            &files,
+            &metadata,
+            "Misc",
+        );
 
         assert!(matches!(result, Err(AppError::Validation { .. })));
     }
 
     #[test]
     fn build_plan_handles_empty_input() {
-        let plan = build_plan(Path::new("/dest"), SortRuleId::ByDate, &[], &[]).expect("plan");
+        let plan =
+            build_plan(Path::new("/dest"), SortRuleId::ByDate, &[], &[], "Misc").expect("plan");
 
         assert_eq!(plan.rule, SortRuleId::ByDate);
         assert_eq!(plan.root, PathBuf::from("/dest"));
@@ -150,6 +168,7 @@ mod tests {
             SortRuleId::ByDateAndPlace,
             &files,
             &metadata,
+            "Misc",
         )
         .expect("plan");
 
@@ -169,8 +188,14 @@ mod tests {
         let files = vec![photo("IMG_001.jpg")];
         let metadata = vec![Metadata::default()];
 
-        let plan =
-            build_plan(Path::new("/dest"), SortRuleId::ByDate, &files, &metadata).expect("plan");
+        let plan = build_plan(
+            Path::new("/dest"),
+            SortRuleId::ByDate,
+            &files,
+            &metadata,
+            "Misc",
+        )
+        .expect("plan");
 
         assert_eq!(plan.items[0].source, PathBuf::from("/src/IMG_001.jpg"));
     }
@@ -189,10 +214,36 @@ mod tests {
             },
         ];
 
-        let plan =
-            build_plan(Path::new("/dest"), SortRuleId::ByDate, &files, &metadata).expect("plan");
+        let plan = build_plan(
+            Path::new("/dest"),
+            SortRuleId::ByDate,
+            &files,
+            &metadata,
+            "Misc",
+        )
+        .expect("plan");
 
         assert_eq!(plan.items[0].target, plan.items[1].target);
+    }
+
+    #[test]
+    fn build_plan_uses_passed_unknown_folder_when_capture_missing() {
+        let files = vec![photo("IMG_001.jpg")];
+        let metadata = vec![Metadata::default()];
+
+        let plan = build_plan(
+            Path::new("/dest"),
+            SortRuleId::ByDate,
+            &files,
+            &metadata,
+            "Без дати",
+        )
+        .expect("plan");
+
+        assert_eq!(
+            plan.items[0].target,
+            PathBuf::from("/dest/Без дати/IMG_001.jpg")
+        );
     }
 
     #[test]
@@ -224,6 +275,7 @@ mod tests {
             SortRuleId::ByDateAndPlace,
             &files,
             &metadata,
+            "Misc",
         )
         .expect("plan");
 
