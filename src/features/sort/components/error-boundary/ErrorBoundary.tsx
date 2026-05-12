@@ -1,6 +1,8 @@
 import { Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 
+import { Button } from "@/components/ui/button";
+
 import { Eyebrow } from "../eyebrow";
 
 export type ErrorBoundaryProps = {
@@ -40,13 +42,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                         <p className="text-body text-fg-2 font-mono break-words">
                             {this.state.error.message}
                         </p>
-                        <button
-                            type="button"
-                            onClick={this.reset}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-primary text-primary-foreground text-body-sm font-medium hover:opacity-85 transition-colors"
-                        >
+                        <Button variant="primary" size="md" onClick={this.reset}>
                             Try again
-                        </button>
+                        </Button>
                     </div>
                 </div>
             );
