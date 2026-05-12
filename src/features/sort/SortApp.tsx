@@ -179,7 +179,7 @@ export function SortApp() {
     const subtitle = TOOLBAR_SUBTITLE[effectiveScreen];
 
     return (
-        <div className="h-screen w-screen flex bg-[var(--color-bg)] text-[var(--color-fg-1)] antialiased">
+        <div className="h-screen w-screen flex bg-bg text-fg-1 antialiased">
             <Sidebar active={screen} onNavigate={setScreen} />
             <div className="flex-1 flex flex-col min-w-0">
                 <Toolbar

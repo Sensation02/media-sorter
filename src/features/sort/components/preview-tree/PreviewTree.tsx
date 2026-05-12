@@ -9,45 +9,45 @@ const LOADING_LABEL = "Building preview…";
 const EMPTY_LABEL = "No media files matched the chosen rule";
 
 export type PreviewTreeProps = {
-  state: PlanPreviewState;
+    state: PlanPreviewState;
 };
 
 export function PreviewTree({ state }: PreviewTreeProps) {
-  if (state.status === "idle") {
-    return <Placeholder>{IDLE_LABEL}</Placeholder>;
-  }
+    if (state.status === "idle") {
+        return <Placeholder>{IDLE_LABEL}</Placeholder>;
+    }
 
-  if (state.status === "loading") {
-    return (
-      <Placeholder>
-        <span className="flex items-center gap-2">
-          <Loader2 className="w-3 h-3 animate-spin" />
-          {LOADING_LABEL}
-        </span>
-      </Placeholder>
-    );
-  }
+    if (state.status === "loading") {
+        return (
+            <Placeholder>
+                <span className="flex items-center gap-2">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    {LOADING_LABEL}
+                </span>
+            </Placeholder>
+        );
+    }
 
-  if (state.status === "error") {
-    return <Placeholder tone="error">{state.error.title}</Placeholder>;
-  }
+    if (state.status === "error") {
+        return <Placeholder tone="error">{state.error.title}</Placeholder>;
+    }
 
-  const nodes = planToTree(state.plan);
+    const nodes = planToTree(state.plan);
 
-  if (nodes.length === 0) {
-    return <Placeholder>{EMPTY_LABEL}</Placeholder>;
-  }
+    if (nodes.length === 0) {
+        return <Placeholder>{EMPTY_LABEL}</Placeholder>;
+    }
 
-  return <Tree nodes={nodes} />;
+    return <Tree nodes={nodes} />;
 }
 
 type PlaceholderProps = {
-  tone?: "neutral" | "error";
-  children: React.ReactNode;
+    tone?: "neutral" | "error";
+    children: React.ReactNode;
 };
 
 function Placeholder({ tone = "neutral", children }: PlaceholderProps) {
-  const color = tone === "error" ? "text-[var(--color-warning)]" : "text-[var(--color-fg-3)]";
+    const color = tone === "error" ? "text-warning" : "text-fg-3";
 
-  return <div className={`font-mono text-[12px] ${color}`}>{children}</div>;
+    return <div className={`font-mono text-[12px] ${color}`}>{children}</div>;
 }
