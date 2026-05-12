@@ -8,7 +8,7 @@ export type RuleSelectorProps = {
 
 export function RuleSelector({ rules, value, onChange }: RuleSelectorProps) {
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
       {rules.map((rule) => {
         const isActive = rule.id === value;
         return (

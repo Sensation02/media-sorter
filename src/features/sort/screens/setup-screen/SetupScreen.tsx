@@ -62,42 +62,44 @@ export function SetupScreen({
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto px-7 py-7 space-y-7">
-        <section>
-          <div className="font-mono text-[10.5px] uppercase tracking-[1px] text-[var(--color-fg-3)] mb-2.5">
-            Source folder
-          </div>
-          <Card className="px-4 py-3 flex items-center gap-3">
-            <span className="text-[var(--color-fg-3)] text-base">{"▣"}</span>
-            <span
-              className={`font-mono text-[13px] flex-1 truncate ${source === null ? "text-[var(--color-fg-3)]" : ""}`}
-            >
-              {source?.root ?? EMPTY_PATH_LABEL}
-            </span>
-            {scanning ? (
-              <span className="flex items-center gap-2 font-mono text-[11px] text-[var(--color-fg-3)]">
-                <Loader2 className="w-3 h-3 animate-spin" />
-                Scanning{"…"}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
+          <section>
+            <div className="font-mono text-[10.5px] uppercase tracking-[1px] text-[var(--color-fg-3)] mb-2.5">
+              Source folder
+            </div>
+            <Card className="px-4 py-3 flex items-center gap-3">
+              <span className="text-[var(--color-fg-3)] text-base">{"▣"}</span>
+              <span
+                className={`font-mono text-[13px] flex-1 truncate ${source === null ? "text-[var(--color-fg-3)]" : ""}`}
+              >
+                {source?.root ?? EMPTY_PATH_LABEL}
               </span>
-            ) : (
-              source !== null && (
-                <span className="font-mono text-[11px] text-[var(--color-fg-3)]">
-                  {source.fileCount.toLocaleString()} files {"·"} {formatBytes(source.sizeBytes)}
+              {scanning ? (
+                <span className="flex items-center gap-2 font-mono text-[11px] text-[var(--color-fg-3)]">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Scanning{"…"}
                 </span>
-              )
-            )}
-            <Button variant="ghost" size="sm" onClick={onPickSource} disabled={scanning}>
-              Browse{"…"}
-            </Button>
-          </Card>
-          {source !== null && !scanning && <ScanBreakdown summary={source} />}
-        </section>
+              ) : (
+                source !== null && (
+                  <span className="font-mono text-[11px] text-[var(--color-fg-3)]">
+                    {source.fileCount.toLocaleString()} files {"·"} {formatBytes(source.sizeBytes)}
+                  </span>
+                )
+              )}
+              <Button variant="ghost" size="sm" onClick={onPickSource} disabled={scanning}>
+                Browse{"…"}
+              </Button>
+            </Card>
+            {source !== null && !scanning && <ScanBreakdown summary={source} />}
+          </section>
 
-        <section>
-          <div className="font-mono text-[10.5px] uppercase tracking-[1px] text-[var(--color-fg-3)] mb-2.5">
-            Sorting rule
-          </div>
-          <RuleSelector rules={rules} value={ruleId} onChange={setRuleId} />
-        </section>
+          <section>
+            <div className="font-mono text-[10.5px] uppercase tracking-[1px] text-[var(--color-fg-3)] mb-2.5">
+              Sorting rule
+            </div>
+            <RuleSelector rules={rules} value={ruleId} onChange={setRuleId} />
+          </section>
+        </div>
 
         <section>
           <div className="font-mono text-[10.5px] uppercase tracking-[1px] text-[var(--color-fg-3)] mb-2.5">
@@ -109,11 +111,7 @@ export function SetupScreen({
         </section>
       </div>
 
-      <footer className="h-12 border-t border-[var(--color-border)] px-5 flex items-center gap-2 bg-[var(--color-surface-1)]">
-        <Button variant="ghost" size="md">
-          Save preset
-        </Button>
-        <div className="ml-auto" />
+      <footer className="h-12 border-t border-[var(--color-border)] px-5 flex items-center justify-end bg-[var(--color-surface-1)]">
         <Button variant="primary" size="md" onClick={handleRun} disabled={!canRun}>
           Run sort {"→"}
         </Button>
