@@ -45,6 +45,12 @@ export type SortStatus = "idle" | "running" | "paused" | "warning" | "error";
 
 export type { SortScreen } from "../features/sort/constants/screens";
 
+const SORT_RULE_IDS = new Set<SortRuleId>(["by-date-and-place", "by-date", "by-type", "by-camera"]);
+
+export function isSortRuleId(value: string): value is SortRuleId {
+    return SORT_RULE_IDS.has(value as SortRuleId);
+}
+
 export type SortSettings = {
     copy: boolean;
     skipDuplicates: boolean;
