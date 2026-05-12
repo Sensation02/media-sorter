@@ -357,6 +357,12 @@ When a task is split into multiple PRs:
 - After verification → self-improvement loop (re-read, fix typos, document learnings)
 - After self-improvement → deliver all work as PRs
 
+**Session control (`/bg`):**
+
+- `/bg` — detach the session for autonomous mechanical work (Strategy C/D parallel teams after IPC contract is locked, self-improvement loop, discovery research, additive implementations).
+- Forbidden in `/bg`: `git push`, `gh pr create`, `gh pr merge`, writes to user media, `pnpm tauri dev`, `tauri.conf.json` / `capabilities/*.json` edits, `STATUS.md` transitions. Article I and Article VI apply.
+- Full rules and Pre-`/bg` checklist: `docs/workflow/background-execution.md`.
+
 ## Self-Improvement Loop
 
 After implementation completes, BEFORE delivery:

@@ -114,6 +114,11 @@ For each PR defined in the plan:
 - Deliver PRs in the order defined in the plan
 - If PR #2 depends on PR #1 at runtime but not at build time — note it in PR description
 
+**`/bg` between PRs:** `/bg` is allowed for mechanical between-PR work (rebase
+onto fresh staging, self-improvement loop, drafting PR bodies in scratch files)
+but MUST stop before `git push` or `gh pr create` — these are attended actions
+per Constitution Article VI. Full rules: `docs/workflow/background-execution.md`.
+
 ### Review-then-Fix Loop
 
 ```
