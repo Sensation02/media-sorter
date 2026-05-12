@@ -43,7 +43,7 @@ export function HistoryScreen({ state, onRevert, onRetry, nowMs }: HistoryScreen
         <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto px-7 py-7">
                 <Card className="overflow-hidden">
-                    <ul className="divide-y divide-[var(--color-divider-soft)]">
+                    <ul className="divide-y divide-divider-soft">
                         {state.items.map((job) => (
                             <HistoryRow
                                 key={job.id}

@@ -9,7 +9,7 @@ export type ToolbarProps = {
 
 export function Toolbar({ jobName, status = "idle", subtitle }: ToolbarProps) {
     return (
-        <header className="h-12 px-5 border-b border-[var(--color-border)] flex items-center gap-3 bg-surface-1">
+        <header className="h-12 px-5 border-b border-border flex items-center gap-3 bg-surface-1">
             <StatusDot status={status} />
             <div className="flex items-baseline gap-2">
                 <h1 className="text-[14px] font-medium tracking-[-0.1px]">{jobName}</h1>

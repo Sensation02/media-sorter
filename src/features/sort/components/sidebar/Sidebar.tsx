@@ -19,7 +19,7 @@ export type SidebarProps = {
 
 export function Sidebar({ active, onNavigate }: SidebarProps) {
     return (
-        <aside className="w-14 bg-surface-1 border-r border-[var(--color-border)] flex flex-col items-center py-4 gap-1">
+        <aside className="w-14 bg-surface-1 border-r border-border flex flex-col items-center py-4 gap-1">
             {ITEMS.map((item) => (
                 <button
                     key={item.id}

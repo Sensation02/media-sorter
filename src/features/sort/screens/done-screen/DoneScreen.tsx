@@ -42,7 +42,7 @@ export function DoneScreen({ done, onUndo, onNewSort, onReveal }: DoneScreenProp
                 </section>
 
                 {hasSkipped && (
-                    <Card className="px-4 py-3 border-[var(--color-warning)]/20 bg-warning/5">
+                    <Card className="px-4 py-3 border-warning/20 bg-warning/5">
                         <div className="flex items-baseline gap-3">
                             <span className="font-mono text-[10.5px] uppercase tracking-[0.8px] text-warning">
                                 {done.skipped} skipped
@@ -58,7 +58,7 @@ export function DoneScreen({ done, onUndo, onNewSort, onReveal }: DoneScreenProp
                 )}
             </div>
 
-            <footer className="h-12 border-t border-[var(--color-border)] px-5 flex items-center gap-2 bg-surface-1">
+            <footer className="h-12 border-t border-border px-5 flex items-center gap-2 bg-surface-1">
                 <Button variant="ghost" size="md" onClick={onUndo}>
                     {"\u21b6"} Undo last sort
                 </Button>

@@ -117,7 +117,7 @@ export function SetupScreen({
                 </section>
             </div>
 
-            <footer className="h-12 border-t border-[var(--color-border)] px-2.5 flex items-center justify-end bg-surface-1">
+            <footer className="h-12 border-t border-border px-2.5 flex items-center justify-end bg-surface-1">
                 <Button variant="primary" size="md" onClick={handleRun} disabled={!canRun}>
                     Run sort {"→"}
                 </Button>

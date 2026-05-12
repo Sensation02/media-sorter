@@ -61,7 +61,7 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
                         Activity log
                     </div>
                     <Card className="overflow-hidden">
-                        <ul className="divide-y divide-[var(--color-divider-soft)]">
+                        <ul className="divide-y divide-divider-soft">
                             {progress.log.map((entry, index) => (
                                 <li
                                     key={`${entry.time}-${index}`}
@@ -87,7 +87,7 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
                 </section>
             </div>
 
-            <footer className="h-12 border-t border-[var(--color-border)] px-5 flex items-center gap-2 bg-surface-1">
+            <footer className="h-12 border-t border-border px-5 flex items-center gap-2 bg-surface-1">
                 <Button variant="cautious" size="md" onClick={onCancel}>
                     Cancel sort
                 </Button>

@@ -9,10 +9,10 @@ export function Switch({ className, ...props }: ComponentProps<typeof SwitchPrim
             data-slot="switch"
             className={cn(
                 "peer relative inline-flex h-[17px] w-[30px] shrink-0 cursor-pointer items-center rounded-full transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 "disabled:cursor-not-allowed disabled:opacity-50",
                 "data-[state=checked]:bg-primary",
-                "data-[state=unchecked]:bg-surface-2 data-[state=unchecked]:border data-[state=unchecked]:border-[var(--color-border-strong)]",
+                "data-[state=unchecked]:bg-surface-2 data-[state=unchecked]:border data-[state=unchecked]:border-border-strong",
                 className,
             )}
             {...props}

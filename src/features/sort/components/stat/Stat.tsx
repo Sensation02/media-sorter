@@ -15,7 +15,7 @@ const TONES: Record<StatTone, string> = {
 
 export function Stat({ label, value, tone = "default" }: StatProps) {
     return (
-        <div className="flex-1 bg-surface-1 border border-[var(--color-border)] rounded-md px-3 py-2.5">
+        <div className="flex-1 bg-surface-1 border border-border rounded-md px-3 py-2.5">
             <div className="font-mono text-[10px] uppercase tracking-[0.6px] text-fg-3">
                 {label}
             </div>

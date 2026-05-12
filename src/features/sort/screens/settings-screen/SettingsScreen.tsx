@@ -110,7 +110,7 @@ function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
         <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto px-7 py-7 space-y-5">
                 <Card className="overflow-hidden">
-                    <ul className="divide-y divide-[var(--color-divider-soft)]">
+                    <ul className="divide-y divide-divider-soft">
                         <li className="px-4 py-3.5 flex items-center gap-4">
                             <div className="flex-1">
                                 <div className="text-[13px]">Remember last sort rule</div>
@@ -143,7 +143,7 @@ function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                 </Card>
 
                 <Card className="overflow-hidden">
-                    <ul className="divide-y divide-[var(--color-divider-soft)]">
+                    <ul className="divide-y divide-divider-soft">
                         <li className="px-4 py-3.5 flex items-center gap-4">
                             <div className="flex-1">
                                 <div className="text-[13px]">Unknown-date folder name</div>
@@ -161,7 +161,7 @@ function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                                     setFolderDraft(event.target.value);
                                 }}
                                 onBlur={handleFolderBlur}
-                                className="w-44 rounded-md border border-[var(--color-divider-soft)] bg-surface-2 px-2.5 py-1.5 text-[13px] outline-none focus:border-[var(--color-fg-2)]"
+                                className="w-44 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-[13px] outline-none focus:border-fg-2"
                             />
                         </li>
                         <li className="px-4 py-3.5 flex items-center gap-4">
@@ -181,7 +181,7 @@ function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                                     setRetentionDraft(event.target.value);
                                 }}
                                 onBlur={handleRetentionBlur}
-                                className="w-24 rounded-md border border-[var(--color-divider-soft)] bg-surface-2 px-2.5 py-1.5 text-[13px] outline-none focus:border-[var(--color-fg-2)]"
+                                className="w-24 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-[13px] outline-none focus:border-fg-2"
                             />
                         </li>
                         <li className="px-4 py-3.5 flex items-center gap-4">
