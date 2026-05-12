@@ -3,10 +3,11 @@ use std::sync::Arc;
 
 use tauri::{AppHandle, Manager};
 
-use crate::domain::{HistoryItem, JobId, SortPlan};
+use crate::domain::{HistoryItem, JobId, SessionMemo, SortPlan};
 use crate::error::{AppError, AppResult};
 use crate::history::summary::write_summary;
 use crate::scanning::repository::get_session;
+use crate::settings;
 use crate::utils::now_ms;
 
 use super::dto::{JobIdRequest, PreviewPlanRequest, StartSortRequest, StartSortResponse};
@@ -32,6 +33,11 @@ pub async fn start_sort(app: AppHandle, request: StartSortRequest) -> AppResult<
     let summary_path = summary_path(&jobs_dir, job_id);
     let destination_root = request.plan.root.clone();
     let dry_run = request.dry_run;
+
+    if !dry_run {
+        write_session_memo(&app, request.plan.rule, &destination_root);
+    }
+
     let control = job::register(job_id)?;
     let tauri_emitter: Arc<dyn ProgressEmitter> = Arc::new(TauriEmitter::new(app.clone()));
     let emitter: Arc<dyn ProgressEmitter> =
@@ -98,6 +104,17 @@ fn log_path(jobs_dir: &Path, job_id: JobId) -> PathBuf {
 
 fn summary_path(jobs_dir: &Path, job_id: JobId) -> PathBuf {
     jobs_dir.join(format!("{job_id}.summary.json"))
+}
+
+fn write_session_memo(app: &AppHandle, rule: crate::domain::SortRuleId, destination: &Path) {
+    let memo = SessionMemo {
+        last_sort_rule: Some(rule),
+        last_destination: Some(destination.to_path_buf()),
+    };
+
+    if let Err(err) = settings::service::set_memo(app, memo) {
+        eprintln!("[settings] could not persist session memo: {err}");
+    }
 }
 
 fn build_history_item(outcome: &JobOutcome, destination_root: &Path) -> HistoryItem {
