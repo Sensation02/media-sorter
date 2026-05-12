@@ -5,7 +5,7 @@
 > places in the same PR — see `docs/workflow/delivery.md`, section
 > _Epic Status Tracking_.
 
-**Last reviewed:** 2026-05-12 (EPIC-09 closed)
+**Last reviewed:** 2026-05-12 (EPIC-12 closed)
 
 ## Status legend
 
@@ -29,7 +29,7 @@
 | [EPIC-09](epic-09-settings.md)             | 🟢 complete    | Settings persistence and defaults                                               |
 | [EPIC-10](epic-10-i18n.md)                 | ⚪ pending     | Internationalization (UA / EN folder names, UI strings)                         |
 | [EPIC-11](epic-11-ui-polish.md)            | 🟡 in progress | UI polish — rolling backlog of post-review visual tweaks                        |
-| [EPIC-12](epic-12-frontend-foundations.md) | 🟡 in progress | Frontend foundations refactor (tokens, icons, decomposition, dead-code cleanup) |
+| [EPIC-12](epic-12-frontend-foundations.md) | 🟢 complete    | Frontend foundations refactor (tokens, icons, decomposition, dead-code cleanup) |
 
 ## Active follow-ups
 

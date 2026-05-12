@@ -1,6 +1,6 @@
 # EPIC-12. Frontend Foundations Refactor
 
-**Status:** 🟡 in progress
+**Status:** 🟢 complete
 **Branch:** `refactor/epic-12-frontend-foundations`
 **Owner:** Vasyl Kaminskyi
 **Last updated:** 2026-05-12
@@ -91,31 +91,31 @@ The drift (`text-[10px]` vs `text-[10.5px]`, `tracking-[0.6px]` vs `tracking-[1p
 The PR ships as a single branch with the following atomic commits. Each maps to one task in the implementation plan at `docs/superpowers/plans/2026-05-12-frontend-foundations.md`.
 
 - [x] **C01** — `docs(workflow): add AP-003..AP-013 to anti-patterns` (already landed pre-execution)
-- [ ] **C02** — `docs(specs): add EPIC-12 spec and update STATUS`
-- [ ] **C03** — `style(theme): add typography and geometry tokens to @theme inline`
-- [ ] **C04** — `refactor(ui): replace bg/text-[var(--color-X)] with @theme classes`
-- [ ] **C05** — `refactor(ui): replace border/divide/ring-[var(--color-X)] with @theme classes`
-- [ ] **C06** — `refactor(ui): replace text-[Npx] arbitrary sizes with typography tokens`
-- [ ] **C07** — `refactor(ui): replace switch/select/progress geometry magic with tokens`
-- [ ] **C08** — `feat(ui): add lucide-react icon manifest at constants/icons.tsx`
-- [ ] **C09** — `refactor(ui): migrate Sidebar icons to lucide-react and type as LucideIcon`
-- [ ] **C10** — `refactor(ui): migrate Tree, Preview, Progress, Setup, Done, History icons to lucide-react`
-- [ ] **C11** — `feat(ui): add Eyebrow primitive with default/warning/destructive tones`
-- [ ] **C12** — `feat(ui): add ScreenFrame primitive for screen + footer composition`
-- [ ] **C13** — `refactor(ui): replace 8 eyebrow copies with <Eyebrow>; fix Stat drift`
-- [ ] **C14** — `refactor(ui): replace 4 screen frame copies with <ScreenFrame>`
-- [ ] **C15** — `refactor(ui): split PreviewTree co-located Placeholder into its own file`
-- [ ] **C16** — `refactor(ui): split HistoryScreen co-located components`
-- [ ] **C17** — `refactor(ui): split SettingsScreen co-located SettingsForm`
-- [ ] **C18** — `feat(sort): centralize screens constants (SORT_SCREEN, TOOLBAR_*, SIDEBAR_ITEMS)`
-- [ ] **C19** — `refactor(sort): extract resolveScreen, toSortDone, revertSummary, preferredDefaultRule`
-- [ ] **C20** — `refactor(sort): extract useSortOrchestration hook from SortApp`
-- [ ] **C21** — `feat(sort): add isSortRuleId type guard; remove cast in RuleSelector`
-- [ ] **C22** — `refactor(ui): replace inline <button> in ErrorBoundary with <Button>`
-- [ ] **C23** — `chore(sort): delete dead code (CardHeader/Content/Footer, DEFAULT_SETTINGS, SortSettings, components barrel)`
-- [ ] **C24** — `refactor(sort): rename LEGACY_SORT_SETTINGS to IMMUTABLE_SORT_FLAGS`
-- [ ] **C25** — `refactor(sort): move hooks/mappers/constants into subdirectories; update imports`
-- [ ] **C26** — `chore(specs): mark EPIC-12 done; update STATUS`
+- [x] **C02** — `docs(specs): add EPIC-12 spec and update STATUS`
+- [x] **C03** — `style(theme): add typography and geometry tokens to @theme inline`
+- [x] **C04** — `refactor(ui): replace bg/text-[var(--color-X)] with @theme classes`
+- [x] **C05** — `refactor(ui): replace border/divide/ring-[var(--color-X)] with @theme classes`
+- [x] **C06** — `refactor(ui): replace text-[Npx] arbitrary sizes with typography tokens`
+- [x] **C07** — `refactor(ui): replace switch/select/progress geometry magic with tokens`
+- [x] **C08** — `feat(ui): add lucide-react icon manifest at constants/icons.tsx`
+- [x] **C09** — `refactor(ui): migrate Sidebar icons to lucide-react and type as LucideIcon`
+- [x] **C10** — `refactor(ui): migrate Tree, Preview, Progress, Setup, Done, History icons to lucide-react`
+- [x] **C11** — `feat(ui): add Eyebrow primitive with default/warning/destructive tones`
+- [x] **C12** — `feat(ui): add ScreenFrame primitive for screen + footer composition`
+- [x] **C13** — `refactor(ui): replace 8 eyebrow copies with <Eyebrow>; fix Stat drift`
+- [x] **C14** — `refactor(ui): replace 4 screen frame copies with <ScreenFrame>`
+- [x] **C15** — `refactor(ui): split PreviewTree co-located Placeholder into its own file`
+- [x] **C16** — `refactor(ui): split HistoryScreen co-located components`
+- [x] **C17** — `refactor(ui): split SettingsScreen co-located SettingsForm`
+- [x] **C18** — `feat(sort): centralize screens constants (SORT_SCREEN, TOOLBAR_*, SIDEBAR_ITEMS)`
+- [x] **C19** — `refactor(sort): extract resolveScreen, toSortDone, revertSummary, preferredDefaultRule`
+- [x] **C20** — `refactor(sort): extract useSortOrchestration hook from SortApp`
+- [x] **C21** — `feat(sort): add isSortRuleId type guard; remove cast in RuleSelector`
+- [x] **C22** — `refactor(ui): replace inline <button> in ErrorBoundary with <Button>`
+- [x] **C23** — `chore(sort): delete dead code (CardHeader/Content/Footer, DEFAULT_SETTINGS, SortSettings, components barrel)`
+- [x] **C24** — `refactor(sort): rename LEGACY_SORT_SETTINGS to IMMUTABLE_SORT_FLAGS`
+- [x] **C25** — `refactor(sort): move hooks/mappers/constants into subdirectories; update imports`
+- [x] **C26** — `chore(specs): mark EPIC-12 done; update STATUS`
 
 ## Out of scope
 
