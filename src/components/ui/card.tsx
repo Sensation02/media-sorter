@@ -11,21 +11,3 @@ export function Card({ className, ...props }: ComponentProps<"div">) {
         />
     );
 }
-
-export function CardHeader({ className, ...props }: ComponentProps<"div">) {
-    return <div data-slot="card-header" className={cn("px-4 py-3", className)} {...props} />;
-}
-
-export function CardContent({ className, ...props }: ComponentProps<"div">) {
-    return <div data-slot="card-content" className={cn("px-4 py-3", className)} {...props} />;
-}
-
-export function CardFooter({ className, ...props }: ComponentProps<"div">) {
-    return (
-        <div
-            data-slot="card-footer"
-            className={cn("px-4 py-3 flex items-center", className)}
-            {...props}
-        />
-    );
-}
