@@ -21,14 +21,14 @@ export function DoneScreen({ done, onUndo, onNewSort, onReveal }: DoneScreenProp
                 <section>
                     <div className="flex items-center gap-2.5 mb-3">
                         <StatusDot status="idle" />
-                        <span className="font-mono text-[10.5px] uppercase tracking-[1px] text-fg-2">
+                        <span className="font-mono text-eyebrow uppercase tracking-eyebrow text-fg-2">
                             Completed in {done.duration}
                         </span>
                     </div>
-                    <h1 className="text-[28px] font-medium tracking-[-0.6px] leading-tight">
+                    <h1 className="text-display font-medium tracking-[-0.6px] leading-tight">
                         {done.moved.toLocaleString()} files in their place.
                     </h1>
-                    <p className="text-[13px] text-fg-2 mt-2 font-mono">{done.destination}</p>
+                    <p className="text-body text-fg-2 mt-2 font-mono">{done.destination}</p>
                 </section>
 
                 <section className="flex gap-3">
@@ -44,10 +44,10 @@ export function DoneScreen({ done, onUndo, onNewSort, onReveal }: DoneScreenProp
                 {hasSkipped && (
                     <Card className="px-4 py-3 border-warning/20 bg-warning/5">
                         <div className="flex items-baseline gap-3">
-                            <span className="font-mono text-[10.5px] uppercase tracking-[0.8px] text-warning">
+                            <span className="font-mono text-eyebrow uppercase tracking-eyebrow text-warning">
                                 {done.skipped} skipped
                             </span>
-                            <span className="text-[12.5px] text-fg-2">
+                            <span className="text-body-sm text-fg-2">
                                 Files without EXIF date were left in place.
                             </span>
                             <Button variant="ghost" size="sm" className="ml-auto">

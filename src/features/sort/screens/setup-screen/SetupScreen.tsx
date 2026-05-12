@@ -64,24 +64,24 @@ export function SetupScreen({
             <div className="flex-1 overflow-y-auto px-7 py-7 space-y-7">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
                     <section>
-                        <div className="font-mono text-[10.5px] uppercase tracking-[1px] text-fg-3 mb-2.5">
+                        <div className="font-mono text-eyebrow uppercase tracking-eyebrow text-fg-3 mb-2.5">
                             Source folder
                         </div>
                         <Card className="px-4 py-3 flex items-center gap-3">
                             <span className="text-fg-3 text-base">{"▣"}</span>
                             <span
-                                className={`font-mono text-[13px] flex-1 truncate ${source === null ? "text-fg-3" : ""}`}
+                                className={`font-mono text-body flex-1 truncate ${source === null ? "text-fg-3" : ""}`}
                             >
                                 {source?.root ?? EMPTY_PATH_LABEL}
                             </span>
                             {scanning ? (
-                                <span className="flex items-center gap-2 font-mono text-[11px] text-fg-3">
+                                <span className="flex items-center gap-2 font-mono text-meta-sm text-fg-3">
                                     <Loader2 className="w-3 h-3 animate-spin" />
                                     Scanning{"…"}
                                 </span>
                             ) : (
                                 source !== null && (
-                                    <span className="font-mono text-[11px] text-fg-3">
+                                    <span className="font-mono text-meta-sm text-fg-3">
                                         {source.fileCount.toLocaleString()} files {"·"}{" "}
                                         {formatBytes(source.sizeBytes)}
                                     </span>
@@ -100,7 +100,7 @@ export function SetupScreen({
                     </section>
 
                     <section>
-                        <div className="font-mono text-[10.5px] uppercase tracking-[1px] text-fg-3 mb-2.5">
+                        <div className="font-mono text-eyebrow uppercase tracking-eyebrow text-fg-3 mb-2.5">
                             Sorting rule
                         </div>
                         <RuleSelector rules={rules} value={ruleId} onChange={setRuleId} />
@@ -108,7 +108,7 @@ export function SetupScreen({
                 </div>
 
                 <section>
-                    <div className="font-mono text-[10.5px] uppercase tracking-[1px] text-fg-3 mb-2.5">
+                    <div className="font-mono text-eyebrow uppercase tracking-eyebrow text-fg-3 mb-2.5">
                         Output preview
                     </div>
                     <Card className="px-4 py-4">

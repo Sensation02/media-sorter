@@ -28,18 +28,18 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
             <div className="flex-1 overflow-y-auto px-7 py-7 space-y-6">
                 <section>
                     <div className="flex items-baseline gap-3 mb-3">
-                        <span className="font-mono text-[28px] font-medium tracking-[-1px]">
+                        <span className="font-mono text-display font-medium tracking-display">
                             {progress.processed.toLocaleString()}
                         </span>
-                        <span className="font-mono text-[14px] text-fg-3">
+                        <span className="font-mono text-title text-fg-3">
                             / {progress.total.toLocaleString()}
                         </span>
-                        <span className="ml-auto font-mono text-[11.5px] text-fg-2">
+                        <span className="ml-auto font-mono text-meta text-fg-2">
                             {pct}% {"\u00b7"} {progress.remaining}
                         </span>
                     </div>
                     <Progress value={pct} />
-                    <div className="mt-3 flex items-center gap-2 font-mono text-[11.5px] text-fg-2">
+                    <div className="mt-3 flex items-center gap-2 font-mono text-meta text-fg-2">
                         <span className="text-primary">{"\u25b8"}</span>
                         <span className="truncate">{progress.current}</span>
                     </div>
@@ -57,7 +57,7 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
                 </section>
 
                 <section>
-                    <div className="font-mono text-[10.5px] uppercase tracking-[1px] text-fg-3 mb-2.5">
+                    <div className="font-mono text-eyebrow uppercase tracking-eyebrow text-fg-3 mb-2.5">
                         Activity log
                     </div>
                     <Card className="overflow-hidden">
@@ -65,7 +65,7 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
                             {progress.log.map((entry, index) => (
                                 <li
                                     key={`${entry.time}-${index}`}
-                                    className="px-4 py-2 flex items-baseline gap-3 font-mono text-[12px]"
+                                    className="px-4 py-2 flex items-baseline gap-3 font-mono text-caption"
                                 >
                                     <span className="text-fg-3 tabular-nums w-[58px] flex-shrink-0">
                                         {entry.time}

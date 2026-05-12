@@ -49,5 +49,5 @@ type PlaceholderProps = {
 function Placeholder({ tone = "neutral", children }: PlaceholderProps) {
     const color = tone === "error" ? "text-warning" : "text-fg-3";
 
-    return <div className={`font-mono text-[12px] ${color}`}>{children}</div>;
+    return <div className={`font-mono text-caption ${color}`}>{children}</div>;
 }

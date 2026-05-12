@@ -16,7 +16,7 @@ export function SelectTrigger({
         <SelectPrimitive.Trigger
             data-slot="select-trigger"
             className={cn(
-                "flex h-13.5 w-full items-center justify-between gap-2 rounded-lg border border-border bg-surface-1 px-4 py-3 text-left text-[13px] transition-colors",
+                "flex h-13.5 w-full items-center justify-between gap-2 rounded-lg border border-border bg-surface-1 px-4 py-3 text-left text-body transition-colors",
                 "hover:border-border-strong",
                 "focus-visible:border-primary/40 focus-visible:outline-none",
                 "data-[state=open]:border-primary/40 data-[state=open]:bg-surface-2",
@@ -74,10 +74,10 @@ export function SelectItem({ className, children, description, ...props }: Selec
             {...props}
         >
             <SelectPrimitive.ItemText asChild>
-                <span className="text-[12.5px] font-medium">{children}</span>
+                <span className="text-body-sm font-medium">{children}</span>
             </SelectPrimitive.ItemText>
             {description && (
-                <span className="mt-1 font-mono text-[10.5px] text-fg-3">{description}</span>
+                <span className="mt-1 font-mono text-eyebrow text-fg-3">{description}</span>
             )}
             <SelectPrimitive.ItemIndicator className="absolute right-3 top-2.5">
                 <Check className="h-3.5 w-3.5 text-primary" />

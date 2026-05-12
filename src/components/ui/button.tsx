@@ -15,9 +15,9 @@ const buttonVariants = cva(
                 cautious: "border border-warning/30 text-warning hover:bg-warning/10",
             },
             size: {
-                sm: "h-7 px-2.5 text-[11.5px] rounded-[5px]",
-                md: "h-8 px-3.5 text-[12.5px] rounded-md",
-                lg: "h-10 px-5 text-[13px] rounded-md",
+                sm: "h-7 px-2.5 text-meta rounded-[5px]",
+                md: "h-8 px-3.5 text-body-sm rounded-md",
+                lg: "h-10 px-5 text-body rounded-md",
             },
         },
         defaultVariants: {

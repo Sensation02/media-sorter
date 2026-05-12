@@ -30,7 +30,7 @@ const MAX_RETENTION_DAYS = 365;
 export function SettingsScreen({ state, onSave, onReset, onRetry }: SettingsScreenProps) {
     if (state.status === "loading") {
         return (
-            <div className="flex h-full items-center justify-center text-[13px] text-fg-3">
+            <div className="flex h-full items-center justify-center text-body text-fg-3">
                 Loading settings…
             </div>
         );
@@ -39,8 +39,8 @@ export function SettingsScreen({ state, onSave, onReset, onRetry }: SettingsScre
     if (state.status === "error") {
         return (
             <div className="flex h-full flex-col items-center justify-center gap-3">
-                <div className="text-[13px]">{state.error.title}</div>
-                <div className="text-[11.5px] text-fg-3">{state.error.detail}</div>
+                <div className="text-body">{state.error.title}</div>
+                <div className="text-meta text-fg-3">{state.error.detail}</div>
                 <Button variant="ghost" size="sm" onClick={onRetry}>
                     Retry
                 </Button>
@@ -113,8 +113,8 @@ function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                     <ul className="divide-y divide-divider-soft">
                         <li className="px-4 py-3.5 flex items-center gap-4">
                             <div className="flex-1">
-                                <div className="text-[13px]">Remember last sort rule</div>
-                                <div className="text-[11.5px] text-fg-3 mt-0.5">
+                                <div className="text-body">Remember last sort rule</div>
+                                <div className="text-meta text-fg-3 mt-0.5">
                                     Start each session with the rule you used last time.
                                 </div>
                             </div>
@@ -127,8 +127,8 @@ function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                         </li>
                         <li className="px-4 py-3.5 flex items-center gap-4">
                             <div className="flex-1">
-                                <div className="text-[13px]">Remember last destination</div>
-                                <div className="text-[11.5px] text-fg-3 mt-0.5">
+                                <div className="text-body">Remember last destination</div>
+                                <div className="text-meta text-fg-3 mt-0.5">
                                     Preselect the destination folder from the last sort.
                                 </div>
                             </div>
@@ -146,8 +146,8 @@ function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                     <ul className="divide-y divide-divider-soft">
                         <li className="px-4 py-3.5 flex items-center gap-4">
                             <div className="flex-1">
-                                <div className="text-[13px]">Unknown-date folder name</div>
-                                <div className="text-[11.5px] text-fg-3 mt-0.5">
+                                <div className="text-body">Unknown-date folder name</div>
+                                <div className="text-meta text-fg-3 mt-0.5">
                                     Files without a capture date land here. Leave empty for the
                                     locale default.
                                 </div>
@@ -161,13 +161,13 @@ function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                                     setFolderDraft(event.target.value);
                                 }}
                                 onBlur={handleFolderBlur}
-                                className="w-44 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-[13px] outline-none focus:border-fg-2"
+                                className="w-44 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-body outline-none focus:border-fg-2"
                             />
                         </li>
                         <li className="px-4 py-3.5 flex items-center gap-4">
                             <div className="flex-1">
-                                <div className="text-[13px]">History retention (days)</div>
-                                <div className="text-[11.5px] text-fg-3 mt-0.5">
+                                <div className="text-body">History retention (days)</div>
+                                <div className="text-meta text-fg-3 mt-0.5">
                                     Undo logs older than this are cleared at startup. Min{" "}
                                     {MIN_RETENTION_DAYS}, max {MAX_RETENTION_DAYS}.
                                 </div>
@@ -181,17 +181,17 @@ function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                                     setRetentionDraft(event.target.value);
                                 }}
                                 onBlur={handleRetentionBlur}
-                                className="w-24 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-[13px] outline-none focus:border-fg-2"
+                                className="w-24 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-body outline-none focus:border-fg-2"
                             />
                         </li>
                         <li className="px-4 py-3.5 flex items-center gap-4">
                             <div className="flex-1">
-                                <div className="text-[13px]">Language</div>
-                                <div className="text-[11.5px] text-fg-3 mt-0.5">
+                                <div className="text-body">Language</div>
+                                <div className="text-meta text-fg-3 mt-0.5">
                                     Available in a follow-up release (EPIC-10).
                                 </div>
                             </div>
-                            <div className="text-[13px] text-fg-3">{languageDisplay}</div>
+                            <div className="text-body text-fg-3">{languageDisplay}</div>
                         </li>
                     </ul>
                 </Card>

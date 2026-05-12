@@ -34,7 +34,7 @@ export function Sidebar({ active, onNavigate }: SidebarProps) {
                             : "text-fg-3 hover:text-fg-1 hover:bg-hover-soft"
                     }`}
                 >
-                    <span className="text-[22px]">{item.icon}</span>
+                    <span className="text-icon-lg">{item.icon}</span>
                 </button>
             ))}
         </aside>

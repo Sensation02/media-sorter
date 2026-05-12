@@ -8,7 +8,7 @@ export function ScanBreakdown({ summary }: ScanBreakdownProps) {
     const { photos, raw, videos } = summary.byKind;
 
     return (
-        <div className="mt-2 px-4 flex items-center gap-4 font-mono text-[11px] text-fg-3">
+        <div className="mt-2 px-4 flex items-center gap-4 font-mono text-meta-sm text-fg-3">
             <span>
                 Photos {"·"} <span className="text-fg-2">{photos.toLocaleString()}</span>
             </span>

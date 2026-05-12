@@ -6,7 +6,7 @@ export type TreeProps = {
 };
 
 export function Tree({ nodes, depth = 0 }: TreeProps) {
-    const className = depth === 0 ? "font-mono text-[12px] space-y-0.5" : "ml-4 space-y-0.5";
+    const className = depth === 0 ? "font-mono text-caption space-y-0.5" : "ml-4 space-y-0.5";
 
     return (
         <ul className={className}>
