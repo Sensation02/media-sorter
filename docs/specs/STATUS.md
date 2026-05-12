@@ -16,19 +16,20 @@
 
 ## Epics
 
-| Epic                                  | Status      | Goal                                                         |
-| ------------------------------------- | ----------- | ------------------------------------------------------------ |
-| [EPIC-01](epic-01-foundation.md)      | 🟢 complete | Domain types, IPC contract, capabilities scaffolding         |
-| [EPIC-02](epic-02-source-scan.md)     | 🟢 complete | Source folder selection and flat scanning                    |
-| [EPIC-03](epic-03-metadata.md)        | 🟢 complete | EXIF / video metadata extraction (date, GPS, camera)         |
-| [EPIC-04](epic-04-geo.md)             | 🟢 complete | Offline reverse geocoding (GPS → city / place name)          |
-| [EPIC-05](epic-05-planner.md)         | 🟢 complete | Sort planner — turn a rule + scan into a move plan           |
-| [EPIC-06](epic-06-fs-operations.md)   | 🟢 complete | Filesystem operations (move / copy with undo log)            |
-| [EPIC-07](epic-07-history-undo.md)    | 🟢 complete | Job history and undo / revert                                |
-| [EPIC-08](epic-08-progress-events.md) | 🟢 complete | Progress events (Tauri event channel from sort runner to UI) |
-| [EPIC-09](epic-09-settings.md)        | 🟢 complete | Settings persistence and defaults                            |
-| [EPIC-10](epic-10-i18n.md)            | ⚪ pending  | Internationalization (UA / EN folder names, UI strings)      |
-| [EPIC-11](epic-11-ui-polish.md)       | 🟡 in progress | UI polish — rolling backlog of post-review visual tweaks  |
+| Epic                                       | Status         | Goal                                                                            |
+| ------------------------------------------ | -------------- | ------------------------------------------------------------------------------- |
+| [EPIC-01](epic-01-foundation.md)           | 🟢 complete    | Domain types, IPC contract, capabilities scaffolding                            |
+| [EPIC-02](epic-02-source-scan.md)          | 🟢 complete    | Source folder selection and flat scanning                                       |
+| [EPIC-03](epic-03-metadata.md)             | 🟢 complete    | EXIF / video metadata extraction (date, GPS, camera)                            |
+| [EPIC-04](epic-04-geo.md)                  | 🟢 complete    | Offline reverse geocoding (GPS → city / place name)                             |
+| [EPIC-05](epic-05-planner.md)              | 🟢 complete    | Sort planner — turn a rule + scan into a move plan                              |
+| [EPIC-06](epic-06-fs-operations.md)        | 🟢 complete    | Filesystem operations (move / copy with undo log)                               |
+| [EPIC-07](epic-07-history-undo.md)         | 🟢 complete    | Job history and undo / revert                                                   |
+| [EPIC-08](epic-08-progress-events.md)      | 🟢 complete    | Progress events (Tauri event channel from sort runner to UI)                    |
+| [EPIC-09](epic-09-settings.md)             | 🟢 complete    | Settings persistence and defaults                                               |
+| [EPIC-10](epic-10-i18n.md)                 | ⚪ pending     | Internationalization (UA / EN folder names, UI strings)                         |
+| [EPIC-11](epic-11-ui-polish.md)            | 🟡 in progress | UI polish — rolling backlog of post-review visual tweaks                        |
+| [EPIC-12](epic-12-frontend-foundations.md) | 🟡 in progress | Frontend foundations refactor (tokens, icons, decomposition, dead-code cleanup) |
 
 ## Active follow-ups
 
