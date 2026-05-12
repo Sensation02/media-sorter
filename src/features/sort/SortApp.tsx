@@ -4,16 +4,7 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 
 import { cancelSort, pauseSort, pickSourceDir, scanSource, startSort } from "../../ipc";
-import type {
-    JobId,
-    ScanId,
-    ScanSummary,
-    SortDoneDto,
-    SortPlan,
-    SortRuleId,
-    SortSettingsDto,
-} from "../../types/ipc";
-import type { SortDone } from "../../types/sort";
+import type { JobId, ScanId, ScanSummary, SortPlan, SortSettingsDto } from "../../types/ipc";
 import { toAppErrorView } from "../../utils";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Sidebar } from "./components/sidebar";
@@ -26,11 +17,14 @@ import {
     TOOLBAR_TITLE,
     type SortScreen,
 } from "./constants/screens";
-import { formatHistoryDuration } from "./history-format";
+import { preferredDefaultRule } from "./mappers/preferred-rule";
+import { resolveScreen } from "./mappers/resolve-screen";
+import { revertSummary } from "./mappers/revert-summary";
+import { toSortDone } from "./mappers/to-sort-done";
 import { DoneScreen, HistoryScreen, ProgressScreen, SettingsScreen, SetupScreen } from "./screens";
 import { useHistory } from "./use-history";
-import { useSettings, type SettingsHook } from "./use-settings";
-import { useSortJob, type SortJobStatus } from "./use-sort-job";
+import { useSettings } from "./use-settings";
+import { useSortJob } from "./use-sort-job";
 
 const IMMUTABLE_SORT_FLAGS: SortSettingsDto = {
     copy: false,
@@ -240,56 +234,4 @@ export function SortApp() {
             <Toaster />
         </div>
     );
-}
-
-function resolveScreen(screen: SortScreen, jobStatus: SortJobStatus): SortScreen {
-    if (screen !== SORT_SCREEN.progress) {
-        return screen;
-    }
-
-    if (jobStatus === "done") {
-        return SORT_SCREEN.done;
-    }
-
-    if (jobStatus === "error") {
-        return SORT_SCREEN.setup;
-    }
-
-    return SORT_SCREEN.progress;
-}
-
-function preferredDefaultRule(state: SettingsHook["state"]): SortRuleId | null {
-    if (state.status !== "success") {
-        return null;
-    }
-
-    const { rememberLastSortRule, memo } = state.settings;
-
-    if (!rememberLastSortRule) {
-        return null;
-    }
-
-    return memo.lastSortRule;
-}
-
-function toSortDone(dto: SortDoneDto): SortDone {
-    return {
-        duration: formatHistoryDuration(dto.durationMs),
-        moved: dto.moved,
-        skipped: dto.skipped,
-        folders: dto.folders,
-        destination: dto.destination,
-    };
-}
-
-function revertSummary(restored: number, skipped: number, errors: number): string {
-    const parts = [`${restored} restored`];
-    if (skipped > 0) {
-        parts.push(`${skipped} skipped`);
-    }
-    if (errors > 0) {
-        parts.push(`${errors} errors`);
-    }
-
-    return parts.join(", ");
 }
