@@ -63,8 +63,8 @@ export function SortApp() {
                                 }}
                                 onNewSort={handlers.resetForNewSort}
                                 onReveal={() => {
-                                    // TODO(IPC): wire to a Tauri command that reveals the destination in Finder/Explorer
-                                    console.warn("[SortApp] onReveal not yet wired to Tauri");
+                                    // EPIC-13: wire to plugin-opener revealItemInDir (docs/specs/epic-13-reveal-in-finder.md)
+                                    console.warn("[SortApp] onReveal not yet wired — see EPIC-13");
                                 }}
                             />
                         )}
