@@ -1,4 +1,3 @@
-import { StatusDot } from "../status-dot";
 import type { SortScreen } from "../../../../types/sort";
 
 export type SidebarItem = {
@@ -8,9 +7,9 @@ export type SidebarItem = {
 };
 
 const ITEMS: SidebarItem[] = [
-  { id: "setup", label: "New sort", icon: "\u2726" },
-  { id: "history", label: "History", icon: "\u25f7" },
-  { id: "settings", label: "Settings", icon: "\u2699" },
+  { id: "setup", label: "New sort", icon: "✦" },
+  { id: "history", label: "History", icon: "◷" },
+  { id: "settings", label: "Settings", icon: "⚙" },
 ];
 
 export type SidebarProps = {
@@ -21,9 +20,6 @@ export type SidebarProps = {
 export function Sidebar({ active, onNavigate }: SidebarProps) {
   return (
     <aside className="w-14 bg-[var(--color-surface-1)] border-r border-[var(--color-border)] flex flex-col items-center py-4 gap-1">
-      <div className="mb-3 flex items-center justify-center w-8 h-8">
-        <StatusDot status="idle" />
-      </div>
       {ITEMS.map((item) => (
         <button
           key={item.id}
@@ -38,7 +34,7 @@ export function Sidebar({ active, onNavigate }: SidebarProps) {
               : "text-[var(--color-fg-3)] hover:text-[var(--color-fg-1)] hover:bg-[var(--color-hover-soft)]"
           }`}
         >
-          <span className="text-[15px]">{item.icon}</span>
+          <span className="text-[19px]">{item.icon}</span>
         </button>
       ))}
     </aside>

@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - App now remembers your last session: when "Remember last sort rule" is on, the sort rule from your previous run is preselected on launch; when "Remember last destination" is on, the app re-scans the last folder you sorted automatically so you can jump straight into another pass
 - Files without a capture date now land in a folder whose name comes from your settings (or the locale default — "Misc" in English, "Різне" in Ukrainian); changing the Unknown-date folder name in Settings is reflected the next time you preview a sort
 - History retention now runs automatically at app startup: undo logs and summaries older than your configured window are removed so the app data folder doesn't grow indefinitely; active jobs and entries with future timestamps are never touched (Article I — user files are sacred)
+- Sort setup now shows the source folder and the sorting rule side-by-side on wide windows, and the sorting rule cards lay out in a balanced 2×2 grid instead of leaving one card alone on its own row
+- App window title now reads `sort-my-media`, matching the in-app branding (the duplicate label in the workbench header is gone)
+- Sidebar navigation icons are larger and easier to scan
+- Removed two non-functional UI elements from the sort setup: a "Save preset" button that did nothing, and an always-green decorative status dot at the top of the sidebar (the toolbar status dot remains and continues to reflect real sort status)
 
 ### Bug Fixes
 

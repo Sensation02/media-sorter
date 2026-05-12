@@ -28,6 +28,7 @@
 | [EPIC-08](epic-08-progress-events.md) | 🟢 complete | Progress events (Tauri event channel from sort runner to UI) |
 | [EPIC-09](epic-09-settings.md)        | 🟢 complete | Settings persistence and defaults                            |
 | [EPIC-10](epic-10-i18n.md)            | ⚪ pending  | Internationalization (UA / EN folder names, UI strings)      |
+| [EPIC-11](epic-11-ui-polish.md)       | 🟡 in progress | UI polish — rolling backlog of post-review visual tweaks  |
 
 ## Active follow-ups
 

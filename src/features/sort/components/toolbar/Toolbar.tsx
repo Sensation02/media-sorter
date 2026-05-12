@@ -20,9 +20,6 @@ export function Toolbar({ jobName, status = "idle", subtitle }: ToolbarProps) {
           </span>
         )}
       </div>
-      <div className="ml-auto font-mono text-[10.5px] uppercase tracking-[0.8px] text-[var(--color-fg-3)]">
-        sort-my-media
-      </div>
     </header>
   );
 }
