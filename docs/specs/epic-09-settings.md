@@ -1,7 +1,7 @@
 # EPIC-09. Settings (persisted)
 
 **Status:** 🟡 in progress
-**Branch:** `feat/epic-09-settings-*` (5 PRs — PR2 of 5 in flight, stacked on PR1)
+**Branch:** `feat/epic-09-settings-*` (5 PRs — PR3 of 5 in flight)
 **Depends on:** EPIC-01, EPIC-05, EPIC-06, EPIC-07
 **Last updated:** 2026-05-12
 
@@ -323,10 +323,12 @@ export type SessionMemoDto = {
 
 ### PR3 — memo behaviour
 
-- [ ] `sorting/command.rs::start_sort` writes memo on entry
-- [ ] `SortApp` prefills from memo when corresponding toggle is on
-- [ ] Unit test for the prefill logic
-- [ ] CHANGELOG entry
+- [x] `sorting/command.rs::start_sort` writes memo on entry (best-effort, skips on dry-run; failure logs and does not abort the sort)
+- [x] `SortApp` prefills `SetupScreen.defaultRuleId` from `memo.lastSortRule` when `rememberLastSortRule` is on
+- [x] `SortApp` auto-scans `memo.lastDestination` once on first successful settings hydration when `rememberLastDestination` is on (gated by `prefillTriggeredRef`)
+- [x] `SetupScreen` accepts optional `defaultRuleId`; render-phase reset pattern keeps local `ruleId` in sync if the prop changes
+- [~] Unit tests for prefill — `resolveDefaultRule` is a trivial helper (skipped per CLAUDE.md §IX); backend memo write requires Tauri `mock_app` (deferred). Manual smoke-test in PR description.
+- [x] CHANGELOG entry
 
 ### PR4 — planner behaviour
 
