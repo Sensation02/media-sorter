@@ -23,7 +23,7 @@ const unlistenLog = vi.fn();
 const unlistenDone = vi.fn();
 const unlistenError = vi.fn();
 
-vi.mock("../../ipc", () => ({
+vi.mock("../../../ipc", () => ({
     onSortProgress: (handler: ProgressHandler) => {
         progressHandlers.push(handler);
         return Promise.resolve(unlistenProgress);

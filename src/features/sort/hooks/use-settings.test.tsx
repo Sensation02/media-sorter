@@ -7,7 +7,7 @@ const getSettingsMock = vi.fn<() => Promise<AppSettingsDto>>();
 const setSettingsMock = vi.fn<(next: AppSettingsDto) => Promise<AppSettingsDto>>();
 const resetSettingsMock = vi.fn<() => Promise<AppSettingsDto>>();
 
-vi.mock("../../ipc", () => ({
+vi.mock("../../../ipc", () => ({
     getSettings: () => getSettingsMock(),
     setSettings: (next: AppSettingsDto) => setSettingsMock(next),
     resetSettings: () => resetSettingsMock(),

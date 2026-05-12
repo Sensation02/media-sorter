@@ -6,7 +6,7 @@ import type { HistoryItemDto, RevertOutcomeDto } from "../../../types/ipc";
 const listHistoryMock = vi.fn<() => Promise<HistoryItemDto[]>>();
 const revertJobMock = vi.fn<(jobId: number) => Promise<RevertOutcomeDto>>();
 
-vi.mock("../../ipc", () => ({
+vi.mock("../../../ipc", () => ({
     listHistory: () => listHistoryMock(),
     revertJob: (jobId: number) => revertJobMock(jobId),
 }));
