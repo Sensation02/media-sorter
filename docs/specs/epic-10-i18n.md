@@ -1,7 +1,7 @@
 # EPIC-10. Localization (UI + folder names)
 
 **Status:** ⚪ pending
-**Depends on:** EPIC-01
+**Depends on:** EPIC-01, EPIC-09 (provides the `i18n::registry` module and persisted `uiLanguage` field)
 
 ## Goal
 
@@ -17,7 +17,7 @@ The UI is currently English. The project description requires Ukrainian month na
 
 ## Open questions
 
-1. **Default UI language:** detect from the OS, fixed UA, or fixed EN?
+1. ~~**Default UI language:** detect from the OS, fixed UA, or fixed EN?~~ **Resolved in EPIC-09:** OS auto-detect via `sys_locale` on first launch, fall back to `en` if the subtag is not in the language registry. Persisted on first launch and only changed by explicit user action thereafter.
 2. **Month names on disk** when the UI language changes:
    - always follow the UI (change the language and new files go into different folders),
    - fixed to UA (per the project requirements),

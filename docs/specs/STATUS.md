@@ -5,7 +5,7 @@
 > places in the same PR — see `docs/workflow/delivery.md`, section
 > _Epic Status Tracking_.
 
-**Last reviewed:** 2026-05-10
+**Last reviewed:** 2026-05-12
 
 ## Status legend
 
@@ -26,7 +26,7 @@
 | [EPIC-06](epic-06-fs-operations.md)   | 🟢 complete | Filesystem operations (move / copy with undo log)            |
 | [EPIC-07](epic-07-history-undo.md)    | 🟢 complete | Job history and undo / revert                                |
 | [EPIC-08](epic-08-progress-events.md) | 🟢 complete | Progress events (Tauri event channel from sort runner to UI) |
-| [EPIC-09](epic-09-settings.md)        | ⚪ pending  | Settings persistence and defaults                            |
+| [EPIC-09](epic-09-settings.md)        | 🟡 in progress | Settings persistence and defaults                         |
 | [EPIC-10](epic-10-i18n.md)            | ⚪ pending  | Internationalization (UA / EN folder names, UI strings)      |
 
 ## Active follow-ups
