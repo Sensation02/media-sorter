@@ -1,3 +1,5 @@
+use tauri::Manager;
+
 pub mod domain;
 pub mod error;
 pub mod geo;
@@ -16,7 +18,10 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
-            settings::hydrate(app.handle())?;
+            let handle = app.handle();
+            let app_settings = settings::hydrate(handle)?;
+            collect_history_retention(handle, app_settings.history_retention_days);
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -37,4 +42,19 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+fn collect_history_retention<R: tauri::Runtime>(app: &tauri::AppHandle<R>, retention_days: u16) {
+    let Ok(data_dir) = app.path().app_data_dir() else {
+        return;
+    };
+
+    let jobs_dir = data_dir.join("jobs");
+    let now_ms = utils::now_ms();
+
+    match history::gc::collect(&jobs_dir, retention_days, now_ms) {
+        Ok(0) => {}
+        Ok(count) => eprintln!("[history] gc removed {count} expired job(s)"),
+        Err(err) => eprintln!("[history] gc failed: {err}"),
+    }
 }

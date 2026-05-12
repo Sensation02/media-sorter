@@ -1,7 +1,7 @@
 # EPIC-09. Settings (persisted)
 
-**Status:** 🟡 in progress
-**Branch:** `feat/epic-09-settings-*` (5 PRs — PR4 of 5 in flight)
+**Status:** 🟢 complete
+**Branch:** `feat/epic-09-settings-*` (5 PRs — all merged)
 **Depends on:** EPIC-01, EPIC-05, EPIC-06, EPIC-07
 **Last updated:** 2026-05-12
 
@@ -339,12 +339,12 @@ export type SessionMemoDto = {
 
 ### PR5 — history retention
 
-- [ ] `history::service::gc(retention_days)` walker
-- [ ] Article I safety guards (path scope, future-mtime, head-of-job)
-- [ ] `app::setup` invocation
-- [ ] Frozen-clock integration test
-- [ ] STATUS.md row → 🟢 complete
-- [ ] CHANGELOG entry
+- [x] `history::gc::collect(jobs_dir, retention_days, now_ms)` walker — pure logic, takes clock as parameter for testability
+- [x] Article I safety guards: scope (only iterates `jobs_dir`), future-mtime (`job_id > now_ms` → refuse), active job (`job::is_active(job_id)` → refuse). New helper `sorting::runner::job::is_active`.
+- [x] `lib.rs` setup wires `collect_history_retention(handle, settings.history_retention_days)` after `settings::hydrate`. Failures and counts logged, never abort startup.
+- [x] Six frozen-clock unit tests in tmpdir cover: missing dir, expired pair, recent kept, future-mtime refused, active job skipped, junk files ignored
+- [x] STATUS.md row → 🟢 complete
+- [x] CHANGELOG entry
 
 ## Out of scope
 
