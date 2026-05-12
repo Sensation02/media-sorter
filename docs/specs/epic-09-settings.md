@@ -1,7 +1,7 @@
 # EPIC-09. Settings (persisted)
 
 **Status:** 🟡 in progress
-**Branch:** `feat/epic-09-settings-*` (5 PRs — PR3 of 5 in flight)
+**Branch:** `feat/epic-09-settings-*` (5 PRs — PR4 of 5 in flight)
 **Depends on:** EPIC-01, EPIC-05, EPIC-06, EPIC-07
 **Last updated:** 2026-05-12
 
@@ -332,9 +332,10 @@ export type SessionMemoDto = {
 
 ### PR4 — planner behaviour
 
-- [ ] Planner reads `unknown_date_folder_name` resolved value
-- [ ] Three-scenario test (EXIF / mtime / unknown)
-- [ ] CHANGELOG entry
+- [x] `SortStrategy::folder_segments` and `build_plan` accept `unknown_folder: &str` — strategies no longer hardcode `MISC_FOLDER`
+- [x] `sorting/command.rs::run_preview` loads settings and resolves the folder name (`settings.unknown_date_folder_name` ∪ `i18n::unknown_date_folder_for(ui_language)`)
+- [x] Two new tests: strategy-level (`by_date_uses_custom_unknown_folder_when_capture_missing`) and integration-level (`build_plan_uses_passed_unknown_folder_when_capture_missing` with a Ukrainian-localized example)
+- [x] CHANGELOG entry
 
 ### PR5 — history retention
 
