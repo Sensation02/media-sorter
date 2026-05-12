@@ -139,6 +139,24 @@ pub struct SortSettings {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct AppSettings {
+    pub remember_last_sort_rule: bool,
+    pub remember_last_destination: bool,
+    pub unknown_date_folder_name: Option<String>,
+    pub history_retention_days: u16,
+    pub ui_language: String,
+    pub memo: SessionMemo,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SessionMemo {
+    pub last_sort_rule: Option<SortRuleId>,
+    pub last_destination: Option<PathBuf>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct HistoryItem {
     pub id: JobId,
     pub name: String,
