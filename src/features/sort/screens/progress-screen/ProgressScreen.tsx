@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 import { ICON } from "../../constants/icons";
+import { Eyebrow } from "../../components/eyebrow";
 import { Stat } from "../../components/stat";
 import type { SortLogLevel, SortProgress } from "../../../../types/sort";
 
@@ -60,9 +61,7 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
                 </section>
 
                 <section>
-                    <div className="font-mono text-eyebrow uppercase tracking-eyebrow text-fg-3 mb-2.5">
-                        Activity log
-                    </div>
+                    <Eyebrow className="mb-2.5">Activity log</Eyebrow>
                     <Card className="overflow-hidden">
                         <ul className="divide-y divide-divider-soft">
                             {progress.log.map((entry, index) => (

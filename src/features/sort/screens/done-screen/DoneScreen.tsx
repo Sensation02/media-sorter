@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 import { ICON } from "../../constants/icons";
+import { Eyebrow } from "../../components/eyebrow";
 import { Stat } from "../../components/stat";
 import { StatusDot } from "../../components/status-dot";
 import type { SortDone } from "../../../../types/sort";
@@ -24,9 +25,7 @@ export function DoneScreen({ done, onUndo, onNewSort, onReveal }: DoneScreenProp
                 <section>
                     <div className="flex items-center gap-2.5 mb-3">
                         <StatusDot status="idle" />
-                        <span className="font-mono text-eyebrow uppercase tracking-eyebrow text-fg-2">
-                            Completed in {done.duration}
-                        </span>
+                        <Eyebrow tone="muted">Completed in {done.duration}</Eyebrow>
                     </div>
                     <h1 className="text-display font-medium tracking-[-0.6px] leading-tight">
                         {done.moved.toLocaleString()} files in their place.
@@ -47,9 +46,7 @@ export function DoneScreen({ done, onUndo, onNewSort, onReveal }: DoneScreenProp
                 {hasSkipped && (
                     <Card className="px-4 py-3 border-warning/20 bg-warning/5">
                         <div className="flex items-baseline gap-3">
-                            <span className="font-mono text-eyebrow uppercase tracking-eyebrow text-warning">
-                                {done.skipped} skipped
-                            </span>
+                            <Eyebrow tone="warning">{done.skipped} skipped</Eyebrow>
                             <span className="text-body-sm text-fg-2">
                                 Files without EXIF date were left in place.
                             </span>

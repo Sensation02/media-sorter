@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 import { ICON } from "../../constants/icons";
+import { Eyebrow } from "../../components/eyebrow";
 import type { ScanId, ScanSummary, SortPlan } from "../../../../types/ipc";
 import type { SortRule, SortRuleId } from "../../../../types/sort";
 import { formatBytes } from "../../../../utils";
@@ -68,9 +69,7 @@ export function SetupScreen({
             <div className="flex-1 overflow-y-auto px-7 py-7 space-y-7">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
                     <section>
-                        <div className="font-mono text-eyebrow uppercase tracking-eyebrow text-fg-3 mb-2.5">
-                            Source folder
-                        </div>
+                        <Eyebrow className="mb-2.5">Source folder</Eyebrow>
                         <Card className="px-4 py-3 flex items-center gap-3">
                             <Folder className="h-4 w-4 text-fg-3" aria-hidden />
                             <span
@@ -104,17 +103,13 @@ export function SetupScreen({
                     </section>
 
                     <section>
-                        <div className="font-mono text-eyebrow uppercase tracking-eyebrow text-fg-3 mb-2.5">
-                            Sorting rule
-                        </div>
+                        <Eyebrow className="mb-2.5">Sorting rule</Eyebrow>
                         <RuleSelector rules={rules} value={ruleId} onChange={setRuleId} />
                     </section>
                 </div>
 
                 <section>
-                    <div className="font-mono text-eyebrow uppercase tracking-eyebrow text-fg-3 mb-2.5">
-                        Output preview
-                    </div>
+                    <Eyebrow className="mb-2.5">Output preview</Eyebrow>
                     <Card className="px-4 py-4">
                         <PreviewTree state={previewState} />
                     </Card>

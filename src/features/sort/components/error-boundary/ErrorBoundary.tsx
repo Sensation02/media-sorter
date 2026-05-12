@@ -1,6 +1,8 @@
 import { Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 
+import { Eyebrow } from "../eyebrow";
+
 export type ErrorBoundaryProps = {
     children: ReactNode;
 };
@@ -31,9 +33,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             return (
                 <div className="h-screen w-screen flex items-center justify-center bg-bg text-fg-1 p-8">
                     <div className="max-w-md w-full space-y-4 text-center">
-                        <div className="font-mono text-eyebrow uppercase tracking-eyebrow text-destructive">
-                            Something went wrong
-                        </div>
+                        <Eyebrow tone="destructive">Something went wrong</Eyebrow>
                         <h1 className="text-subtitle font-medium tracking-tight">
                             media-sorter hit an unexpected error
                         </h1>
