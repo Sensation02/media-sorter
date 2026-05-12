@@ -16,6 +16,7 @@ pub trait SortStrategy {
         file: &MediaFile,
         metadata: &Metadata,
         geo: &mut GeoCache,
+        unknown_folder: &str,
     ) -> Vec<String>;
 }
 
@@ -27,10 +28,11 @@ impl SortStrategy for ByDate {
         _file: &MediaFile,
         metadata: &Metadata,
         _geo: &mut GeoCache,
+        unknown_folder: &str,
     ) -> Vec<String> {
         match format_month_year(metadata) {
             Some(month_year) => vec![month_year],
-            None => vec![MISC_FOLDER.to_string()],
+            None => vec![unknown_folder.to_string()],
         }
     }
 }
@@ -43,9 +45,10 @@ impl SortStrategy for ByDateAndPlace {
         _file: &MediaFile,
         metadata: &Metadata,
         geo: &mut GeoCache,
+        unknown_folder: &str,
     ) -> Vec<String> {
         let Some(month_year) = format_month_year(metadata) else {
-            return vec![MISC_FOLDER.to_string()];
+            return vec![unknown_folder.to_string()];
         };
 
         let location = resolve_location(metadata, geo);
@@ -62,6 +65,7 @@ impl SortStrategy for ByType {
         file: &MediaFile,
         _metadata: &Metadata,
         _geo: &mut GeoCache,
+        _unknown_folder: &str,
     ) -> Vec<String> {
         vec![type_label(file.kind).to_string()]
     }
@@ -75,10 +79,11 @@ impl SortStrategy for ByCamera {
         _file: &MediaFile,
         metadata: &Metadata,
         _geo: &mut GeoCache,
+        unknown_folder: &str,
     ) -> Vec<String> {
         match format_camera(metadata.camera.as_ref()) {
             Some(label) => vec![label],
-            None => vec![MISC_FOLDER.to_string()],
+            None => vec![unknown_folder.to_string()],
         }
     }
 }
@@ -198,7 +203,7 @@ mod tests {
         };
         let mut geo = GeoCache::new();
 
-        let segments = ByDate.folder_segments(&photo(), &metadata, &mut geo);
+        let segments = ByDate.folder_segments(&photo(), &metadata, &mut geo, MISC_FOLDER);
 
         assert_eq!(segments, vec!["February 2024"]);
     }
@@ -207,9 +212,19 @@ mod tests {
     fn by_date_falls_back_to_misc_when_capture_missing() {
         let mut geo = GeoCache::new();
 
-        let segments = ByDate.folder_segments(&photo(), &Metadata::default(), &mut geo);
+        let segments =
+            ByDate.folder_segments(&photo(), &Metadata::default(), &mut geo, MISC_FOLDER);
 
         assert_eq!(segments, vec![MISC_FOLDER]);
+    }
+
+    #[test]
+    fn by_date_uses_custom_unknown_folder_when_capture_missing() {
+        let mut geo = GeoCache::new();
+
+        let segments = ByDate.folder_segments(&photo(), &Metadata::default(), &mut geo, "Різне");
+
+        assert_eq!(segments, vec!["Різне"]);
     }
 
     #[test]
@@ -221,7 +236,7 @@ mod tests {
         };
         let mut geo = GeoCache::new();
 
-        let segments = ByDateAndPlace.folder_segments(&photo(), &metadata, &mut geo);
+        let segments = ByDateAndPlace.folder_segments(&photo(), &metadata, &mut geo, MISC_FOLDER);
 
         assert_eq!(segments, vec!["August 2024", "Paris, France"]);
     }
@@ -234,7 +249,7 @@ mod tests {
         };
         let mut geo = GeoCache::new();
 
-        let segments = ByDateAndPlace.folder_segments(&photo(), &metadata, &mut geo);
+        let segments = ByDateAndPlace.folder_segments(&photo(), &metadata, &mut geo, MISC_FOLDER);
 
         assert_eq!(segments, vec!["August 2024", UNKNOWN_LOCATION]);
     }
@@ -247,7 +262,7 @@ mod tests {
         };
         let mut geo = GeoCache::new();
 
-        let segments = ByDateAndPlace.folder_segments(&photo(), &metadata, &mut geo);
+        let segments = ByDateAndPlace.folder_segments(&photo(), &metadata, &mut geo, MISC_FOLDER);
 
         assert_eq!(segments, vec![MISC_FOLDER]);
     }
@@ -256,7 +271,8 @@ mod tests {
     fn by_date_and_place_collapses_to_misc_when_both_missing() {
         let mut geo = GeoCache::new();
 
-        let segments = ByDateAndPlace.folder_segments(&photo(), &Metadata::default(), &mut geo);
+        let segments =
+            ByDateAndPlace.folder_segments(&photo(), &Metadata::default(), &mut geo, MISC_FOLDER);
 
         assert_eq!(segments, vec![MISC_FOLDER]);
     }
@@ -267,15 +283,15 @@ mod tests {
         let metadata = Metadata::default();
 
         assert_eq!(
-            ByType.folder_segments(&photo(), &metadata, &mut geo),
+            ByType.folder_segments(&photo(), &metadata, &mut geo, MISC_FOLDER),
             vec!["Photos"]
         );
         assert_eq!(
-            ByType.folder_segments(&raw_file(), &metadata, &mut geo),
+            ByType.folder_segments(&raw_file(), &metadata, &mut geo, MISC_FOLDER),
             vec!["RAW"]
         );
         assert_eq!(
-            ByType.folder_segments(&video(), &metadata, &mut geo),
+            ByType.folder_segments(&video(), &metadata, &mut geo, MISC_FOLDER),
             vec!["Videos"]
         );
     }
@@ -291,7 +307,7 @@ mod tests {
         };
         let mut geo = GeoCache::new();
 
-        let segments = ByCamera.folder_segments(&photo(), &metadata, &mut geo);
+        let segments = ByCamera.folder_segments(&photo(), &metadata, &mut geo, MISC_FOLDER);
 
         assert_eq!(segments, vec!["Sony A7 IV"]);
     }
@@ -307,7 +323,7 @@ mod tests {
         };
         let mut geo = GeoCache::new();
 
-        let segments = ByCamera.folder_segments(&photo(), &metadata, &mut geo);
+        let segments = ByCamera.folder_segments(&photo(), &metadata, &mut geo, MISC_FOLDER);
 
         assert_eq!(segments, vec!["Canon"]);
     }
@@ -323,7 +339,7 @@ mod tests {
         };
         let mut geo = GeoCache::new();
 
-        let segments = ByCamera.folder_segments(&photo(), &metadata, &mut geo);
+        let segments = ByCamera.folder_segments(&photo(), &metadata, &mut geo, MISC_FOLDER);
 
         assert_eq!(segments, vec!["iPhone 15 Pro"]);
     }
@@ -332,7 +348,8 @@ mod tests {
     fn by_camera_falls_back_to_misc_when_camera_missing() {
         let mut geo = GeoCache::new();
 
-        let segments = ByCamera.folder_segments(&photo(), &Metadata::default(), &mut geo);
+        let segments =
+            ByCamera.folder_segments(&photo(), &Metadata::default(), &mut geo, MISC_FOLDER);
 
         assert_eq!(segments, vec![MISC_FOLDER]);
     }
@@ -348,7 +365,7 @@ mod tests {
         };
         let mut geo = GeoCache::new();
 
-        let segments = ByCamera.folder_segments(&photo(), &metadata, &mut geo);
+        let segments = ByCamera.folder_segments(&photo(), &metadata, &mut geo, MISC_FOLDER);
 
         assert_eq!(segments, vec![MISC_FOLDER]);
     }

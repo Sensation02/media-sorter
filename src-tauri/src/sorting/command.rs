@@ -3,9 +3,10 @@ use std::sync::Arc;
 
 use tauri::{AppHandle, Manager};
 
-use crate::domain::{HistoryItem, JobId, SessionMemo, SortPlan};
+use crate::domain::{AppSettings, HistoryItem, JobId, SessionMemo, SortPlan};
 use crate::error::{AppError, AppResult};
 use crate::history::summary::write_summary;
+use crate::i18n;
 use crate::scanning::repository::get_session;
 use crate::settings;
 use crate::utils::now_ms;
@@ -19,8 +20,8 @@ use super::runner::job;
 use super::runner::service::{run_sort, JobOutcome, RunInput};
 
 #[tauri::command]
-pub async fn preview_plan(request: PreviewPlanRequest) -> AppResult<SortPlan> {
-    tauri::async_runtime::spawn_blocking(move || run_preview(request))
+pub async fn preview_plan(app: AppHandle, request: PreviewPlanRequest) -> AppResult<SortPlan> {
+    tauri::async_runtime::spawn_blocking(move || run_preview(&app, request))
         .await
         .map_err(AppError::internal)?
 }
@@ -78,15 +79,25 @@ pub async fn cancel_sort(request: JobIdRequest) -> AppResult<()> {
     job::cancel(request.job_id)
 }
 
-fn run_preview(request: PreviewPlanRequest) -> AppResult<SortPlan> {
+fn run_preview(app: &AppHandle, request: PreviewPlanRequest) -> AppResult<SortPlan> {
     let session = get_session(request.scan_id)?;
+    let settings = settings::service::get_settings(app)?;
+    let unknown_folder = resolve_unknown_folder(&settings);
 
     build_plan(
         &session.root,
         request.rule,
         &session.files,
         &session.metadata,
+        &unknown_folder,
     )
+}
+
+fn resolve_unknown_folder(settings: &AppSettings) -> String {
+    settings
+        .unknown_date_folder_name
+        .clone()
+        .unwrap_or_else(|| i18n::unknown_date_folder_for(&settings.ui_language).to_string())
 }
 
 fn jobs_dir(app: &AppHandle) -> AppResult<PathBuf> {
