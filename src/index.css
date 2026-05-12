@@ -5,6 +5,7 @@
 
 @layer base {
     :root {
+        color-scheme: light;
         --background: oklch(0.985 0.002 95);
         --foreground: oklch(0.18 0.01 250);
 
@@ -62,6 +63,7 @@
 
     .dark,
     [data-theme="dark"] {
+        color-scheme: dark;
         --background: oklch(0.16 0.01 250);
         --foreground: oklch(0.93 0.005 250);
 
