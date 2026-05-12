@@ -2,6 +2,7 @@ import { ICON } from "../../constants/icons";
 import { Tree } from "../tree";
 import { planToTree } from "../../plan-tree";
 import type { PlanPreviewState } from "../../use-plan-preview";
+import { Placeholder } from "./Placeholder";
 
 const Loader = ICON.loader;
 
@@ -40,15 +41,4 @@ export function PreviewTree({ state }: PreviewTreeProps) {
     }
 
     return <Tree nodes={nodes} />;
-}
-
-type PlaceholderProps = {
-    tone?: "neutral" | "error";
-    children: React.ReactNode;
-};
-
-function Placeholder({ tone = "neutral", children }: PlaceholderProps) {
-    const color = tone === "error" ? "text-warning" : "text-fg-3";
-
-    return <div className={`font-mono text-caption ${color}`}>{children}</div>;
 }
