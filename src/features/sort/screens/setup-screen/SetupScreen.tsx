@@ -3,15 +3,15 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-import { ICON } from "../../constants/icons";
-import { Eyebrow } from "../../components/eyebrow";
-import { ScreenFrame } from "../../components/screen-frame";
 import type { ScanId, ScanSummary, SortPlan } from "../../../../types/ipc";
 import type { SortRule, SortRuleId } from "../../../../types/sort";
 import { formatBytes } from "../../../../utils";
+import { Eyebrow } from "../../components/eyebrow";
 import { PreviewTree } from "../../components/preview-tree";
 import { RuleSelector } from "../../components/rule-selector";
 import { ScanBreakdown } from "../../components/scan-breakdown";
+import { ScreenFrame } from "../../components/screen-frame";
+import { ICON } from "../../constants/icons";
 import { usePlanPreview } from "../../use-plan-preview";
 
 const Loader = ICON.loader;

@@ -1,19 +1,4 @@
-import type { LucideIcon } from "lucide-react";
-
-import { ICON } from "../../constants/icons";
-import type { SortScreen } from "../../../../types/sort";
-
-export type SidebarItem = {
-    id: SortScreen;
-    label: string;
-    icon: LucideIcon;
-};
-
-const ITEMS: SidebarItem[] = [
-    { id: "setup", label: "New sort", icon: ICON.newSort },
-    { id: "history", label: "History", icon: ICON.history },
-    { id: "settings", label: "Settings", icon: ICON.settings },
-];
+import { SIDEBAR_ITEMS, type SortScreen } from "../../constants/screens";
 
 export type SidebarProps = {
     active: SortScreen;
@@ -23,7 +8,7 @@ export type SidebarProps = {
 export function Sidebar({ active, onNavigate }: SidebarProps) {
     return (
         <aside className="w-14 bg-surface-1 border-r border-border flex flex-col items-center py-4 gap-1">
-            {ITEMS.map((item) => {
+            {SIDEBAR_ITEMS.map((item) => {
                 const Icon = item.icon;
                 const isActive = active === item.id;
 

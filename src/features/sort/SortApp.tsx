@@ -13,40 +13,26 @@ import type {
     SortRuleId,
     SortSettingsDto,
 } from "../../types/ipc";
-import type { SortDone, SortScreen, SortStatus } from "../../types/sort";
+import type { SortDone } from "../../types/sort";
 import { toAppErrorView } from "../../utils";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Sidebar } from "./components/sidebar";
 import { Toolbar } from "./components/toolbar";
 import { DEFAULT_RULES } from "./constants";
+import {
+    SORT_SCREEN,
+    TOOLBAR_STATUS,
+    TOOLBAR_SUBTITLE,
+    TOOLBAR_TITLE,
+    type SortScreen,
+} from "./constants/screens";
 import { formatHistoryDuration } from "./history-format";
 import { DoneScreen, HistoryScreen, ProgressScreen, SettingsScreen, SetupScreen } from "./screens";
 import { useHistory } from "./use-history";
 import { useSettings, type SettingsHook } from "./use-settings";
 import { useSortJob, type SortJobStatus } from "./use-sort-job";
 
-const TOOLBAR_TITLE: Record<SortScreen, string> = {
-    setup: "New sort",
-    progress: "Sorting",
-    done: "Sorted",
-    history: "History",
-    settings: "Settings",
-};
-
-const TOOLBAR_STATUS: Record<SortScreen, SortStatus> = {
-    setup: "idle",
-    progress: "running",
-    done: "idle",
-    history: "idle",
-    settings: "idle",
-};
-
-const TOOLBAR_SUBTITLE: Partial<Record<SortScreen, string>> = {
-    progress: "running",
-    done: "completed",
-};
-
-const LEGACY_SORT_SETTINGS: SortSettingsDto = {
+const IMMUTABLE_SORT_FLAGS: SortSettingsDto = {
     copy: false,
     skipDuplicates: true,
     watchSource: false,
@@ -54,7 +40,7 @@ const LEGACY_SORT_SETTINGS: SortSettingsDto = {
 };
 
 export function SortApp() {
-    const [screen, setScreen] = useState<SortScreen>("setup");
+    const [screen, setScreen] = useState<SortScreen>(SORT_SCREEN.setup);
     const [source, setSource] = useState<ScanSummary | null>(null);
     const [scanId, setScanId] = useState<ScanId | null>(null);
     const [scanning, setScanning] = useState(false);
@@ -113,9 +99,9 @@ export function SortApp() {
 
     const handleRun = useCallback(async (plan: SortPlan) => {
         try {
-            const response = await startSort(plan, LEGACY_SORT_SETTINGS);
+            const response = await startSort(plan, IMMUTABLE_SORT_FLAGS);
             setJobId(response.jobId);
-            setScreen("progress");
+            setScreen(SORT_SCREEN.progress);
         } catch (error) {
             const view = toAppErrorView(error);
             toast.error(view.title, { description: view.detail });
@@ -171,7 +157,7 @@ export function SortApp() {
         const view = toAppErrorView(job.error);
         toast.error(view.title, { description: view.detail });
         // eslint-disable-next-line react-hooks/set-state-in-effect -- terminal job error must reset screen and jobId together with the toast side effect
-        setScreen("setup");
+        setScreen(SORT_SCREEN.setup);
         setJobId(null);
     }, [job.status, job.error]);
 
@@ -189,7 +175,7 @@ export function SortApp() {
                 />
                 <main className="flex-1 min-h-0">
                     <ErrorBoundary>
-                        {effectiveScreen === "setup" && (
+                        {effectiveScreen === SORT_SCREEN.setup && (
                             <SetupScreen
                                 rules={DEFAULT_RULES}
                                 source={source}
@@ -204,7 +190,7 @@ export function SortApp() {
                                 }}
                             />
                         )}
-                        {effectiveScreen === "progress" && (
+                        {effectiveScreen === SORT_SCREEN.progress && (
                             <ProgressScreen
                                 progress={job.progress}
                                 onPause={() => {
@@ -215,15 +201,15 @@ export function SortApp() {
                                 }}
                             />
                         )}
-                        {effectiveScreen === "done" && job.done !== null && (
+                        {effectiveScreen === SORT_SCREEN.done && job.done !== null && (
                             <DoneScreen
                                 done={toSortDone(job.done)}
                                 onUndo={() => {
-                                    setScreen("history");
+                                    setScreen(SORT_SCREEN.history);
                                 }}
                                 onNewSort={() => {
                                     setJobId(null);
-                                    setScreen("setup");
+                                    setScreen(SORT_SCREEN.setup);
                                 }}
                                 onReveal={() => {
                                     // TODO(IPC): wire to a Tauri command that reveals the destination in Finder/Explorer
@@ -231,7 +217,7 @@ export function SortApp() {
                                 }}
                             />
                         )}
-                        {effectiveScreen === "history" && (
+                        {effectiveScreen === SORT_SCREEN.history && (
                             <HistoryScreen
                                 state={history.state}
                                 onRevert={(id) => {
@@ -240,7 +226,7 @@ export function SortApp() {
                                 onRetry={history.refresh}
                             />
                         )}
-                        {effectiveScreen === "settings" && (
+                        {effectiveScreen === SORT_SCREEN.settings && (
                             <SettingsScreen
                                 state={settings.state}
                                 onSave={settings.save}
@@ -257,19 +243,19 @@ export function SortApp() {
 }
 
 function resolveScreen(screen: SortScreen, jobStatus: SortJobStatus): SortScreen {
-    if (screen !== "progress") {
+    if (screen !== SORT_SCREEN.progress) {
         return screen;
     }
 
     if (jobStatus === "done") {
-        return "done";
+        return SORT_SCREEN.done;
     }
 
     if (jobStatus === "error") {
-        return "setup";
+        return SORT_SCREEN.setup;
     }
 
-    return "progress";
+    return SORT_SCREEN.progress;
 }
 
 function preferredDefaultRule(state: SettingsHook["state"]): SortRuleId | null {
