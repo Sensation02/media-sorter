@@ -16,6 +16,7 @@ Plan and decompose tasks into a sequence of agent-executable steps. Choose Strat
 - `.claude/CLAUDE.md` § Multi-Agent Orchestration
 - The relevant `docs/specs/<feature>.md` if one exists
 - `docs/workflow/anti-patterns.md` for project-specific traps
+- `docs/workflow/background-execution.md` — when planning Strategy C/D or recommending `/bg` for any phase
 
 ## Conventions
 
@@ -30,6 +31,7 @@ Plan and decompose tasks into a sequence of agent-executable steps. Choose Strat
 - [ ] Every task has a clear file scope (which folder, which files)
 - [ ] Every task has a verification command (lint, test, build)
 - [ ] Multi-agent tasks specify shared resources prepared sequentially before parallel work
+- [ ] If `/bg` is recommended at any step, the plan lists which actions stop the backgrounded session and require an attached human (push, PR, merge, capability changes, user-media writes)
 
 ## Constraints
 
