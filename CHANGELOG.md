@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Settings screen now reads and writes real persisted values: toggles for "Remember last sort rule" and "Remember last destination", an editable Unknown-date folder name (with locale-aware placeholder), a History retention number input (7-365 days), a language indicator (switching arrives with EPIC-10), and a Reset to defaults button that preserves your last sort rule and destination
 - App now remembers your last session: when "Remember last sort rule" is on, the sort rule from your previous run is preselected on launch; when "Remember last destination" is on, the app re-scans the last folder you sorted automatically so you can jump straight into another pass
 - Files without a capture date now land in a folder whose name comes from your settings (or the locale default — "Misc" in English, "Різне" in Ukrainian); changing the Unknown-date folder name in Settings is reflected the next time you preview a sort
+- History retention now runs automatically at app startup: undo logs and summaries older than your configured window are removed so the app data folder doesn't grow indefinitely; active jobs and entries with future timestamps are never touched (Article I — user files are sacred)
 
 ### Bug Fixes
 

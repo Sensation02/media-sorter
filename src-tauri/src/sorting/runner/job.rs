@@ -81,6 +81,12 @@ pub fn finish(job_id: JobId) -> AppResult<()> {
     Ok(())
 }
 
+pub fn is_active(job_id: JobId) -> AppResult<bool> {
+    let jobs = registry().lock().map_err(poisoned)?;
+
+    Ok(jobs.contains_key(&job_id))
+}
+
 #[cfg(test)]
 pub fn clear_all() -> AppResult<()> {
     let mut jobs = registry().lock().map_err(poisoned)?;
