@@ -19,6 +19,7 @@ export type SetupScreenProps = {
   source: ScanSummary | null;
   scanId: ScanId | null;
   scanning: boolean;
+  defaultRuleId?: SortRuleId | null;
   onPickSource: () => void;
   onRun: (plan: SortPlan) => void;
 };
@@ -28,6 +29,7 @@ export function SetupScreen({
   source,
   scanId,
   scanning,
+  defaultRuleId,
   onPickSource,
   onRun,
 }: SetupScreenProps) {
@@ -37,7 +39,14 @@ export function SetupScreen({
     throw new Error("SetupScreen requires at least one rule");
   }
 
-  const [ruleId, setRuleId] = useState<SortRuleId>(firstRule.id);
+  const resolvedDefault = resolveDefaultRule(defaultRuleId, rules, firstRule.id);
+  const [prevDefault, setPrevDefault] = useState(resolvedDefault);
+  const [ruleId, setRuleId] = useState<SortRuleId>(resolvedDefault);
+
+  if (resolvedDefault !== prevDefault) {
+    setPrevDefault(resolvedDefault);
+    setRuleId(resolvedDefault);
+  }
   const previewState = usePlanPreview(scanId, ruleId);
   const canRun = source !== null && !scanning && previewState.status === "success";
   const plan = previewState.status === "success" ? previewState.plan : null;
@@ -111,4 +120,20 @@ export function SetupScreen({
       </footer>
     </div>
   );
+}
+
+function resolveDefaultRule(
+  preferred: SortRuleId | null | undefined,
+  rules: SortRule[],
+  fallback: SortRuleId,
+): SortRuleId {
+  if (preferred === null || preferred === undefined) {
+    return fallback;
+  }
+
+  if (!rules.some((rule) => rule.id === preferred)) {
+    return fallback;
+  }
+
+  return preferred;
 }
