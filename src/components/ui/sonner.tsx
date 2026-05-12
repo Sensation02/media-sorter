@@ -10,10 +10,10 @@ export function Toaster({ position = "bottom-right", ...props }: ToasterProps) {
                     toast: "bg-surface-1 border border-border-strong rounded-md shadow-lg text-fg-1",
                     title: "text-body font-medium",
                     description: "text-meta font-mono text-fg-3",
-                    error: "border-l-[3px] border-l-destructive",
-                    warning: "border-l-[3px] border-l-warning",
-                    info: "border-l-[3px] border-l-primary",
-                    success: "border-l-[3px] border-l-success",
+                    error: "border-l-(length:--toast-accent-width) border-l-destructive",
+                    warning: "border-l-(length:--toast-accent-width) border-l-warning",
+                    info: "border-l-(length:--toast-accent-width) border-l-primary",
+                    success: "border-l-(length:--toast-accent-width) border-l-success",
                 },
             }}
             {...props}

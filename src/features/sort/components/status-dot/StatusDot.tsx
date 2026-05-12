@@ -18,7 +18,7 @@ export function StatusDot({ status = "idle" }: StatusDotProps) {
 
     return (
         <span
-            className="inline-block w-[7px] h-[7px] rounded-full"
+            className="inline-block w-(--dot-size) h-(--dot-size) rounded-full"
             style={{ background: color, boxShadow: `0 0 6px ${color}` }}
         />
     );
