@@ -114,3 +114,33 @@ Identifiers are sequential (`AP-001`, `AP-002`, ...). Never reuse or renumber �
 - **Why it's bad:** "Legacy" is a contract about lifetime. Future cleanup will delete it in good faith and break the running app. Wrong names mislead grep, mislead reviewers, and waste the next contributor's time deciding whether they're allowed to remove it.
 - **Fix:** Name things by what they are. If the value is intentionally fixed at the call site until the UI surfaces the flags, name it `IMMUTABLE_SORT_FLAGS` or `SORT_FLAGS_UI_NOT_YET_WIRED` and pair it with a `TODO` referencing the tracking epic. If it's truly legacy, delete it.
 - **First seen in:** PR #43 (EPIC-12)
+
+- **AP-014: `Component props exceeding 5 fields without grouping`**
+- **Problem:** A React component's `Props` type declares more than 5 named fields, with no grouping by semantic domain (state, configuration, actions). Example caught in PR #43: `SetupScreenProps` had 7 flat fields (`rules`, `source`, `scanId`, `scanning`, `defaultRuleId`, `onPickSource`, `onRun`).
+- **Why it's bad:** Call sites become "props soup" — hard to scan, hard to refactor when another field is added, easy to mis-order or omit values. The component's responsibilities become opaque: a 7-prop signature usually means the component owns multiple separable concerns (source state, rule config, user actions) that should be readable from the signature alone. Each prop is also a re-render axis; mixing unrelated primitives masks data ownership.
+- **Why 5 specifically:** This is an arbitrary cap close to Miller's `7±2` cognitive limit. Most components naturally fit in 3–5 fields; crossing 6+ is a signal the component is **growing in responsibilities**, not just gaining data.
+- **Fix:** Group props by semantic domain into nested objects, each with a named type. Domain-named groups (`source`, `rule`, `actions`) carry meaning; mechanical splits (`data` vs `actions`) usually do not.
+  ```ts
+  export type SetupScreenSource = {
+      summary: ScanSummary | null;
+      scanId: ScanId | null;
+      scanning: boolean;
+  };
+  export type SetupScreenRule = {
+      rules: SortRule[];
+      defaultId: SortRuleId | null;
+  };
+  export type SetupScreenActions = {
+      onPickSource: () => void;
+      onRun: (plan: SortPlan) => void;
+  };
+  export type SetupScreenProps = {
+      source: SetupScreenSource;
+      rule: SetupScreenRule;
+      actions: SetupScreenActions;
+  };
+  ```
+- **Exclusions:**
+  - `children` and `className` do NOT count toward the 5-field cap. They are universal JSX mechanics, not domain props.
+  - Native-attribute-spread components (e.g. `Button` extending `ComponentProps<"button">`) are exempt — they inherit dozens of HTML attrs uniformly through one `...rest`.
+- **First seen in:** PR #43 (EPIC-12)

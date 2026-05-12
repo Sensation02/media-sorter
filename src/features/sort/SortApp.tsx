@@ -31,16 +31,18 @@ export function SortApp() {
                     <ErrorBoundary>
                         {effectiveScreen === SORT_SCREEN.setup && (
                             <SetupScreen
-                                rules={DEFAULT_RULES}
-                                source={source}
-                                scanId={scanId}
-                                scanning={scanning}
-                                defaultRuleId={preferredDefaultRule(settings.state)}
-                                onPickSource={() => {
-                                    void handlers.pickSource();
+                                source={{ summary: source, scanId, scanning }}
+                                rule={{
+                                    rules: DEFAULT_RULES,
+                                    defaultId: preferredDefaultRule(settings.state),
                                 }}
-                                onRun={(plan) => {
-                                    void handlers.run(plan);
+                                actions={{
+                                    onPickSource: () => {
+                                        void handlers.pickSource();
+                                    },
+                                    onRun: (plan) => {
+                                        void handlers.run(plan);
+                                    },
                                 }}
                             />
                         )}

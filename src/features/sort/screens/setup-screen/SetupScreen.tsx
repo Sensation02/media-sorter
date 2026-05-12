@@ -21,32 +21,36 @@ const ArrowRight = ICON.arrowRight;
 
 const EMPTY_PATH_LABEL = "No folder selected";
 
-export type SetupScreenProps = {
-    rules: SortRule[];
-    source: ScanSummary | null;
+export type SetupScreenSource = {
+    summary: ScanSummary | null;
     scanId: ScanId | null;
     scanning: boolean;
-    defaultRuleId?: SortRuleId | null;
+};
+
+export type SetupScreenRule = {
+    rules: SortRule[];
+    defaultId: SortRuleId | null;
+};
+
+export type SetupScreenActions = {
     onPickSource: () => void;
     onRun: (plan: SortPlan) => void;
 };
 
-export function SetupScreen({
-    rules,
-    source,
-    scanId,
-    scanning,
-    defaultRuleId,
-    onPickSource,
-    onRun,
-}: SetupScreenProps) {
-    const firstRule = rules[0];
+export type SetupScreenProps = {
+    source: SetupScreenSource;
+    rule: SetupScreenRule;
+    actions: SetupScreenActions;
+};
+
+export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
+    const firstRule = rule.rules[0];
 
     if (!firstRule) {
         throw new Error("SetupScreen requires at least one rule");
     }
 
-    const resolvedDefault = resolveDefaultRule(defaultRuleId, rules, firstRule.id);
+    const resolvedDefault = resolveDefaultRule(rule.defaultId, rule.rules, firstRule.id);
     const [prevDefault, setPrevDefault] = useState(resolvedDefault);
     const [ruleId, setRuleId] = useState<SortRuleId>(resolvedDefault);
 
@@ -54,8 +58,8 @@ export function SetupScreen({
         setPrevDefault(resolvedDefault);
         setRuleId(resolvedDefault);
     }
-    const previewState = usePlanPreview(scanId, ruleId);
-    const canRun = source !== null && !scanning && previewState.status === "success";
+    const previewState = usePlanPreview(source.scanId, ruleId);
+    const canRun = source.summary !== null && !source.scanning && previewState.status === "success";
     const plan = previewState.status === "success" ? previewState.plan : null;
 
     const handleRun = () => {
@@ -63,7 +67,7 @@ export function SetupScreen({
             return;
         }
 
-        onRun(plan);
+        actions.onRun(plan);
     };
 
     return (
@@ -81,38 +85,40 @@ export function SetupScreen({
                     <Card className="px-4 py-3 flex items-center gap-3">
                         <Folder className="h-4 w-4 text-fg-3" aria-hidden />
                         <span
-                            className={`font-mono text-body flex-1 truncate ${source === null ? "text-fg-3" : ""}`}
+                            className={`font-mono text-body flex-1 truncate ${source.summary === null ? "text-fg-3" : ""}`}
                         >
-                            {source?.root ?? EMPTY_PATH_LABEL}
+                            {source.summary?.root ?? EMPTY_PATH_LABEL}
                         </span>
-                        {scanning ? (
+                        {source.scanning ? (
                             <span className="flex items-center gap-2 font-mono text-meta-sm text-fg-3">
                                 <Loader className="w-3 h-3 animate-spin" aria-hidden />
                                 Scanning…
                             </span>
                         ) : (
-                            source !== null && (
+                            source.summary !== null && (
                                 <span className="font-mono text-meta-sm text-fg-3">
-                                    {source.fileCount.toLocaleString()} files {"·"}{" "}
-                                    {formatBytes(source.sizeBytes)}
+                                    {source.summary.fileCount.toLocaleString()} files {"·"}{" "}
+                                    {formatBytes(source.summary.sizeBytes)}
                                 </span>
                             )
                         )}
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={onPickSource}
-                            disabled={scanning}
+                            onClick={actions.onPickSource}
+                            disabled={source.scanning}
                         >
                             Browse{"…"}
                         </Button>
                     </Card>
-                    {source !== null && !scanning && <ScanBreakdown summary={source} />}
+                    {source.summary !== null && !source.scanning && (
+                        <ScanBreakdown summary={source.summary} />
+                    )}
                 </section>
 
                 <section>
                     <Eyebrow className="mb-2.5">Sorting rule</Eyebrow>
-                    <RuleSelector rules={rules} value={ruleId} onChange={setRuleId} />
+                    <RuleSelector rules={rule.rules} value={ruleId} onChange={setRuleId} />
                 </section>
             </div>
 
