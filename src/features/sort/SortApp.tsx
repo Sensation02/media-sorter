@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Toaster } from "@/components/ui/sonner";
@@ -10,7 +10,7 @@ import { DoneScreen, HistoryScreen, ProgressScreen, SettingsScreen, SetupScreen 
 import { DEFAULT_RULES } from "./constants";
 import { formatHistoryDuration } from "./history-format";
 import { useHistory } from "./use-history";
-import { useSettings } from "./use-settings";
+import { useSettings, type SettingsHook } from "./use-settings";
 import { useSortJob, type SortJobStatus } from "./use-sort-job";
 import { cancelSort, pauseSort, pickSourceDir, scanSource, startSort } from "../../ipc";
 import { toAppErrorView } from "../../utils";
@@ -20,6 +20,7 @@ import type {
   ScanSummary,
   SortDoneDto,
   SortPlan,
+  SortRuleId,
   SortSettingsDto,
 } from "../../types/ipc";
 import type { SortDone, SortScreen, SortStatus } from "../../types/sort";
@@ -62,17 +63,12 @@ export function SortApp() {
   const history = useHistory();
   const settings = useSettings();
 
-  const handlePickSource = useCallback(async () => {
+  const scanPath = useCallback(async (path: string) => {
+    setSource(null);
+    setScanId(null);
+    setScanning(true);
+
     try {
-      const path = await pickSourceDir();
-
-      if (path === null) {
-        return;
-      }
-
-      setSource(null);
-      setScanId(null);
-      setScanning(true);
       const response = await scanSource(path);
       setSource(response.summary);
       setScanId(response.scanId);
@@ -83,6 +79,37 @@ export function SortApp() {
       setScanning(false);
     }
   }, []);
+
+  const handlePickSource = useCallback(async () => {
+    const path = await pickSourceDir();
+
+    if (path === null) {
+      return;
+    }
+
+    await scanPath(path);
+  }, [scanPath]);
+
+  const prefillTriggeredRef = useRef(false);
+
+  useEffect(() => {
+    if (prefillTriggeredRef.current) {
+      return;
+    }
+
+    if (settings.state.status !== "success") {
+      return;
+    }
+
+    prefillTriggeredRef.current = true;
+
+    const { rememberLastDestination, memo } = settings.state.settings;
+
+    if (rememberLastDestination && memo.lastDestination !== null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- first-success prefill is gated by prefillTriggeredRef; the scanSource IPC is the canonical external-sync use case
+      void scanPath(memo.lastDestination);
+    }
+  }, [settings.state, scanPath]);
 
   const handleRun = useCallback(async (plan: SortPlan) => {
     try {
@@ -168,6 +195,7 @@ export function SortApp() {
                 source={source}
                 scanId={scanId}
                 scanning={scanning}
+                defaultRuleId={preferredDefaultRule(settings.state)}
                 onPickSource={() => {
                   void handlePickSource();
                 }}
@@ -242,6 +270,20 @@ function resolveScreen(screen: SortScreen, jobStatus: SortJobStatus): SortScreen
   }
 
   return "progress";
+}
+
+function preferredDefaultRule(state: SettingsHook["state"]): SortRuleId | null {
+  if (state.status !== "success") {
+    return null;
+  }
+
+  const { rememberLastSortRule, memo } = state.settings;
+
+  if (!rememberLastSortRule) {
+    return null;
+  }
+
+  return memo.lastSortRule;
 }
 
 function toSortDone(dto: SortDoneDto): SortDone {
