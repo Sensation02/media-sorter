@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { cn } from "@/lib/utils";
+
 export type EyebrowTone = "default" | "warning" | "destructive" | "muted";
 
 export type EyebrowProps = {
@@ -16,9 +18,15 @@ const TONES: Record<EyebrowTone, string> = {
 };
 
 export function Eyebrow({ tone = "default", className, children }: EyebrowProps) {
-    const classes = ["font-mono text-eyebrow uppercase tracking-eyebrow", TONES[tone], className]
-        .filter(Boolean)
-        .join(" ");
-
-    return <div className={classes}>{children}</div>;
+    return (
+        <div
+            className={cn(
+                "font-mono text-eyebrow uppercase tracking-eyebrow",
+                TONES[tone],
+                className,
+            )}
+        >
+            {children}
+        </div>
+    );
 }
