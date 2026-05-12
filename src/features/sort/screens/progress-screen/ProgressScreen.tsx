@@ -6,7 +6,7 @@ import { ICON } from "../../constants/icons";
 import { Eyebrow } from "../../components/eyebrow";
 import { ScreenFrame } from "../../components/screen-frame";
 import { Stat } from "../../components/stat";
-import type { SortLogLevel, SortProgress } from "../../../../types/sort";
+import { LOG_LEVEL, type SortLogLevel, type SortProgress } from "../../../../types/sort";
 
 const ChevronRight = ICON.chevronRight;
 
@@ -90,7 +90,9 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
                                 />
                                 <span
                                     className={
-                                        entry.level === "warn" ? "text-warning" : "text-fg-1"
+                                        entry.level === LOG_LEVEL.warn
+                                            ? "text-warning"
+                                            : "text-fg-1"
                                     }
                                 >
                                     {entry.text}

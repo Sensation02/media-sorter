@@ -13,7 +13,13 @@ export type SortRule = {
     description: string;
 };
 
-export type SortLogLevel = "ok" | "warn" | "error";
+export const LOG_LEVEL = {
+    ok: "ok",
+    warn: "warn",
+    error: "error",
+} as const;
+
+export type SortLogLevel = (typeof LOG_LEVEL)[keyof typeof LOG_LEVEL];
 
 export type SortLogEntry = {
     time: string;
@@ -41,7 +47,15 @@ export type SortDone = {
     destination: string;
 };
 
-export type SortStatus = "idle" | "running" | "paused" | "warning" | "error";
+export const SORT_STATUS = {
+    idle: "idle",
+    running: "running",
+    paused: "paused",
+    warning: "warning",
+    error: "error",
+} as const;
+
+export type SortStatus = (typeof SORT_STATUS)[keyof typeof SORT_STATUS];
 
 export type { SortScreen } from "../features/sort/constants/screens";
 

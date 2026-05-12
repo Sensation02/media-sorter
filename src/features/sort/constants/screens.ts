@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 
 import { ICON } from "./icons";
-import type { SortStatus } from "../../../types/sort";
+import { SORT_STATUS, type SortStatus } from "../../../types/sort";
 
 export const SORT_SCREEN = {
     setup: "setup",
@@ -22,11 +22,11 @@ export const TOOLBAR_TITLE: Record<SortScreen, string> = {
 };
 
 export const TOOLBAR_STATUS: Record<SortScreen, SortStatus> = {
-    setup: "idle",
-    progress: "running",
-    done: "idle",
-    history: "idle",
-    settings: "idle",
+    setup: SORT_STATUS.idle,
+    progress: SORT_STATUS.running,
+    done: SORT_STATUS.idle,
+    history: SORT_STATUS.idle,
+    settings: SORT_STATUS.idle,
 };
 
 export const TOOLBAR_SUBTITLE: Partial<Record<SortScreen, string>> = {
