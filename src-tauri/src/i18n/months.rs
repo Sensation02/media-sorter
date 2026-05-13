@@ -29,12 +29,17 @@ pub const MONTH_NAMES_UK: [&str; 12] = [
 ];
 
 pub fn format_month_year(year: i32, month0: usize, lang: &str) -> String {
-    let names = match lang {
-        "uk" => MONTH_NAMES_UK,
-        _ => MONTH_NAMES_EN,
-    };
+    let names = month_names_for(lang);
 
     format!("{} {}", names[month0], year)
+}
+
+fn month_names_for(lang: &str) -> [&'static str; 12] {
+    match lang {
+        super::LANGUAGE_CODE_UK => MONTH_NAMES_UK,
+        super::LANGUAGE_CODE_EN => MONTH_NAMES_EN,
+        _ => MONTH_NAMES_EN,
+    }
 }
 
 #[cfg(test)]

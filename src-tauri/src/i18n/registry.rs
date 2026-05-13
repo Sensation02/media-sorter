@@ -1,3 +1,6 @@
+pub const LANGUAGE_CODE_EN: &str = "en";
+pub const LANGUAGE_CODE_UK: &str = "uk";
+
 pub struct LanguageEntry {
     pub code: &'static str,
     pub native_name: &'static str,
@@ -6,18 +9,18 @@ pub struct LanguageEntry {
 
 pub const SUPPORTED_LANGUAGES: &[LanguageEntry] = &[
     LanguageEntry {
-        code: "en",
+        code: LANGUAGE_CODE_EN,
         native_name: "English",
         unknown_date_folder: "Misc",
     },
     LanguageEntry {
-        code: "uk",
+        code: LANGUAGE_CODE_UK,
         native_name: "Українська",
         unknown_date_folder: "Різне",
     },
 ];
 
-pub const DEFAULT_LANGUAGE_CODE: &str = "en";
+pub const DEFAULT_LANGUAGE_CODE: &str = LANGUAGE_CODE_EN;
 
 pub fn validate_language_code(raw: &str) -> Option<&'static LanguageEntry> {
     SUPPORTED_LANGUAGES.iter().find(|entry| entry.code == raw)
