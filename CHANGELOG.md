@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sidebar navigation icons are larger and easier to scan
 - Removed two non-functional UI elements from the sort setup: a "Save preset" button that did nothing, and an always-green decorative status dot at the top of the sidebar (the toolbar status dot remains and continues to reflect real sort status)
 - Sorting rule is now a compact dropdown — the trigger shows the active rule, the open list shows each rule's name and what its folder layout looks like, replacing the previous 2×2 grid of cards
+- History retention is now a dropdown with preset windows (1 week, 1 month, 3 / 6 / 12 months) instead of a free-text day count
 
 ### Bug Fixes
 
