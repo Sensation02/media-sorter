@@ -1,3 +1,4 @@
+pub mod months;
 pub mod registry;
 
 pub use registry::{
