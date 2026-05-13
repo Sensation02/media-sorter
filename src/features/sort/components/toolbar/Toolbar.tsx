@@ -15,7 +15,7 @@ export function Toolbar({ jobName, status = "idle", subtitle }: ToolbarProps) {
                 <h1 className="text-title font-medium tracking-[-0.1px]">{jobName}</h1>
                 {subtitle && (
                     <span className="font-mono text-meta-sm text-fg-3">
-                        {"\u00b7 "}
+                        {"· "}
                         {subtitle}
                     </span>
                 )}

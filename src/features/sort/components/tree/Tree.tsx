@@ -24,7 +24,7 @@ export function Tree({ nodes, depth = 0 }: TreeProps) {
                             <ChevronRight className="h-3 w-3 text-fg-3" aria-hidden />
                         ) : (
                             <span className="text-fg-3" aria-hidden>
-                                {"\u00b7"}
+                                {"·"}
                             </span>
                         )}
                         <span className={node.muted ? "text-fg-3" : "text-fg-1"}>{node.label}</span>

@@ -52,7 +52,7 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
                         / {progress.total.toLocaleString()}
                     </span>
                     <span className="ml-auto font-mono text-meta text-fg-2">
-                        {pct}% {"\u00b7"} {progress.remaining}
+                        {pct}% {"·"} {progress.remaining}
                     </span>
                 </div>
                 <Progress value={pct} />
