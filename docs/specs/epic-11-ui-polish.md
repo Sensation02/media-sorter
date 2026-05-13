@@ -1,9 +1,9 @@
 # EPIC-11. UI Polish (rolling)
 
-**Status:** 🟡 in progress
+**Status:** 🟢 complete (round closed 2026-05-13)
 **Branch:** `feat/epic-11-ui-polish-*` (one PR per polish batch)
 **Depends on:** EPIC-01..EPIC-09 (every screen the polish targets must already exist)
-**Last updated:** 2026-05-12
+**Last updated:** 2026-05-13
 
 ## Goal
 
@@ -71,6 +71,14 @@ refresh.
 | 05  | `remove-save-preset`  | `src/.../screens/setup-screen/SetupScreen.tsx`                                  | "Save preset" has no `onClick` and there is no preset concept anywhere in the codebase — dead UI.                                                          | Removed the button and the `ml-auto` spacer; footer is now a single-action `justify-end` row with `Run sort →`. A real preset feature, if wanted later, becomes its own feature epic, not polish.                  | done     |
 | 06  | `rule-selector-dropdown` | `src/.../components/rule-selector/RuleSelector.tsx`; new `src/components/ui/select.tsx` | The 4-card grid for sorting rules is visually heavy and consumes vertical space, especially after batch-01's 2-column setup layout shrank the available width. A compact dropdown is enough — name in the trigger, name + hint in the open list. Trigger must also visually match the Source folder `Card` sitting next to it in the 2-column layout (same border radius and same height). | Added `@radix-ui/react-select` (matches existing shadcn-on-Radix pattern of `Switch`/`Progress`) and a new `src/components/ui/select.tsx` primitive. Rewrote `RuleSelector` to use it: trigger shows the selected rule's name; the dropdown lists name + monospace hint per option, with a check indicator on the selected one. Trigger/content radius set to `rounded-lg` (matches `Card`); trigger height pinned to `h-13.5` (54px — the natural external height of the Source folder Card, accounting for 1px border on top and bottom on top of `py-3` + inner `Button size="sm"`). | done     |
 | 07  | `sidebar-icon-size-v2` | `src/.../components/sidebar/Sidebar.tsx` | After batch-01 row 04 bumped sidebar nav glyphs from 15px to 19px, they still read as visually under-weight inside the `w-9 h-9` (36×36) buttons against the workbench surface. | Further bumped glyph size from `19px` to `22px` (~61% of button area). Unicode glyphs kept; Lucide swap still deferred. | done     |
+
+## Closing note
+
+Round closed on 2026-05-13. All seven subtasks above shipped; no further
+polish observations are open at the time of closing. The rolling backlog
+mechanic is preserved: a new round of UI polish should start its own
+spec (`epic-11.2-ui-polish.md` or similar) rather than reopening this
+one, so each round stays a self-contained, revertable unit.
 
 ## Out of scope
 
