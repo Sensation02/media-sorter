@@ -7,7 +7,7 @@ import { toAppErrorView } from "../../../utils";
 import { SORT_SCREEN, type SortScreen } from "../constants/screens";
 import { revertSummary } from "../mappers/revert-summary";
 import { useHistory, type HistoryHook } from "./use-history";
-import { useSettings, type SettingsHook } from "./use-settings";
+import { SETTINGS_STATUS, useSettings, type SettingsHook } from "./use-settings";
 import { JOB_STATUS, useSortJob, type UseSortJobResult } from "./use-sort-job";
 
 const IMMUTABLE_SORT_FLAGS: SortSettingsDto = {
@@ -84,7 +84,7 @@ export function useSortOrchestration(): SortOrchestration {
             return;
         }
 
-        if (settings.state.status !== "success") {
+        if (settings.state.status !== SETTINGS_STATUS.success) {
             return;
         }
 

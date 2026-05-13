@@ -4,11 +4,18 @@ import { previewPlan } from "../../../ipc";
 import { toAppErrorView, type ToastErrorView } from "../../../utils";
 import type { ScanId, SortPlan, SortRuleId } from "../../../types/ipc";
 
+export const PLAN_PREVIEW_STATUS = {
+    idle: "idle",
+    loading: "loading",
+    success: "success",
+    error: "error",
+} as const;
+
 export type PlanPreviewState =
-    | { status: "idle" }
-    | { status: "loading" }
-    | { status: "success"; plan: SortPlan }
-    | { status: "error"; error: ToastErrorView };
+    | { status: typeof PLAN_PREVIEW_STATUS.idle }
+    | { status: typeof PLAN_PREVIEW_STATUS.loading }
+    | { status: typeof PLAN_PREVIEW_STATUS.success; plan: SortPlan }
+    | { status: typeof PLAN_PREVIEW_STATUS.error; error: ToastErrorView };
 
 type Outcome = { plan: SortPlan } | { error: ToastErrorView };
 
@@ -54,16 +61,16 @@ function derivePreviewState(
     result: PreviewResult | null,
 ): PlanPreviewState {
     if (scanId === null) {
-        return { status: "idle" };
+        return { status: PLAN_PREVIEW_STATUS.idle };
     }
 
     if (result?.scanId !== scanId || result.rule !== rule) {
-        return { status: "loading" };
+        return { status: PLAN_PREVIEW_STATUS.loading };
     }
 
     if ("plan" in result.outcome) {
-        return { status: "success", plan: result.outcome.plan };
+        return { status: PLAN_PREVIEW_STATUS.success, plan: result.outcome.plan };
     }
 
-    return { status: "error", error: result.outcome.error };
+    return { status: PLAN_PREVIEW_STATUS.error, error: result.outcome.error };
 }

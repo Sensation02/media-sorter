@@ -1,8 +1,8 @@
 import type { SortRuleId } from "../../../types/ipc";
-import type { SettingsHook } from "../hooks/use-settings";
+import { SETTINGS_STATUS, type SettingsHook } from "../hooks/use-settings";
 
 export function preferredDefaultRule(state: SettingsHook["state"]): SortRuleId | null {
-    if (state.status !== "success") {
+    if (state.status !== SETTINGS_STATUS.success) {
         return null;
     }
 

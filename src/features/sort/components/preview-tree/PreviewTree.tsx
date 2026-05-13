@@ -1,7 +1,7 @@
 import { ICON } from "../../constants/icons";
 import { Tree } from "../tree";
 import { planToTree } from "../../mappers/plan-tree";
-import type { PlanPreviewState } from "../../hooks/use-plan-preview";
+import { PLAN_PREVIEW_STATUS, type PlanPreviewState } from "../../hooks/use-plan-preview";
 import { Placeholder } from "./Placeholder";
 
 const Loader = ICON.loader;
@@ -15,11 +15,11 @@ export type PreviewTreeProps = {
 };
 
 export function PreviewTree({ state }: PreviewTreeProps) {
-    if (state.status === "idle") {
+    if (state.status === PLAN_PREVIEW_STATUS.idle) {
         return <Placeholder>{IDLE_LABEL}</Placeholder>;
     }
 
-    if (state.status === "loading") {
+    if (state.status === PLAN_PREVIEW_STATUS.loading) {
         return (
             <Placeholder>
                 <span className="flex items-center gap-2">
@@ -30,7 +30,7 @@ export function PreviewTree({ state }: PreviewTreeProps) {
         );
     }
 
-    if (state.status === "error") {
+    if (state.status === PLAN_PREVIEW_STATUS.error) {
         return <Placeholder tone="error">{state.error.title}</Placeholder>;
     }
 

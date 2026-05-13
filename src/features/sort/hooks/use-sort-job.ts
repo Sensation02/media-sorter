@@ -23,6 +23,14 @@ export const JOB_STATUS = {
 
 export type SortJobStatus = (typeof JOB_STATUS)[keyof typeof JOB_STATUS];
 
+const JOB_ACTION = {
+    reset: "reset",
+    progress: "progress",
+    log: "log",
+    done: "done",
+    error: "error",
+} as const;
+
 export type UseSortJobResult = {
     progress: SortProgress;
     log: SortLogEntry[];
@@ -42,11 +50,11 @@ type SortJobState = {
 };
 
 type SortJobAction =
-    | { type: "reset"; jobId: JobId | null; startedAtMs: number | null }
-    | { type: "progress"; jobId: JobId; payload: SortProgressDto }
-    | { type: "log"; jobId: JobId; payload: SortLogEntryDto }
-    | { type: "done"; jobId: JobId; payload: SortDoneDto }
-    | { type: "error"; jobId: JobId; payload: AppErrorDto };
+    | { type: typeof JOB_ACTION.reset; jobId: JobId | null; startedAtMs: number | null }
+    | { type: typeof JOB_ACTION.progress; jobId: JobId; payload: SortProgressDto }
+    | { type: typeof JOB_ACTION.log; jobId: JobId; payload: SortLogEntryDto }
+    | { type: typeof JOB_ACTION.done; jobId: JobId; payload: SortDoneDto }
+    | { type: typeof JOB_ACTION.error; jobId: JobId; payload: AppErrorDto };
 
 const IDLE_STATE: SortJobState = {
     jobId: null,
@@ -85,28 +93,28 @@ export function useSortJob(jobId: JobId | null): UseSortJobResult {
 
     useEffect(() => {
         if (jobId === null) {
-            dispatch({ type: "reset", jobId: null, startedAtMs: null });
+            dispatch({ type: JOB_ACTION.reset, jobId: null, startedAtMs: null });
 
             return;
         }
 
-        dispatch({ type: "reset", jobId, startedAtMs: Date.now() });
+        dispatch({ type: JOB_ACTION.reset, jobId, startedAtMs: Date.now() });
 
         let cancelled = false;
         const unlisteners: UnlistenFn[] = [];
 
         const subscriptions: Promise<UnlistenFn>[] = [
             onSortProgress((payload) => {
-                dispatch({ type: "progress", jobId, payload });
+                dispatch({ type: JOB_ACTION.progress, jobId, payload });
             }),
             onSortLog((payload) => {
-                dispatch({ type: "log", jobId, payload });
+                dispatch({ type: JOB_ACTION.log, jobId, payload });
             }),
             onSortDone((payload) => {
-                dispatch({ type: "done", jobId, payload });
+                dispatch({ type: JOB_ACTION.done, jobId, payload });
             }),
             onSortError((payload) => {
-                dispatch({ type: "error", jobId, payload });
+                dispatch({ type: JOB_ACTION.error, jobId, payload });
             }),
         ];
 
@@ -129,7 +137,7 @@ export function useSortJob(jobId: JobId | null): UseSortJobResult {
                     fn();
                 });
                 dispatch({
-                    type: "error",
+                    type: JOB_ACTION.error,
                     jobId,
                     payload: { code: "internal", params: { message: SUBSCRIBE_ERROR_MESSAGE } },
                 });
@@ -175,7 +183,7 @@ export function useSortJob(jobId: JobId | null): UseSortJobResult {
 
 function reduce(state: SortJobState, action: SortJobAction): SortJobState {
     switch (action.type) {
-        case "reset":
+        case JOB_ACTION.reset:
             if (action.jobId === null) {
                 return IDLE_STATE;
             }
@@ -186,25 +194,25 @@ function reduce(state: SortJobState, action: SortJobAction): SortJobState {
                 startedAtMs: action.startedAtMs,
                 status: JOB_STATUS.running,
             };
-        case "progress":
+        case JOB_ACTION.progress:
             if (state.jobId !== action.jobId) {
                 return state;
             }
 
             return { ...state, snapshot: action.payload };
-        case "log":
+        case JOB_ACTION.log:
             if (state.jobId !== action.jobId) {
                 return state;
             }
 
             return { ...state, log: prependLog(state.log, action.payload) };
-        case "done":
+        case JOB_ACTION.done:
             if (state.jobId !== action.jobId) {
                 return state;
             }
 
             return { ...state, done: action.payload, status: statusFromDone(action.payload) };
-        case "error":
+        case JOB_ACTION.error:
             if (state.jobId !== action.jobId) {
                 return state;
             }

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 import type { JobId } from "../../../../types/ipc";
-import type { HistoryHookState } from "../../hooks/use-history";
+import { HISTORY_STATUS, type HistoryHookState } from "../../hooks/use-history";
 import { Centered } from "./Centered";
 import { HistoryRow } from "./HistoryRow";
 
@@ -19,11 +19,11 @@ export function HistoryScreen({ state, onRevert, onRetry, nowMs }: HistoryScreen
     const [mountedNowMs] = useState(() => Date.now());
     const referenceNowMs = nowMs ?? mountedNowMs;
 
-    if (state.status === "loading") {
+    if (state.status === HISTORY_STATUS.loading) {
         return <Centered>Loading history…</Centered>;
     }
 
-    if (state.status === "error") {
+    if (state.status === HISTORY_STATUS.error) {
         return (
             <Centered>
                 <p className="text-body mb-3">{state.error.title}</p>

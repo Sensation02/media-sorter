@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 
 import type { AppSettingsDto } from "../../../../types/ipc";
-import type { SettingsHookState } from "../../hooks/use-settings";
+import { SETTINGS_STATUS, type SettingsHookState } from "../../hooks/use-settings";
 import { SettingsForm } from "./SettingsForm";
 
 export type SettingsScreenProps = {
@@ -12,7 +12,7 @@ export type SettingsScreenProps = {
 };
 
 export function SettingsScreen({ state, onSave, onReset, onRetry }: SettingsScreenProps) {
-    if (state.status === "loading") {
+    if (state.status === SETTINGS_STATUS.loading) {
         return (
             <div className="flex h-full items-center justify-center text-body text-fg-3">
                 Loading settings…
@@ -20,7 +20,7 @@ export function SettingsScreen({ state, onSave, onReset, onRetry }: SettingsScre
         );
     }
 
-    if (state.status === "error") {
+    if (state.status === SETTINGS_STATUS.error) {
         return (
             <div className="flex h-full flex-col items-center justify-center gap-3">
                 <div className="text-body">{state.error.title}</div>

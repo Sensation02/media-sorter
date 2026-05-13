@@ -4,10 +4,16 @@ import { getSettings, resetSettings, setSettings as ipcSetSettings } from "../..
 import type { AppSettingsDto } from "../../../types/ipc";
 import { toAppErrorView, type ToastErrorView } from "../../../utils";
 
+export const SETTINGS_STATUS = {
+    loading: "loading",
+    success: "success",
+    error: "error",
+} as const;
+
 export type SettingsHookState =
-    | { status: "loading" }
-    | { status: "success"; settings: AppSettingsDto }
-    | { status: "error"; error: ToastErrorView };
+    | { status: typeof SETTINGS_STATUS.loading }
+    | { status: typeof SETTINGS_STATUS.success; settings: AppSettingsDto }
+    | { status: typeof SETTINGS_STATUS.error; error: ToastErrorView };
 
 export type SettingsHook = {
     state: SettingsHookState;
@@ -17,7 +23,7 @@ export type SettingsHook = {
 };
 
 export function useSettings(): SettingsHook {
-    const [state, setState] = useState<SettingsHookState>({ status: "loading" });
+    const [state, setState] = useState<SettingsHookState>({ status: SETTINGS_STATUS.loading });
     const [reloadTick, setReloadTick] = useState(0);
 
     useEffect(() => {
@@ -26,12 +32,12 @@ export function useSettings(): SettingsHook {
         getSettings()
             .then((settings) => {
                 if (!cancelled) {
-                    setState({ status: "success", settings });
+                    setState({ status: SETTINGS_STATUS.success, settings });
                 }
             })
             .catch((error: unknown) => {
                 if (!cancelled) {
-                    setState({ status: "error", error: toAppErrorView(error) });
+                    setState({ status: SETTINGS_STATUS.error, error: toAppErrorView(error) });
                 }
             });
 
@@ -41,20 +47,20 @@ export function useSettings(): SettingsHook {
     }, [reloadTick]);
 
     const refresh = useCallback(() => {
-        setState({ status: "loading" });
+        setState({ status: SETTINGS_STATUS.loading });
         setReloadTick((tick) => tick + 1);
     }, []);
 
     const save = useCallback(async (next: AppSettingsDto) => {
         const saved = await ipcSetSettings(next);
-        setState({ status: "success", settings: saved });
+        setState({ status: SETTINGS_STATUS.success, settings: saved });
 
         return saved;
     }, []);
 
     const reset = useCallback(async () => {
         const fresh = await resetSettings();
-        setState({ status: "success", settings: fresh });
+        setState({ status: SETTINGS_STATUS.success, settings: fresh });
 
         return fresh;
     }, []);
