@@ -13,7 +13,7 @@ const DEFAULT_BODY_CLASSES = "flex-1 overflow-y-auto px-7 py-7 space-y-7";
 const FOOTER_BASE = "h-12 border-t border-border flex items-center gap-2 bg-surface-1";
 const FOOTER_PADDING: Record<ScreenFrameFooterPadding, string> = {
     default: "px-5",
-    tight: "px-2.5 justify-end",
+    tight: "px-2 justify-end",
 };
 
 export function ScreenFrame({
