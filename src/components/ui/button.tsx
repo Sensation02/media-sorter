@@ -5,7 +5,7 @@ import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center gap-1.5 font-medium tracking-tight whitespace-nowrap transition-colors disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+    "inline-flex items-center justify-center gap-1.5 font-medium tracking-tight whitespace-nowrap transition-colors cursor-pointer disabled:cursor-not-allowed disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     {
         variants: {
             variant: {
@@ -18,14 +18,22 @@ const buttonVariants = cva(
                     "border border-warning/30 text-warning hover:bg-warning/10 disabled:opacity-50",
             },
             size: {
-                sm: "h-7 px-2.5 text-meta rounded-[5px]",
-                md: "h-8 px-3.5 text-body-sm rounded-md",
-                lg: "h-10 px-5 text-body rounded-md",
+                sm: "h-7 px-2.5 text-meta",
+                md: "h-8 px-3.5 text-body-sm",
+                lg: "h-10 px-5 text-body",
+            },
+            radius: {
+                sm: "rounded-[5px]",
+                md: "rounded-md",
+                lg: "rounded-lg",
+                xl: "rounded-xl",
+                pill: "rounded-full",
             },
         },
         defaultVariants: {
             variant: "secondary",
             size: "md",
+            radius: "md",
         },
     },
 );
@@ -39,6 +47,7 @@ export function Button({
     className,
     variant,
     size,
+    radius,
     asChild = false,
     type = "button",
     ...rest
@@ -48,7 +57,7 @@ export function Button({
     return (
         <Comp
             data-slot="button"
-            className={cn(buttonVariants({ variant, size }), className)}
+            className={cn(buttonVariants({ variant, size, radius }), className)}
             {...(asChild ? {} : { type })}
             {...rest}
         />
