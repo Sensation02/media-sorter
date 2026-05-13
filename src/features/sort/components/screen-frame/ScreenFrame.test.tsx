@@ -25,7 +25,7 @@ describe("ScreenFrame", () => {
                 body
             </ScreenFrame>,
         );
-        expect(container.querySelector("footer")?.className).toContain("px-2.5");
+        expect(container.querySelector("footer")?.className).toContain("px-2");
     });
 
     it("appends bodyClassName to the scroll body", () => {

@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 import { SIDEBAR_ITEMS, type SortScreen } from "../../constants/screens";
 
 export type SidebarProps = {
@@ -13,23 +15,23 @@ export function Sidebar({ active, onNavigate }: SidebarProps) {
                 const isActive = active === item.id;
 
                 return (
-                    <button
+                    <Button
                         key={item.id}
-                        type="button"
+                        variant="ghost"
                         onClick={() => {
                             onNavigate(item.id);
                         }}
                         aria-label={item.label}
                         aria-current={isActive ? "page" : undefined}
                         title={item.label}
-                        className={`w-9 h-9 rounded-md flex items-center justify-center transition-colors ${
+                        className={
                             isActive
-                                ? "bg-surface-2 text-primary"
-                                : "text-fg-3 hover:text-fg-1 hover:bg-hover-soft"
-                        }`}
+                                ? "w-9 h-9 px-0 bg-surface-2 text-primary hover:bg-surface-2 hover:text-primary"
+                                : "w-9 h-9 px-0"
+                        }
                     >
                         <Icon className="h-5 w-5" aria-hidden />
-                    </button>
+                    </Button>
                 );
             })}
         </aside>

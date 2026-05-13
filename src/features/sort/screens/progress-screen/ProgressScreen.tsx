@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
-import { ICON } from "../../constants/icons";
+import { LOG_LEVEL, type SortLogLevel, type SortProgress } from "../../../../types/sort";
 import { Eyebrow } from "../../components/eyebrow";
 import { ScreenFrame } from "../../components/screen-frame";
 import { Stat } from "../../components/stat";
-import { LOG_LEVEL, type SortLogLevel, type SortProgress } from "../../../../types/sort";
+import { ICON } from "../../constants/icons";
 
 const ChevronRight = ICON.chevronRight;
 
@@ -25,7 +25,7 @@ const LOG_DOT_COLORS: Record<SortLogLevel, string> = {
 };
 
 export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenProps) {
-    const pct =
+    const percent =
         progress.total > 0 ? Math.round((progress.processed / progress.total) * PERCENT_BASE) : 0;
 
     return (
@@ -52,10 +52,10 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
                         / {progress.total.toLocaleString()}
                     </span>
                     <span className="ml-auto font-mono text-meta text-fg-2">
-                        {pct}% {"·"} {progress.remaining}
+                        {percent}% {"·"} {progress.remaining}
                     </span>
                 </div>
-                <Progress value={pct} />
+                <Progress value={percent} />
                 <div className="mt-3 flex items-center gap-2 font-mono text-meta text-fg-2">
                     <ChevronRight className="h-3 w-3 text-primary" aria-hidden />
                     <span className="truncate">{progress.current}</span>
@@ -82,11 +82,11 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
                                 key={`${entry.time}-${index}`}
                                 className="px-4 py-2 flex items-baseline gap-3 font-mono text-caption"
                             >
-                                <span className="text-fg-3 tabular-nums w-[58px] flex-shrink-0">
+                                <span className="text-fg-3 tabular-nums w-14.5 shrink-0">
                                     {entry.time}
                                 </span>
                                 <span
-                                    className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${LOG_DOT_COLORS[entry.level]}`}
+                                    className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${LOG_DOT_COLORS[entry.level]}`}
                                 />
                                 <span
                                     className={

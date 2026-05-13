@@ -1,4 +1,5 @@
 import * as SelectPrimitive from "@radix-ui/react-select";
+import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown } from "lucide-react";
 import type { ComponentProps } from "react";
 
@@ -7,22 +8,35 @@ import { cn } from "@/lib/utils";
 export const Select = SelectPrimitive.Root;
 export const SelectValue = SelectPrimitive.Value;
 
-export function SelectTrigger({
-    className,
-    children,
-    ...props
-}: ComponentProps<typeof SelectPrimitive.Trigger>) {
+const selectTriggerVariants = cva(
+    cn(
+        "flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-surface-1 text-left transition-colors",
+        "hover:border-border-strong",
+        "focus-visible:border-primary/40 focus-visible:outline-none",
+        "data-[state=open]:border-primary/40 data-[state=open]:bg-surface-2",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+    ),
+    {
+        variants: {
+            size: {
+                sm: "h-9 px-3 py-1.5 text-body-sm",
+                md: "h-(--select-trigger-height) px-4 py-3 text-body",
+            },
+        },
+        defaultVariants: {
+            size: "md",
+        },
+    },
+);
+
+export type SelectTriggerProps = ComponentProps<typeof SelectPrimitive.Trigger> &
+    VariantProps<typeof selectTriggerVariants>;
+
+export function SelectTrigger({ className, children, size, ...props }: SelectTriggerProps) {
     return (
         <SelectPrimitive.Trigger
             data-slot="select-trigger"
-            className={cn(
-                "flex h-(--select-trigger-height) w-full items-center justify-between gap-2 rounded-lg border border-border bg-surface-1 px-4 py-3 text-left text-body transition-colors",
-                "hover:border-border-strong",
-                "focus-visible:border-primary/40 focus-visible:outline-none",
-                "data-[state=open]:border-primary/40 data-[state=open]:bg-surface-2",
-                "disabled:cursor-not-allowed disabled:opacity-50",
-                className,
-            )}
+            className={cn(selectTriggerVariants({ size }), className)}
             {...props}
         >
             {children}

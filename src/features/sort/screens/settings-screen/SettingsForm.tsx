@@ -2,23 +2,26 @@ import { useCallback, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-import { ScreenFrame } from "../../components/screen-frame";
 import type { AppSettingsDto } from "../../../../types/ipc";
+import { ScreenFrame } from "../../components/screen-frame";
+import { LANGUAGE_NATIVE_NAME, UNKNOWN_DATE_FOLDER_PLACEHOLDER } from "../../constants/locale";
+import { RETENTION_PRESETS } from "../../constants/retention";
+import { retentionLabel, snapToPreset } from "../../mappers/retention";
 
-const LANGUAGE_NATIVE_NAME: Record<string, string> = {
-    en: "English",
-    uk: "Українська",
-};
+import { SettingsRow } from "./SettingsRow";
 
-const UNKNOWN_DATE_FOLDER_PLACEHOLDER: Record<string, string> = {
-    en: "Misc",
-    uk: "Різне",
-};
-
-const MIN_RETENTION_DAYS = 7;
-const MAX_RETENTION_DAYS = 365;
+const SETTINGS_CONTROL_WIDTH = "w-44";
+const SETTINGS_CONTROL_SHAPE = "h-9 rounded-md";
 
 export type SettingsFormProps = {
     settings: AppSettingsDto;
@@ -29,12 +32,10 @@ export type SettingsFormProps = {
 export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
     const [prevSettings, setPrevSettings] = useState(settings);
     const [folderDraft, setFolderDraft] = useState(settings.unknownDateFolderName ?? "");
-    const [retentionDraft, setRetentionDraft] = useState(String(settings.historyRetentionDays));
 
     if (settings !== prevSettings) {
         setPrevSettings(settings);
         setFolderDraft(settings.unknownDateFolderName ?? "");
-        setRetentionDraft(String(settings.historyRetentionDays));
     }
 
     const handleToggle = useCallback(
@@ -55,20 +56,18 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
         void onSave({ ...settings, unknownDateFolderName: next });
     }, [folderDraft, settings, onSave]);
 
-    const handleRetentionBlur = useCallback(() => {
-        const parsed = Number.parseInt(retentionDraft, 10);
-        const clamped = Number.isFinite(parsed)
-            ? Math.min(Math.max(parsed, MIN_RETENTION_DAYS), MAX_RETENTION_DAYS)
-            : settings.historyRetentionDays;
+    const handleRetentionChange = useCallback(
+        (next: string) => {
+            const days = Number.parseInt(next, 10);
 
-        if (clamped === settings.historyRetentionDays) {
-            setRetentionDraft(String(settings.historyRetentionDays));
+            if (!Number.isFinite(days) || days === settings.historyRetentionDays) {
+                return;
+            }
 
-            return;
-        }
-
-        void onSave({ ...settings, historyRetentionDays: clamped });
-    }, [retentionDraft, settings, onSave]);
+            void onSave({ ...settings, historyRetentionDays: days });
+        },
+        [settings, onSave],
+    );
 
     const placeholder =
         UNKNOWN_DATE_FOLDER_PLACEHOLDER[settings.uiLanguage] ?? UNKNOWN_DATE_FOLDER_PLACEHOLDER.en;
@@ -79,93 +78,92 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
         <ScreenFrame bodyClassName="space-y-5">
             <Card className="overflow-hidden">
                 <ul className="divide-y divide-divider-soft">
-                    <li className="px-4 py-3.5 flex items-center gap-4">
-                        <div className="flex-1">
-                            <div className="text-body">Remember last sort rule</div>
-                            <div className="text-meta text-fg-3 mt-0.5">
-                                Start each session with the rule you used last time.
-                            </div>
-                        </div>
-                        <Switch
-                            checked={settings.rememberLastSortRule}
-                            onCheckedChange={(value) => {
-                                handleToggle("rememberLastSortRule", value);
-                            }}
-                        />
-                    </li>
-                    <li className="px-4 py-3.5 flex items-center gap-4">
-                        <div className="flex-1">
-                            <div className="text-body">Remember last destination</div>
-                            <div className="text-meta text-fg-3 mt-0.5">
-                                Preselect the destination folder from the last sort.
-                            </div>
-                        </div>
-                        <Switch
-                            checked={settings.rememberLastDestination}
-                            onCheckedChange={(value) => {
-                                handleToggle("rememberLastDestination", value);
-                            }}
-                        />
-                    </li>
+                    <SettingsRow
+                        label="Remember last sort rule"
+                        description="Start each session with the rule you used last time."
+                        control={
+                            <Switch
+                                checked={settings.rememberLastSortRule}
+                                onCheckedChange={(value) => {
+                                    handleToggle("rememberLastSortRule", value);
+                                }}
+                            />
+                        }
+                    />
+                    <SettingsRow
+                        label="Remember last destination"
+                        description="Preselect the destination folder from the last sort."
+                        control={
+                            <Switch
+                                checked={settings.rememberLastDestination}
+                                onCheckedChange={(value) => {
+                                    handleToggle("rememberLastDestination", value);
+                                }}
+                            />
+                        }
+                    />
                 </ul>
             </Card>
 
             <Card className="overflow-hidden">
                 <ul className="divide-y divide-divider-soft">
-                    <li className="px-4 py-3.5 flex items-center gap-4">
-                        <div className="flex-1">
-                            <div className="text-body">Unknown-date folder name</div>
-                            <div className="text-meta text-fg-3 mt-0.5">
-                                Files without a capture date land here. Leave empty for the locale
-                                default.
+                    <SettingsRow
+                        label="Unknown-date folder name"
+                        description="Files without a capture date land here. Leave empty for the locale default."
+                        control={
+                            <Input
+                                value={folderDraft}
+                                placeholder={placeholder}
+                                maxLength={64}
+                                onChange={(event) => {
+                                    setFolderDraft(event.target.value);
+                                }}
+                                onBlur={handleFolderBlur}
+                                className={SETTINGS_CONTROL_WIDTH}
+                            />
+                        }
+                    />
+                    <SettingsRow
+                        label="History retention"
+                        description="Undo logs older than this are cleared at startup."
+                        control={
+                            <div className={SETTINGS_CONTROL_WIDTH}>
+                                <Select
+                                    value={String(snapToPreset(settings.historyRetentionDays))}
+                                    onValueChange={handleRetentionChange}
+                                >
+                                    <SelectTrigger size="sm" className="rounded-md">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {RETENTION_PRESETS.map((preset) => (
+                                            <SelectItem
+                                                key={preset.days}
+                                                value={String(preset.days)}
+                                            >
+                                                {retentionLabel(preset, settings.uiLanguage)}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
-                        </div>
-                        <input
-                            type="text"
-                            value={folderDraft}
-                            placeholder={placeholder}
-                            maxLength={64}
-                            onChange={(event) => {
-                                setFolderDraft(event.target.value);
-                            }}
-                            onBlur={handleFolderBlur}
-                            className="w-44 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-body outline-none focus:border-fg-2"
-                        />
-                    </li>
-                    <li className="px-4 py-3.5 flex items-center gap-4">
-                        <div className="flex-1">
-                            <div className="text-body">History retention (days)</div>
-                            <div className="text-meta text-fg-3 mt-0.5">
-                                Undo logs older than this are cleared at startup. Min{" "}
-                                {MIN_RETENTION_DAYS}, max {MAX_RETENTION_DAYS}.
-                            </div>
-                        </div>
-                        <input
-                            type="number"
-                            value={retentionDraft}
-                            min={MIN_RETENTION_DAYS}
-                            max={MAX_RETENTION_DAYS}
-                            onChange={(event) => {
-                                setRetentionDraft(event.target.value);
-                            }}
-                            onBlur={handleRetentionBlur}
-                            className="w-24 rounded-md border border-divider-soft bg-surface-2 px-2.5 py-1.5 text-body outline-none focus:border-fg-2"
-                        />
-                    </li>
-                    <li className="px-4 py-3.5 flex items-center gap-4">
-                        <div className="flex-1">
-                            <div className="text-body">Language</div>
-                            <div className="text-meta text-fg-3 mt-0.5">
-                                Available in a follow-up release (EPIC-10).
-                            </div>
-                        </div>
-                        <div className="text-body text-fg-3">{languageDisplay}</div>
-                    </li>
+                        }
+                    />
+                    <SettingsRow
+                        label="Language"
+                        description="Available in a follow-up release (EPIC-10)."
+                        control={<div className="text-body text-fg-3">{languageDisplay}</div>}
+                    />
                 </ul>
             </Card>
 
             <div className="flex justify-end">
-                <Button variant="secondary" size="sm" onClick={() => void onReset()}>
+                <Button
+                    variant="secondary"
+                    radius="lg"
+                    onClick={() => void onReset()}
+                    className={SETTINGS_CONTROL_SHAPE}
+                >
                     Reset to defaults
                 </Button>
             </div>

@@ -4,7 +4,7 @@ import type { SortStatus } from "../../../../types/sort";
 export type ToolbarProps = {
     jobName: string;
     status?: SortStatus;
-    subtitle?: string;
+    subtitle?: string | undefined;
 };
 
 export function Toolbar({ jobName, status = "idle", subtitle }: ToolbarProps) {

@@ -74,7 +74,13 @@ export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
         <ScreenFrame
             footerPadding="tight"
             footer={
-                <Button variant="primary" size="md" onClick={handleRun} disabled={!canRun}>
+                <Button
+                    variant="primary"
+                    size="md"
+                    radius="lg"
+                    onClick={handleRun}
+                    disabled={!canRun}
+                >
                     Run sort <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                 </Button>
             }
