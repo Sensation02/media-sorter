@@ -33,7 +33,7 @@ const buttonVariants = cva(
         defaultVariants: {
             variant: "secondary",
             size: "md",
-            radius: "md",
+            radius: "lg",
         },
     },
 );

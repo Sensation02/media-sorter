@@ -23,7 +23,7 @@ import { retentionLabelKey, snapToPreset } from "../../mappers/retention";
 import { SettingsRow } from "./SettingsRow";
 
 const SETTINGS_CONTROL_WIDTH = "w-44";
-const SETTINGS_CONTROL_SHAPE = "h-9 rounded-md";
+const SETTINGS_CONTROL_SHAPE = "h-9";
 
 export type SettingsFormProps = {
     settings: AppSettingsDto;
@@ -195,7 +195,6 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
             <div className="flex justify-end">
                 <Button
                     variant="secondary"
-                    radius="lg"
                     onClick={() => void onReset()}
                     className={SETTINGS_CONTROL_SHAPE}
                 >
