@@ -16,8 +16,10 @@ const PERCENT_BASE = 100;
 
 export type ProgressScreenProps = {
     progress: SortProgress;
+    completed: boolean;
     onPause: () => void;
     onCancel: () => void;
+    onContinue: () => void;
 };
 
 const LOG_DOT_COLORS: Record<SortLogLevel, string> = {
@@ -26,26 +28,44 @@ const LOG_DOT_COLORS: Record<SortLogLevel, string> = {
     error: "bg-destructive",
 };
 
-export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenProps) {
+export function ProgressScreen({
+    progress,
+    completed,
+    onPause,
+    onCancel,
+    onContinue,
+}: ProgressScreenProps) {
     const { t, i18n } = useTranslation("progress");
     const { t: tCommon } = useTranslation("common");
     const formatter = new Intl.NumberFormat(i18n.language);
-    const percent =
-        progress.total > 0 ? Math.round((progress.processed / progress.total) * PERCENT_BASE) : 0;
+    const percent = completed
+        ? PERCENT_BASE
+        : progress.total > 0
+          ? Math.round((progress.processed / progress.total) * PERCENT_BASE)
+          : 0;
 
     return (
         <ScreenFrame
             bodyClassName="space-y-6"
             footer={
-                <>
-                    <Button variant="cautious" size="md" onClick={onCancel}>
-                        {t("cancelSort")}
-                    </Button>
-                    <div className="ml-auto" />
-                    <Button variant="secondary" size="md" onClick={onPause}>
-                        {t("pause")}
-                    </Button>
-                </>
+                completed ? (
+                    <>
+                        <div className="ml-auto" />
+                        <Button variant="primary" size="md" onClick={onContinue}>
+                            {t("continue")}
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <Button variant="cautious" size="md" onClick={onCancel}>
+                            {t("cancelSort")}
+                        </Button>
+                        <div className="ml-auto" />
+                        <Button variant="secondary" size="md" onClick={onPause}>
+                            {t("pause")}
+                        </Button>
+                    </>
+                )
             }
         >
             <section>
@@ -57,14 +77,16 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
                         / {formatter.format(progress.total)}
                     </span>
                     <span className="ml-auto font-mono text-meta text-fg-2">
-                        {percent}% {"·"} {progress.remaining}
+                        {percent}% {completed ? "" : `· ${progress.remaining}`}
                     </span>
                 </div>
                 <Progress value={percent} />
-                <div className="mt-3 flex items-center gap-2 font-mono text-meta text-fg-2">
-                    <ChevronRight className="h-3 w-3 text-primary" aria-hidden />
-                    <span className="truncate">{progress.current}</span>
-                </div>
+                {!completed && (
+                    <div className="mt-3 flex items-center gap-2 font-mono text-meta text-fg-2">
+                        <ChevronRight className="h-3 w-3 text-primary" aria-hidden />
+                        <span className="truncate">{progress.current}</span>
+                    </div>
+                )}
             </section>
 
             <section className="flex gap-3">

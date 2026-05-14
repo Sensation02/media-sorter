@@ -6,12 +6,14 @@ import { ErrorBoundary } from "./components/error-boundary";
 import { Sidebar } from "./components/sidebar";
 import { Toolbar } from "./components/toolbar";
 import { SORT_SCREEN, TOOLBAR_STATUS, type SortScreen } from "./constants/screens";
+import { JOB_STATUS } from "./hooks/use-sort-job";
 import { useDefaultRules } from "./hooks/use-default-rules";
 import { useSortOrchestration } from "./hooks/use-sort-orchestration";
 import { preferredDefaultRule } from "./mappers/preferred-rule";
 import { resolveScreen } from "./mappers/resolve-screen";
 import { toSortDone } from "./mappers/to-sort-done";
 import { DoneScreen, HistoryScreen, ProgressScreen, SettingsScreen, SetupScreen } from "./screens";
+import { SORT_STATUS } from "../../types/sort";
 
 const TOOLBAR_TITLE_KEY: Record<SortScreen, string> = {
     [SORT_SCREEN.setup]: "newSort",
@@ -33,18 +35,22 @@ export function SortApp() {
         useSortOrchestration();
 
     const effectiveScreen = resolveScreen(screen, job.status);
-    const subtitleKey = TOOLBAR_SUBTITLE_KEY[effectiveScreen];
+    const progressCompleted =
+        effectiveScreen === SORT_SCREEN.progress && job.status === JOB_STATUS.done;
+    const titleKey = progressCompleted
+        ? TOOLBAR_TITLE_KEY[SORT_SCREEN.done]
+        : TOOLBAR_TITLE_KEY[effectiveScreen];
+    const subtitleKey = progressCompleted
+        ? TOOLBAR_SUBTITLE_KEY[SORT_SCREEN.done]
+        : TOOLBAR_SUBTITLE_KEY[effectiveScreen];
     const subtitle = subtitleKey === undefined ? undefined : t(subtitleKey);
+    const toolbarStatus = progressCompleted ? SORT_STATUS.idle : TOOLBAR_STATUS[effectiveScreen];
 
     return (
         <div className="h-screen w-screen flex bg-bg text-fg-1 antialiased">
             <Sidebar active={screen} onNavigate={setScreen} />
             <div className="flex-1 flex flex-col min-w-0">
-                <Toolbar
-                    jobName={t(TOOLBAR_TITLE_KEY[effectiveScreen])}
-                    status={TOOLBAR_STATUS[effectiveScreen]}
-                    subtitle={subtitle}
-                />
+                <Toolbar jobName={t(titleKey)} status={toolbarStatus} subtitle={subtitle} />
                 <main className="flex-1 min-h-0">
                     <ErrorBoundary>
                         {effectiveScreen === SORT_SCREEN.setup && (
@@ -67,11 +73,15 @@ export function SortApp() {
                         {effectiveScreen === SORT_SCREEN.progress && (
                             <ProgressScreen
                                 progress={job.progress}
+                                completed={progressCompleted}
                                 onPause={() => {
                                     void handlers.pause();
                                 }}
                                 onCancel={() => {
                                     void handlers.cancel();
+                                }}
+                                onContinue={() => {
+                                    setScreen(SORT_SCREEN.done);
                                 }}
                             />
                         )}

@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - History retention is now a dropdown with preset windows (1 week, 1 month, 3 / 6 / 12 months) instead of a free-text day count
 - Photos and videos sorted with the Ukrainian UI now go into Ukrainian-named month folders (наприклад, "Лютий 2024" замість "February 2024")
 - New language picker in Settings — switch between English and Ukrainian; takes effect immediately for the UI and for future sorts
+- After a sort finishes the progress screen now stays on screen with the final counters, so quick jobs no longer flash past; tap "Continue" when you're ready to see the result summary
 
 ### Bug Fixes
 

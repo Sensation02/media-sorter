@@ -6,10 +6,6 @@ export function resolveScreen(screen: SortScreen, jobStatus: SortJobStatus): Sor
         return screen;
     }
 
-    if (jobStatus === JOB_STATUS.done) {
-        return SORT_SCREEN.done;
-    }
-
     if (jobStatus === JOB_STATUS.error) {
         return SORT_SCREEN.setup;
     }
