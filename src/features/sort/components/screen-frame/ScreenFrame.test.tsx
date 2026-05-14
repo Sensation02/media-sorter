@@ -19,12 +19,8 @@ describe("ScreenFrame", () => {
         expect(container.querySelector("footer")).toBeNull();
     });
 
-    it("supports a tight footer variant with reduced horizontal padding", () => {
-        const { container } = render(
-            <ScreenFrame footer={<span />} footerPadding="tight">
-                body
-            </ScreenFrame>,
-        );
+    it("renders the footer with px-2 horizontal padding", () => {
+        const { container } = render(<ScreenFrame footer={<span />}>body</ScreenFrame>);
         expect(container.querySelector("footer")?.className).toContain("px-2");
     });
 

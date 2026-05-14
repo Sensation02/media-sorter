@@ -73,14 +73,13 @@ export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
 
     return (
         <ScreenFrame
-            footerPadding="tight"
             footer={
                 <Button
                     variant="primary"
                     size="md"
-                    radius="lg"
                     onClick={handleRun}
                     disabled={!canRun}
+                    className="ml-auto"
                 >
                     {t("runSort")} <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                 </Button>

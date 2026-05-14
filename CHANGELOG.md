@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New language picker in Settings — switch between English and Ukrainian; takes effect immediately for the UI and for future sorts
 - After a sort finishes the progress screen now stays on screen with the final counters, so quick jobs no longer flash past; tap "Continue" when you're ready to see the result summary
 - Durations under one second now show as "0.4 s" (or "0,4 с" in Ukrainian) on the progress, done, and history screens instead of a stuck "00:00"
+- Buttons now use the larger pill-style rounding everywhere by default for a more consistent look across screens
 
 ### Bug Fixes
 
