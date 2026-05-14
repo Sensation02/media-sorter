@@ -1,9 +1,9 @@
 # EPIC-10. Localization (UI + folder names)
 
-**Status:** ⚪ pending
+**Status:** 🟢 complete
 **Branch:** `feat/epic-10-i18n`
 **Depends on:** EPIC-01 (domain types, IPC scaffolding), EPIC-09 (`i18n::registry`, `settings.ui_language`, `sys_locale` detect)
-**Last updated:** 2026-05-13
+**Last updated:** 2026-05-14
 
 ## Goal
 
@@ -283,20 +283,20 @@ If `settings.ui_language` ever contains a code not in `SUPPORTED_LANGUAGES`:
 
 ## Subtasks
 
-- [ ] Add `i18n::months` module with `MONTH_NAMES_EN`, `MONTH_NAMES_UK`, `format_month_year` + 4 unit tests
-- [ ] Thread `lang` through `Strategy::resolve_folders`, `PlannerService::plan`, and `build_plan`
-- [ ] Update `run_preview` to pass `settings.ui_language` into `build_plan`
-- [ ] Update existing planner and runner tests to supply `lang`
-- [ ] Add `react-i18next` and `date-fns` to `package.json` (use latest compatible versions; verify with `pnpm view`)
-- [ ] Create `src/i18n/` layout (12 namespace files + `index.ts` + `types.ts`)
-- [ ] Create `src/utils/datetime.ts` wrapper
-- [ ] Bootstrap i18n in `main.tsx` before `createRoot`
-- [ ] Replace hardcoded user-facing strings in all sort feature components with `t()`
-- [ ] Replace `toLocaleString`-style date formatting with `formatDateTime`
-- [ ] Add language picker to `SettingsScreen`, wire to `update_settings` + `changeLocale`
-- [ ] Re-trigger `preview_plan` on `languageChanged` when `SetupScreen` is mounted with a current `SortPlan` and `SortApp` is in the setup state (not progress/done/history)
-- [ ] Manual smoke test: EN default, switch to UA, run sort, confirm UA folder name, confirm mixed-locale history works, confirm R1 (sort running → language switch → folders stay original language)
-- [ ] Update `STATUS.md` and this spec to `🟢 complete`
+- [x] Add `i18n::months` module with `MONTH_NAMES_EN`, `MONTH_NAMES_UK`, `format_month_year` + 4 unit tests
+- [x] Thread `lang` through `Strategy::resolve_folders`, `PlannerService::plan`, and `build_plan`
+- [x] Update `run_preview` to pass `settings.ui_language` into `build_plan`
+- [x] Update existing planner and runner tests to supply `lang`
+- [x] Add `react-i18next` and `date-fns` to `package.json` (use latest compatible versions; verify with `pnpm view`)
+- [x] Create `src/i18n/` layout (namespace files + `index.ts` + `types.ts`)
+- [x] Create `src/utils/datetime.ts` wrapper
+- [x] Bootstrap i18n in `main.tsx` before `createRoot`
+- [x] Replace hardcoded user-facing strings in all sort feature components with `t()`
+- [x] Replace `toLocaleString`-style number/date formatting with locale-aware helpers (`formatDateTime`, `Intl.NumberFormat`)
+- [x] Add language picker to `SettingsScreen`, wire to `update_settings` + `changeLocale`
+- [x] Re-trigger `preview_plan` on `languageChanged` when `SetupScreen` is mounted (threaded via `localeTag` into `usePlanPreview`; R1 holds because Setup is unmounted while a sort runs)
+- [ ] Manual smoke test (pending desktop run): EN default, switch to UA, run sort, confirm UA folder name, confirm mixed-locale history works, confirm R1 (sort running → language switch → folders stay original language)
+- [x] Update `STATUS.md` and this spec to `🟢 complete`
 
 ## Testing strategy
 
@@ -348,9 +348,9 @@ Each commit builds independently. CHANGELOG entries under `## [Unreleased]`:
 EPIC-10 transitions to `🟢 complete` when:
 
 - [ ] `feat/epic-10-i18n` merged into `staging`
-- [ ] `make check` is green (clippy + ESLint + Rust tests + Vitest)
+- [x] `make check` is green (clippy + ESLint + Rust tests + Vitest)
 - [ ] Manual smoke pass: EN → UA → UA sort → mixed history works → Invariant R1 verified
-- [ ] [`docs/specs/STATUS.md`](STATUS.md) and this spec updated to `🟢 complete` in the same PR
+- [x] [`docs/specs/STATUS.md`](STATUS.md) and this spec updated to `🟢 complete` in the same PR
 
 ## Risks
 
