@@ -1,6 +1,8 @@
 export default {
     sourceFolder: "Тека з джерелом",
     chooseFolder: "Обрати теку",
+    browse: "Огляд…",
+    scanning: "Сканування…",
     rule: "Правило сортування",
     pickRule: "Оберіть правило",
     runSort: "Сортувати",
@@ -8,4 +10,13 @@ export default {
     requiresAtLeastOneRule: "SetupScreen потребує принаймні одне правило",
     previewIdle: "Оберіть теку з джерелом, щоб побачити структуру",
     previewLoading: "Будуємо попередній перегляд…",
+    previewEmpty: "Жоден медіафайл не підпадає під обране правило",
+    outputPreview: "Попередній перегляд",
+    filesSummary_one: "{{value}} файл",
+    filesSummary_few: "{{value}} файли",
+    filesSummary_many: "{{value}} файлів",
+    filesSummary_other: "{{value}} файлів",
+    breakdownPhotos: "Фото",
+    breakdownRaw: "RAW",
+    breakdownVideos: "Відео",
 } as const;

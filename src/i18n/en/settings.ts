@@ -1,12 +1,20 @@
 export default {
+    loading: "Loading settings…",
     rememberLastSortRule: "Remember last sort rule",
     rememberLastSortRuleDescription: "Start each session with the rule you used last time.",
     rememberLastDestination: "Remember last destination",
+    rememberLastDestinationDescription: "Preselect the destination folder from the last sort.",
     unknownDateFolderName: "Unknown-date folder name",
     unknownDateFolderNameDescription:
         "Files without a capture date land here. Leave empty for the locale default.",
     historyRetention: "History retention",
     historyRetentionDescription: "Undo logs older than this are cleared at startup.",
     language: "Language",
+    languageDescription: "Switch the UI and folder-name language.",
     copyInsteadOfMove: "Copy instead of move",
+    retention1Week: "1 week",
+    retention1Month: "1 month",
+    retention3Months: "3 months",
+    retention6Months: "6 months",
+    retention12Months: "12 months",
 } as const;

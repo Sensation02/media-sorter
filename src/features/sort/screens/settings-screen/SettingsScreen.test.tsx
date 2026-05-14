@@ -112,7 +112,8 @@ describe("SettingsScreen", () => {
             />,
         );
 
-        expect(screen.getByRole("combobox")).toHaveTextContent("3 months");
+        const [retentionCombobox] = screen.getAllByRole("combobox");
+        expect(retentionCombobox).toHaveTextContent("3 months");
     });
 
     it("retention snaps non-preset values to the next preset", () => {
@@ -125,7 +126,8 @@ describe("SettingsScreen", () => {
             />,
         );
 
-        expect(screen.getByRole("combobox")).toHaveTextContent("3 months");
+        const [retentionCombobox] = screen.getAllByRole("combobox");
+        expect(retentionCombobox).toHaveTextContent("3 months");
     });
 
     it("reset button calls onReset", () => {

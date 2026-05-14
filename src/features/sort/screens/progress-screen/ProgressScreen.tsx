@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -25,6 +27,9 @@ const LOG_DOT_COLORS: Record<SortLogLevel, string> = {
 };
 
 export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenProps) {
+    const { t, i18n } = useTranslation("progress");
+    const { t: tCommon } = useTranslation("common");
+    const formatter = new Intl.NumberFormat(i18n.language);
     const percent =
         progress.total > 0 ? Math.round((progress.processed / progress.total) * PERCENT_BASE) : 0;
 
@@ -34,11 +39,11 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
             footer={
                 <>
                     <Button variant="cautious" size="md" onClick={onCancel}>
-                        Cancel sort
+                        {t("cancelSort")}
                     </Button>
                     <div className="ml-auto" />
                     <Button variant="secondary" size="md" onClick={onPause}>
-                        Pause
+                        {t("pause")}
                     </Button>
                 </>
             }
@@ -46,10 +51,10 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
             <section>
                 <div className="flex items-baseline gap-3 mb-3">
                     <span className="font-mono text-display font-medium tracking-display">
-                        {progress.processed.toLocaleString()}
+                        {formatter.format(progress.processed)}
                     </span>
                     <span className="font-mono text-title text-fg-3">
-                        / {progress.total.toLocaleString()}
+                        / {formatter.format(progress.total)}
                     </span>
                     <span className="ml-auto font-mono text-meta text-fg-2">
                         {percent}% {"·"} {progress.remaining}
@@ -63,18 +68,18 @@ export function ProgressScreen({ progress, onPause, onCancel }: ProgressScreenPr
             </section>
 
             <section className="flex gap-3">
-                <Stat label="Moved" value={progress.moved} />
+                <Stat label={tCommon("moved")} value={progress.moved} />
                 <Stat
-                    label="Skipped"
+                    label={tCommon("skipped")}
                     value={progress.skipped}
                     tone={progress.skipped > 0 ? "warning" : "default"}
                 />
-                <Stat label="Folders" value={progress.folders} />
-                <Stat label="Elapsed" value={progress.elapsed} />
+                <Stat label={tCommon("folders")} value={progress.folders} />
+                <Stat label={tCommon("elapsed")} value={progress.elapsed} />
             </section>
 
             <section>
-                <Eyebrow className="mb-2.5">Activity log</Eyebrow>
+                <Eyebrow className="mb-2.5">{t("activityLog")}</Eyebrow>
                 <Card className="overflow-hidden">
                     <ul className="divide-y divide-divider-soft">
                         {progress.log.map((entry, index) => (

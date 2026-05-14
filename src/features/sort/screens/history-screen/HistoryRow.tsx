@@ -1,9 +1,12 @@
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 
 import { ICON } from "../../constants/icons";
-import { formatHistoryDate, formatHistoryDuration } from "../../mappers/history-format";
+import { formatHistoryDuration, historyDateParts } from "../../mappers/history-format";
 import type { HistoryItemDto, JobId } from "../../../../types/ipc";
 import { HistoryStats } from "./HistoryStats";
+import { renderHistoryDate } from "./render-history-date";
 
 const Undo = ICON.undo;
 
@@ -16,7 +19,9 @@ export type HistoryRowProps = {
 };
 
 export function HistoryRow({ job, nowMs, onRevert }: HistoryRowProps) {
-    const date = formatHistoryDate(job.startedAtMs, nowMs);
+    const { t } = useTranslation("history");
+    const parts = historyDateParts(job.startedAtMs, nowMs);
+    const date = renderHistoryDate(t, parts);
     const duration = formatHistoryDuration(job.durationMs);
     const canRevert = REVERTABLE_STATES.has(job.state);
 
@@ -38,10 +43,10 @@ export function HistoryRow({ job, nowMs, onRevert }: HistoryRowProps) {
                 }}
             >
                 {job.state === "reverted" ? (
-                    "Reverted"
+                    t("reverted")
                 ) : (
                     <>
-                        <Undo className="h-3.5 w-3.5" aria-hidden /> Revert
+                        <Undo className="h-3.5 w-3.5" aria-hidden /> {t("revert")}
                     </>
                 )}
             </Button>

@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 import type { ScanId, ScanSummary, SortPlan } from "../../../../types/ipc";
 import type { SortRule, SortRuleId } from "../../../../types/sort";
-import { formatBytes } from "../../../../utils";
+import { formatBytes, formatNumber } from "../../../../utils";
 import { Eyebrow } from "../../components/eyebrow";
 import { PreviewTree } from "../../components/preview-tree";
 import { RuleSelector } from "../../components/rule-selector";
@@ -18,8 +19,6 @@ import { resolveDefaultRule } from "../../mappers/resolve-default-rule";
 const Loader = ICON.loader;
 const Folder = ICON.folder;
 const ArrowRight = ICON.arrowRight;
-
-const EMPTY_PATH_LABEL = "No folder selected";
 
 export type SetupScreenSource = {
     summary: ScanSummary | null;
@@ -44,10 +43,12 @@ export type SetupScreenProps = {
 };
 
 export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
+    const { t, i18n } = useTranslation("setup");
+    const { t: tCommon } = useTranslation("common");
     const firstRule = rule.rules[0];
 
     if (!firstRule) {
-        throw new Error("SetupScreen requires at least one rule");
+        throw new Error(t("requiresAtLeastOneRule"));
     }
 
     const resolvedDefault = resolveDefaultRule(rule.defaultId, rule.rules, firstRule.id);
@@ -58,7 +59,7 @@ export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
         setPrevDefault(resolvedDefault);
         setRuleId(resolvedDefault);
     }
-    const previewState = usePlanPreview(source.scanId, ruleId);
+    const previewState = usePlanPreview(source.scanId, ruleId, i18n.language);
     const canRun = source.summary !== null && !source.scanning && previewState.status === "success";
     const plan = previewState.status === "success" ? previewState.plan : null;
 
@@ -81,30 +82,33 @@ export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
                     onClick={handleRun}
                     disabled={!canRun}
                 >
-                    Run sort <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                    {t("runSort")} <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                 </Button>
             }
         >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
                 <section>
-                    <Eyebrow className="mb-2.5">Source folder</Eyebrow>
+                    <Eyebrow className="mb-2.5">{t("sourceFolder")}</Eyebrow>
                     <Card className="px-4 py-3 flex items-center gap-3">
                         <Folder className="h-4 w-4 text-fg-3" aria-hidden />
                         <span
                             className={`font-mono text-body flex-1 truncate ${source.summary === null ? "text-fg-3" : ""}`}
                         >
-                            {source.summary?.root ?? EMPTY_PATH_LABEL}
+                            {source.summary?.root ?? tCommon("noFolderSelected")}
                         </span>
                         {source.scanning ? (
                             <span className="flex items-center gap-2 font-mono text-meta-sm text-fg-3">
                                 <Loader className="w-3 h-3 animate-spin" aria-hidden />
-                                Scanning…
+                                {t("scanning")}
                             </span>
                         ) : (
                             source.summary !== null && (
                                 <span className="font-mono text-meta-sm text-fg-3">
-                                    {source.summary.fileCount.toLocaleString()} files {"·"}{" "}
-                                    {formatBytes(source.summary.sizeBytes)}
+                                    {t("filesSummary", {
+                                        count: source.summary.fileCount,
+                                        value: formatNumber(source.summary.fileCount),
+                                    })}{" "}
+                                    {"·"} {formatBytes(source.summary.sizeBytes)}
                                 </span>
                             )
                         )}
@@ -114,7 +118,7 @@ export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
                             onClick={actions.onPickSource}
                             disabled={source.scanning}
                         >
-                            Browse{"…"}
+                            {t("browse")}
                         </Button>
                     </Card>
                     {source.summary !== null && !source.scanning && (
@@ -123,13 +127,13 @@ export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
                 </section>
 
                 <section>
-                    <Eyebrow className="mb-2.5">Sorting rule</Eyebrow>
+                    <Eyebrow className="mb-2.5">{t("rule")}</Eyebrow>
                     <RuleSelector rules={rule.rules} value={ruleId} onChange={setRuleId} />
                 </section>
             </div>
 
             <section>
-                <Eyebrow className="mb-2.5">Output preview</Eyebrow>
+                <Eyebrow className="mb-2.5">{t("outputPreview")}</Eyebrow>
                 <Card className="px-4 py-4">
                     <PreviewTree state={previewState} />
                 </Card>

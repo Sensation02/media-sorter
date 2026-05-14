@@ -1,6 +1,8 @@
 export default {
     sourceFolder: "Source folder",
     chooseFolder: "Choose folder",
+    browse: "Browse…",
+    scanning: "Scanning…",
     rule: "Sorting rule",
     pickRule: "Pick a rule",
     runSort: "Run sort",
@@ -8,4 +10,11 @@ export default {
     requiresAtLeastOneRule: "SetupScreen requires at least one rule",
     previewIdle: "Pick a source folder to see the layout",
     previewLoading: "Building preview…",
+    previewEmpty: "No media files matched the chosen rule",
+    outputPreview: "Output preview",
+    filesSummary_one: "{{value}} file",
+    filesSummary_other: "{{value}} files",
+    breakdownPhotos: "Photos",
+    breakdownRaw: "RAW",
+    breakdownVideos: "Videos",
 } as const;
