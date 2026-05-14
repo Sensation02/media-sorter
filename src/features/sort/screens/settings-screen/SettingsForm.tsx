@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,15 +14,16 @@ import {
 import { Switch } from "@/components/ui/switch";
 
 import type { AppSettingsDto } from "../../../../types/ipc";
+import { changeLocale, isSupportedLocale, SUPPORTED_LOCALES } from "../../../../i18n";
 import { ScreenFrame } from "../../components/screen-frame";
-import { LANGUAGE_NATIVE_NAME, UNKNOWN_DATE_FOLDER_PLACEHOLDER } from "../../constants/locale";
+import { UNKNOWN_DATE_FOLDER_PLACEHOLDER } from "../../constants/locale";
 import { RETENTION_PRESETS } from "../../constants/retention";
-import { retentionLabel, snapToPreset } from "../../mappers/retention";
+import { retentionLabelKey, snapToPreset } from "../../mappers/retention";
 
 import { SettingsRow } from "./SettingsRow";
 
 const SETTINGS_CONTROL_WIDTH = "w-44";
-const SETTINGS_CONTROL_SHAPE = "h-9 rounded-md";
+const SETTINGS_CONTROL_SHAPE = "h-9";
 
 export type SettingsFormProps = {
     settings: AppSettingsDto;
@@ -30,6 +32,8 @@ export type SettingsFormProps = {
 };
 
 export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
+    const { t } = useTranslation("settings");
+    const { t: tCommon } = useTranslation("common");
     const [prevSettings, setPrevSettings] = useState(settings);
     const [folderDraft, setFolderDraft] = useState(settings.unknownDateFolderName ?? "");
 
@@ -69,18 +73,31 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
         [settings, onSave],
     );
 
+    const handleLanguageChange = useCallback(
+        (next: string) => {
+            if (!isSupportedLocale(next) || next === settings.uiLanguage) {
+                return;
+            }
+
+            void onSave({ ...settings, uiLanguage: next }).then((saved) => {
+                if (isSupportedLocale(saved.uiLanguage)) {
+                    void changeLocale(saved.uiLanguage);
+                }
+            });
+        },
+        [settings, onSave],
+    );
+
     const placeholder =
         UNKNOWN_DATE_FOLDER_PLACEHOLDER[settings.uiLanguage] ?? UNKNOWN_DATE_FOLDER_PLACEHOLDER.en;
-    const languageDisplay =
-        LANGUAGE_NATIVE_NAME[settings.uiLanguage] ?? settings.uiLanguage.toUpperCase();
 
     return (
         <ScreenFrame bodyClassName="space-y-5">
             <Card className="overflow-hidden">
                 <ul className="divide-y divide-divider-soft">
                     <SettingsRow
-                        label="Remember last sort rule"
-                        description="Start each session with the rule you used last time."
+                        label={t("rememberLastSortRule")}
+                        description={t("rememberLastSortRuleDescription")}
                         control={
                             <Switch
                                 checked={settings.rememberLastSortRule}
@@ -91,8 +108,8 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                         }
                     />
                     <SettingsRow
-                        label="Remember last destination"
-                        description="Preselect the destination folder from the last sort."
+                        label={t("rememberLastDestination")}
+                        description={t("rememberLastDestinationDescription")}
                         control={
                             <Switch
                                 checked={settings.rememberLastDestination}
@@ -108,8 +125,8 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
             <Card className="overflow-hidden">
                 <ul className="divide-y divide-divider-soft">
                     <SettingsRow
-                        label="Unknown-date folder name"
-                        description="Files without a capture date land here. Leave empty for the locale default."
+                        label={t("unknownDateFolderName")}
+                        description={t("unknownDateFolderNameDescription")}
                         control={
                             <Input
                                 value={folderDraft}
@@ -124,8 +141,8 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                         }
                     />
                     <SettingsRow
-                        label="History retention"
-                        description="Undo logs older than this are cleared at startup."
+                        label={t("historyRetention")}
+                        description={t("historyRetentionDescription")}
                         control={
                             <div className={SETTINGS_CONTROL_WIDTH}>
                                 <Select
@@ -141,7 +158,7 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                                                 key={preset.days}
                                                 value={String(preset.days)}
                                             >
-                                                {retentionLabel(preset, settings.uiLanguage)}
+                                                {t(retentionLabelKey(preset.days))}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -150,9 +167,27 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                         }
                     />
                     <SettingsRow
-                        label="Language"
-                        description="Available in a follow-up release (EPIC-10)."
-                        control={<div className="text-body text-fg-3">{languageDisplay}</div>}
+                        label={t("language")}
+                        description={t("languageDescription")}
+                        control={
+                            <div className={SETTINGS_CONTROL_WIDTH}>
+                                <Select
+                                    value={settings.uiLanguage}
+                                    onValueChange={handleLanguageChange}
+                                >
+                                    <SelectTrigger size="sm" className="rounded-md">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {SUPPORTED_LOCALES.map((entry) => (
+                                            <SelectItem key={entry.code} value={entry.code}>
+                                                {entry.nativeName}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        }
                     />
                 </ul>
             </Card>
@@ -160,11 +195,10 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
             <div className="flex justify-end">
                 <Button
                     variant="secondary"
-                    radius="lg"
                     onClick={() => void onReset()}
                     className={SETTINGS_CONTROL_SHAPE}
                 >
-                    Reset to defaults
+                    {tCommon("reset")}
                 </Button>
             </div>
         </ScreenFrame>

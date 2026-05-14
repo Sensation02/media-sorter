@@ -1,11 +1,13 @@
+import type { TFunction } from "i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { cancelSort, pauseSort, pickSourceDir, scanSource, startSort } from "../../../ipc";
 import type { JobId, ScanId, ScanSummary, SortPlan, SortSettingsDto } from "../../../types/ipc";
-import { toAppErrorView } from "../../../utils";
+import { formatNumber, toAppErrorView } from "../../../utils";
 import { SORT_SCREEN, type SortScreen } from "../constants/screens";
-import { revertSummary } from "../mappers/revert-summary";
+import { revertSummaryParts } from "../mappers/revert-summary";
 import { useHistory, type HistoryHook } from "./use-history";
 import { SETTINGS_STATUS, useSettings, type SettingsHook } from "./use-settings";
 import { JOB_STATUS, useSortJob, type UseSortJobResult } from "./use-sort-job";
@@ -40,6 +42,7 @@ export type SortOrchestration = {
 };
 
 export function useSortOrchestration(): SortOrchestration {
+    const { t } = useTranslation("history");
     const [screen, setScreen] = useState<SortScreen>(SORT_SCREEN.setup);
     const [source, setSource] = useState<ScanSummary | null>(null);
     const [scanId, setScanId] = useState<ScanId | null>(null);
@@ -139,15 +142,15 @@ export function useSortOrchestration(): SortOrchestration {
         async (id: JobId) => {
             try {
                 const outcome = await history.revert(id);
-                toast.success("Revert complete", {
-                    description: revertSummary(outcome.restored, outcome.skipped, outcome.errors),
+                toast.success(t("revertComplete"), {
+                    description: formatRevertDescription(t, outcome),
                 });
             } catch (error) {
                 const view = toAppErrorView(error);
                 toast.error(view.title, { description: view.detail });
             }
         },
-        [history],
+        [history, t],
     );
 
     const resetForNewSort = useCallback(() => {
@@ -179,4 +182,28 @@ export function useSortOrchestration(): SortOrchestration {
         settings,
         handlers: { pickSource, run, pause, cancel, revert, resetForNewSort },
     };
+}
+
+function formatRevertDescription(
+    t: TFunction<"history">,
+    outcome: { restored: number; skipped: number; errors: number },
+): string {
+    const { restored, skipped, errors } = revertSummaryParts(
+        outcome.restored,
+        outcome.skipped,
+        outcome.errors,
+    );
+    const parts: string[] = [
+        t("revertRestored", { count: restored, value: formatNumber(restored) }),
+    ];
+
+    if (skipped > 0) {
+        parts.push(t("revertSkipped", { count: skipped, value: formatNumber(skipped) }));
+    }
+
+    if (errors > 0) {
+        parts.push(t("revertErrors", { count: errors, value: formatNumber(errors) }));
+    }
+
+    return parts.join(", ");
 }

@@ -12,6 +12,7 @@ pub fn build_plan(
     files: &[MediaFile],
     metadata: &[Metadata],
     unknown_folder: &str,
+    lang: &str,
 ) -> AppResult<SortPlan> {
     if files.len() != metadata.len() {
         return Err(AppError::validation(format!(
@@ -35,6 +36,7 @@ pub fn build_plan(
                 meta,
                 &mut geo,
                 unknown_folder,
+                lang,
             )
         })
         .collect();
@@ -62,8 +64,9 @@ fn build_item(
     metadata: &Metadata,
     geo: &mut GeoCache,
     unknown_folder: &str,
+    lang: &str,
 ) -> SortPlanItem {
-    let segments = strategy.folder_segments(file, metadata, geo, unknown_folder);
+    let segments = strategy.folder_segments(file, metadata, geo, unknown_folder, lang);
     let target = build_target(root, &segments, &file.path);
 
     SortPlanItem {
@@ -133,6 +136,7 @@ mod tests {
             &files,
             &metadata,
             "Misc",
+            "en",
         );
 
         assert!(matches!(result, Err(AppError::Validation { .. })));
@@ -140,8 +144,15 @@ mod tests {
 
     #[test]
     fn build_plan_handles_empty_input() {
-        let plan =
-            build_plan(Path::new("/dest"), SortRuleId::ByDate, &[], &[], "Misc").expect("plan");
+        let plan = build_plan(
+            Path::new("/dest"),
+            SortRuleId::ByDate,
+            &[],
+            &[],
+            "Misc",
+            "en",
+        )
+        .expect("plan");
 
         assert_eq!(plan.rule, SortRuleId::ByDate);
         assert_eq!(plan.root, PathBuf::from("/dest"));
@@ -169,6 +180,7 @@ mod tests {
             &files,
             &metadata,
             "Misc",
+            "en",
         )
         .expect("plan");
 
@@ -194,6 +206,7 @@ mod tests {
             &files,
             &metadata,
             "Misc",
+            "en",
         )
         .expect("plan");
 
@@ -220,6 +233,7 @@ mod tests {
             &files,
             &metadata,
             "Misc",
+            "en",
         )
         .expect("plan");
 
@@ -237,6 +251,7 @@ mod tests {
             &files,
             &metadata,
             "Без дати",
+            "en",
         )
         .expect("plan");
 
@@ -276,6 +291,7 @@ mod tests {
             &files,
             &metadata,
             "Misc",
+            "en",
         )
         .expect("plan");
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -16,11 +17,13 @@ export type HistoryScreenProps = {
 };
 
 export function HistoryScreen({ state, onRevert, onRetry, nowMs }: HistoryScreenProps) {
+    const { t } = useTranslation("history");
+    const { t: tCommon } = useTranslation("common");
     const [mountedNowMs] = useState(() => Date.now());
     const referenceNowMs = nowMs ?? mountedNowMs;
 
     if (state.status === HISTORY_STATUS.loading) {
-        return <Centered>Loading history…</Centered>;
+        return <Centered>{t("loading")}</Centered>;
     }
 
     if (state.status === HISTORY_STATUS.error) {
@@ -28,14 +31,14 @@ export function HistoryScreen({ state, onRevert, onRetry, nowMs }: HistoryScreen
             <Centered>
                 <p className="text-body mb-3">{state.error.title}</p>
                 <Button variant="ghost" size="sm" onClick={onRetry}>
-                    Try again
+                    {tCommon("tryAgain")}
                 </Button>
             </Centered>
         );
     }
 
     if (state.items.length === 0) {
-        return <Centered>No completed sorts yet.</Centered>;
+        return <Centered>{t("emptyState")}</Centered>;
     }
 
     return (

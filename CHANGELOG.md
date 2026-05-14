@@ -35,6 +35,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed two non-functional UI elements from the sort setup: a "Save preset" button that did nothing, and an always-green decorative status dot at the top of the sidebar (the toolbar status dot remains and continues to reflect real sort status)
 - Sorting rule is now a compact dropdown — the trigger shows the active rule, the open list shows each rule's name and what its folder layout looks like, replacing the previous 2×2 grid of cards
 - History retention is now a dropdown with preset windows (1 week, 1 month, 3 / 6 / 12 months) instead of a free-text day count
+- Photos and videos sorted with the Ukrainian UI now go into Ukrainian-named month folders (наприклад, "Лютий 2024" замість "February 2024")
+- New language picker in Settings — switch between English and Ukrainian; takes effect immediately for the UI and for future sorts
+- After a sort finishes the progress screen now stays on screen with the final counters, so quick jobs no longer flash past; tap "Continue" when you're ready to see the result summary
+- Durations under one second now show as "0.4 s" (or "0,4 с" in Ukrainian) on the progress, done, and history screens instead of a stuck "00:00"
+- Buttons now use the larger pill-style rounding everywhere by default for a more consistent look across screens
 
 ### Bug Fixes
 

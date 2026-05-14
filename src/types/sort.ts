@@ -4,7 +4,7 @@ import type { SortRuleId } from "./ipc";
 
 export type SortTreeNode =
     | { kind: "folder"; label: string; muted?: boolean; children: SortTreeNode[] }
-    | { kind: "file"; label: string; muted?: boolean };
+    | { kind: "file"; count: number; muted?: boolean };
 
 export type SortRule = {
     id: SortRuleId;

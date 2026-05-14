@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 
 import type { AppSettingsDto } from "../../../../types/ipc";
@@ -12,10 +14,13 @@ export type SettingsScreenProps = {
 };
 
 export function SettingsScreen({ state, onSave, onReset, onRetry }: SettingsScreenProps) {
+    const { t } = useTranslation("settings");
+    const { t: tCommon } = useTranslation("common");
+
     if (state.status === SETTINGS_STATUS.loading) {
         return (
             <div className="flex h-full items-center justify-center text-body text-fg-3">
-                Loading settings…
+                {t("loading")}
             </div>
         );
     }
@@ -26,7 +31,7 @@ export function SettingsScreen({ state, onSave, onReset, onRetry }: SettingsScre
                 <div className="text-body">{state.error.title}</div>
                 <div className="text-meta text-fg-3">{state.error.detail}</div>
                 <Button variant="ghost" size="sm" onClick={onRetry}>
-                    Retry
+                    {tCommon("retry")}
                 </Button>
             </div>
         );

@@ -90,6 +90,7 @@ fn run_preview(app: &AppHandle, request: PreviewPlanRequest) -> AppResult<SortPl
         &session.files,
         &session.metadata,
         &unknown_folder,
+        &settings.ui_language,
     )
 }
 

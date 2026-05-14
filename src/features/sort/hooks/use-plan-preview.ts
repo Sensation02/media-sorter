@@ -22,10 +22,15 @@ type Outcome = { plan: SortPlan } | { error: ToastErrorView };
 type PreviewResult = {
     scanId: ScanId;
     rule: SortRuleId;
+    localeTag: string;
     outcome: Outcome;
 };
 
-export function usePlanPreview(scanId: ScanId | null, rule: SortRuleId): PlanPreviewState {
+export function usePlanPreview(
+    scanId: ScanId | null,
+    rule: SortRuleId,
+    localeTag: string,
+): PlanPreviewState {
     const [result, setResult] = useState<PreviewResult | null>(null);
 
     useEffect(() => {
@@ -38,33 +43,39 @@ export function usePlanPreview(scanId: ScanId | null, rule: SortRuleId): PlanPre
         previewPlan(scanId, rule)
             .then((plan) => {
                 if (!cancelled) {
-                    setResult({ scanId, rule, outcome: { plan } });
+                    setResult({ scanId, rule, localeTag, outcome: { plan } });
                 }
             })
             .catch((error: unknown) => {
                 if (!cancelled) {
-                    setResult({ scanId, rule, outcome: { error: toAppErrorView(error) } });
+                    setResult({
+                        scanId,
+                        rule,
+                        localeTag,
+                        outcome: { error: toAppErrorView(error) },
+                    });
                 }
             });
 
         return () => {
             cancelled = true;
         };
-    }, [scanId, rule]);
+    }, [scanId, rule, localeTag]);
 
-    return derivePreviewState(scanId, rule, result);
+    return derivePreviewState(scanId, rule, localeTag, result);
 }
 
 function derivePreviewState(
     scanId: ScanId | null,
     rule: SortRuleId,
+    localeTag: string,
     result: PreviewResult | null,
 ): PlanPreviewState {
     if (scanId === null) {
         return { status: PLAN_PREVIEW_STATUS.idle };
     }
 
-    if (result?.scanId !== scanId || result.rule !== rule) {
+    if (result?.scanId !== scanId || result.rule !== rule || result.localeTag !== localeTag) {
         return { status: PLAN_PREVIEW_STATUS.loading };
     }
 

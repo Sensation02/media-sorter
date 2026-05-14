@@ -1,13 +1,38 @@
-import { describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import i18next from "i18next";
+
+import { DEFAULT_LOCALE, initI18n, LANGUAGE_CODE_EN } from "../../../i18n";
 import { formatElapsed, formatEta } from "./progress-format";
+
+let previousLanguage: string | undefined;
+
+beforeAll(async () => {
+    await initI18n(DEFAULT_LOCALE);
+    previousLanguage = i18next.language;
+    await i18next.changeLanguage(LANGUAGE_CODE_EN);
+});
+
+afterAll(async () => {
+    if (previousLanguage !== undefined) {
+        await i18next.changeLanguage(previousLanguage);
+    }
+});
 
 describe("formatElapsed", () => {
     it("returns 00:00 for zero", () => {
         expect(formatElapsed(0)).toBe("00:00");
     });
 
-    it("formats seconds under a minute", () => {
+    it("renders sub-second durations with one decimal", () => {
+        expect(formatElapsed(400)).toBe("0.4 s");
+    });
+
+    it("renders sub-second durations close to one second", () => {
+        expect(formatElapsed(900)).toBe("0.9 s");
+    });
+
+    it("formats seconds under a minute as MM:SS", () => {
         expect(formatElapsed(42_000)).toBe("00:42");
     });
 

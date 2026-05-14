@@ -1,25 +1,25 @@
 import { describe, expect, it } from "vitest";
 
-import { revertSummary } from "./revert-summary";
+import { revertSummaryParts } from "./revert-summary";
 
-describe("revertSummary", () => {
-    it("reports restored count only when no skips and no errors", () => {
-        expect(revertSummary(12, 0, 0)).toBe("12 restored");
+describe("revertSummaryParts", () => {
+    it("returns restored count along with zero counters", () => {
+        expect(revertSummaryParts(12, 0, 0)).toEqual({ restored: 12, skipped: 0, errors: 0 });
     });
 
-    it("includes skipped when non-zero", () => {
-        expect(revertSummary(12, 3, 0)).toBe("12 restored, 3 skipped");
+    it("preserves skipped count", () => {
+        expect(revertSummaryParts(12, 3, 0)).toEqual({ restored: 12, skipped: 3, errors: 0 });
     });
 
-    it("includes errors when non-zero", () => {
-        expect(revertSummary(12, 0, 2)).toBe("12 restored, 2 errors");
+    it("preserves errors count", () => {
+        expect(revertSummaryParts(12, 0, 2)).toEqual({ restored: 12, skipped: 0, errors: 2 });
     });
 
-    it("includes both skipped and errors when both non-zero", () => {
-        expect(revertSummary(12, 3, 2)).toBe("12 restored, 3 skipped, 2 errors");
+    it("preserves all three counters", () => {
+        expect(revertSummaryParts(12, 3, 2)).toEqual({ restored: 12, skipped: 3, errors: 2 });
     });
 
     it("handles zero restored", () => {
-        expect(revertSummary(0, 0, 0)).toBe("0 restored");
+        expect(revertSummaryParts(0, 0, 0)).toEqual({ restored: 0, skipped: 0, errors: 0 });
     });
 });

@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { ICON } from "../../constants/icons";
 import { Tree } from "../tree";
 import { planToTree } from "../../mappers/plan-tree";
@@ -6,17 +8,15 @@ import { Placeholder } from "./Placeholder";
 
 const Loader = ICON.loader;
 
-const IDLE_LABEL = "Pick a source folder to see the layout";
-const LOADING_LABEL = "Building preview…";
-const EMPTY_LABEL = "No media files matched the chosen rule";
-
 export type PreviewTreeProps = {
     state: PlanPreviewState;
 };
 
 export function PreviewTree({ state }: PreviewTreeProps) {
+    const { t } = useTranslation("setup");
+
     if (state.status === PLAN_PREVIEW_STATUS.idle) {
-        return <Placeholder>{IDLE_LABEL}</Placeholder>;
+        return <Placeholder>{t("previewIdle")}</Placeholder>;
     }
 
     if (state.status === PLAN_PREVIEW_STATUS.loading) {
@@ -24,7 +24,7 @@ export function PreviewTree({ state }: PreviewTreeProps) {
             <Placeholder>
                 <span className="flex items-center gap-2">
                     <Loader className="w-3 h-3 animate-spin" aria-hidden />
-                    {LOADING_LABEL}
+                    {t("previewLoading")}
                 </span>
             </Placeholder>
         );
@@ -37,7 +37,7 @@ export function PreviewTree({ state }: PreviewTreeProps) {
     const nodes = planToTree(state.plan);
 
     if (nodes.length === 0) {
-        return <Placeholder>{EMPTY_LABEL}</Placeholder>;
+        return <Placeholder>{t("previewEmpty")}</Placeholder>;
     }
 
     return <Tree nodes={nodes} />;

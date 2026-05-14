@@ -1,13 +1,13 @@
-export function revertSummary(restored: number, skipped: number, errors: number): string {
-    const parts: string[] = [`${restored} restored`];
+export type RevertSummaryParts = {
+    restored: number;
+    skipped: number;
+    errors: number;
+};
 
-    if (skipped > 0) {
-        parts.push(`${skipped} skipped`);
-    }
-
-    if (errors > 0) {
-        parts.push(`${errors} errors`);
-    }
-
-    return parts.join(", ");
+export function revertSummaryParts(
+    restored: number,
+    skipped: number,
+    errors: number,
+): RevertSummaryParts {
+    return { restored, skipped, errors };
 }

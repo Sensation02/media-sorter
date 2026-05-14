@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import {
     Select,
     SelectContent,
@@ -16,6 +18,8 @@ export type RuleSelectorProps = {
 };
 
 export function RuleSelector({ rules, value, onChange }: RuleSelectorProps) {
+    const { t } = useTranslation("setup");
+
     return (
         <Select
             value={value}
@@ -26,7 +30,7 @@ export function RuleSelector({ rules, value, onChange }: RuleSelectorProps) {
             }}
         >
             <SelectTrigger>
-                <SelectValue placeholder="Pick a rule" />
+                <SelectValue placeholder={t("pickRule")} />
             </SelectTrigger>
             <SelectContent>
                 {rules.map((rule) => (

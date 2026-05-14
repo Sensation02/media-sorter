@@ -10,8 +10,8 @@ describe("resolveScreen", () => {
         expect(resolveScreen(SORT_SCREEN.settings, "error")).toBe(SORT_SCREEN.settings);
     });
 
-    it("returns done when on progress with status=done", () => {
-        expect(resolveScreen(SORT_SCREEN.progress, "done")).toBe(SORT_SCREEN.done);
+    it("stays on progress when the job is done so the user can review counters", () => {
+        expect(resolveScreen(SORT_SCREEN.progress, "done")).toBe(SORT_SCREEN.progress);
     });
 
     it("falls back to setup when on progress with status=error", () => {

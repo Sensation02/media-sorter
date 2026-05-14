@@ -1,3 +1,5 @@
+import { formatSubSecond, isSubSecond } from "./duration";
+
 const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
 
@@ -9,10 +11,20 @@ const ZERO_TIME = "00:00";
 const REMAINING_SUFFIX = "remaining";
 
 /**
- * Format an elapsed millisecond duration as `MM:SS`.
- * Negative or non-finite inputs collapse to `00:00`.
+ * Format an elapsed millisecond duration as `MM:SS` once at least one second
+ * has passed, falling back to `0.4 s` style for the first second so quick
+ * jobs do not display a stuck `00:00`. Negative or non-finite inputs
+ * collapse to `00:00`.
  */
 export function formatElapsed(elapsedMs: number): string {
+    if (!Number.isFinite(elapsedMs) || elapsedMs <= 0) {
+        return ZERO_TIME;
+    }
+
+    if (isSubSecond(elapsedMs)) {
+        return formatSubSecond(elapsedMs);
+    }
+
     return formatMinutesSeconds(elapsedMs, Math.floor);
 }
 

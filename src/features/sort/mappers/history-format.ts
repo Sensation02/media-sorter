@@ -1,49 +1,51 @@
+import { formatDateTime } from "../../../utils/datetime";
+import { formatSubSecond, isSubSecond } from "./duration";
+
 const MS_PER_SECOND = 1000;
 const MS_PER_MINUTE = MS_PER_SECOND * 60;
 const MS_PER_HOUR = MS_PER_MINUTE * 60;
 
-const MONTH_NAMES = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-] as const;
+const TIME_PATTERN = "HH:mm";
+const MONTH_DAY_PATTERN = "MMM d";
 
-export function formatHistoryDate(timestampMs: number, nowMs: number): string {
+export type HistoryDateParts =
+    | { kind: "today"; time: string }
+    | { kind: "yesterday"; time: string }
+    | { kind: "thisYear"; monthDay: string; time: string }
+    | { kind: "otherYear"; monthDay: string; year: number; time: string };
+
+export function historyDateParts(timestampMs: number, nowMs: number): HistoryDateParts {
     const at = new Date(timestampMs);
     const now = new Date(nowMs);
-    const time = `${pad2(at.getHours())}:${pad2(at.getMinutes())}`;
+    const time = formatDateTime(at, TIME_PATTERN);
 
     if (isSameLocalDay(at, now)) {
-        return `Today, ${time}`;
+        return { kind: "today", time };
     }
 
     const yesterday = new Date(now);
     yesterday.setDate(now.getDate() - 1);
+
     if (isSameLocalDay(at, yesterday)) {
-        return `Yesterday, ${time}`;
+        return { kind: "yesterday", time };
     }
 
-    const monthDay = `${MONTH_NAMES[at.getMonth()]} ${at.getDate()}`;
+    const monthDay = formatDateTime(at, MONTH_DAY_PATTERN);
 
     if (at.getFullYear() === now.getFullYear()) {
-        return `${monthDay}, ${time}`;
+        return { kind: "thisYear", monthDay, time };
     }
 
-    return `${monthDay} ${at.getFullYear()}, ${time}`;
+    return { kind: "otherYear", monthDay, year: at.getFullYear(), time };
 }
 
 export function formatHistoryDuration(durationMs: number): string {
     if (!Number.isFinite(durationMs) || durationMs < 0) {
         return "—";
+    }
+
+    if (isSubSecond(durationMs)) {
+        return formatSubSecond(durationMs);
     }
 
     if (durationMs >= MS_PER_HOUR) {
