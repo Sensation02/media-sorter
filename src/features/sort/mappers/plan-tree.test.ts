@@ -34,12 +34,12 @@ describe("planToTree", () => {
             {
                 kind: "folder",
                 label: "Photos",
-                children: [{ kind: "file", label: "2 files" }],
+                children: [{ kind: "file", count: 2 }],
             },
             {
                 kind: "folder",
                 label: "Videos",
-                children: [{ kind: "file", label: "1 file" }],
+                children: [{ kind: "file", count: 1 }],
             },
         ]);
     });
@@ -62,12 +62,12 @@ describe("planToTree", () => {
                     {
                         kind: "folder",
                         label: "Lviv, Ukraine",
-                        children: [{ kind: "file", label: "1 file" }],
+                        children: [{ kind: "file", count: 1 }],
                     },
                     {
                         kind: "folder",
                         label: "Paris, France",
-                        children: [{ kind: "file", label: "2 files" }],
+                        children: [{ kind: "file", count: 2 }],
                     },
                 ],
             },
@@ -78,7 +78,7 @@ describe("planToTree", () => {
                     {
                         kind: "folder",
                         label: "Unknown location",
-                        children: [{ kind: "file", label: "1 file" }],
+                        children: [{ kind: "file", count: 1 }],
                     },
                 ],
             },
@@ -97,12 +97,12 @@ describe("planToTree", () => {
             {
                 kind: "folder",
                 label: "Misc",
-                children: [{ kind: "file", label: "1 file" }],
+                children: [{ kind: "file", count: 1 }],
             },
             {
                 kind: "folder",
                 label: "Photos",
-                children: [{ kind: "file", label: "1 file" }],
+                children: [{ kind: "file", count: 1 }],
             },
         ]);
     });
@@ -121,12 +121,12 @@ describe("planToTree", () => {
             {
                 kind: "folder",
                 label: "August 2024",
-                children: [{ kind: "file", label: "2 files" }],
+                children: [{ kind: "file", count: 2 }],
             },
         ]);
     });
 
-    it("uses singular 'file' for single-file folders and 'files' otherwise", () => {
+    it("preserves the file count for single-file folders", () => {
         const tree = planToTree(
             plan([
                 { source: "/src/a.jpg", target: "/dest/Solo/a.jpg" },
@@ -139,12 +139,12 @@ describe("planToTree", () => {
             {
                 kind: "folder",
                 label: "Pair",
-                children: [{ kind: "file", label: "2 files" }],
+                children: [{ kind: "file", count: 2 }],
             },
             {
                 kind: "folder",
                 label: "Solo",
-                children: [{ kind: "file", label: "1 file" }],
+                children: [{ kind: "file", count: 1 }],
             },
         ]);
     });

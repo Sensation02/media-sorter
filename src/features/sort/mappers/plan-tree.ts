@@ -2,8 +2,6 @@ import type { SortPlan, SortPlanItem } from "../../../types/ipc";
 import type { SortTreeNode } from "../../../types/sort";
 
 const PATH_SEPARATORS = /[\\/]+/;
-const FILES_SUFFIX = "files";
-const FILE_SUFFIX = "file";
 
 export function planToTree(plan: SortPlan): SortTreeNode[] {
     const root = collectFolderCounts(plan);
@@ -100,7 +98,7 @@ function buildFolderNode(label: string, child: FolderNode): SortTreeNode {
 function buildFileSummary(count: number): SortTreeNode {
     return {
         kind: "file",
-        label: `${count.toLocaleString()} ${count === 1 ? FILE_SUFFIX : FILES_SUFFIX}`,
+        count,
     };
 }
 
