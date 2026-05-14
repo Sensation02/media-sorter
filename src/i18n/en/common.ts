@@ -11,6 +11,7 @@ export default {
     error: "Error",
     somethingWentWrong: "Something went wrong",
     unexpectedErrorTitle: "media-sorter hit an unexpected error",
+    secondsShort: "{{value}} s",
     moved: "Moved",
     skipped: "Skipped",
     folders: "Folders",

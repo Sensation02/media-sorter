@@ -11,6 +11,7 @@ export default {
     error: "Помилка",
     somethingWentWrong: "Щось пішло не так",
     unexpectedErrorTitle: "media-sorter натрапив на неочікувану помилку",
+    secondsShort: "{{value}} с",
     moved: "Переміщено",
     skipped: "Пропущено",
     folders: "Теки",

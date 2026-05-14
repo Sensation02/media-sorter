@@ -1,4 +1,5 @@
 import { formatDateTime } from "../../../utils/datetime";
+import { formatSubSecond, isSubSecond } from "./duration";
 
 const MS_PER_SECOND = 1000;
 const MS_PER_MINUTE = MS_PER_SECOND * 60;
@@ -41,6 +42,10 @@ export function historyDateParts(timestampMs: number, nowMs: number): HistoryDat
 export function formatHistoryDuration(durationMs: number): string {
     if (!Number.isFinite(durationMs) || durationMs < 0) {
         return "—";
+    }
+
+    if (isSubSecond(durationMs)) {
+        return formatSubSecond(durationMs);
     }
 
     if (durationMs >= MS_PER_HOUR) {

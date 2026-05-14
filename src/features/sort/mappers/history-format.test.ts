@@ -57,6 +57,12 @@ describe("historyDateParts", () => {
 });
 
 describe("formatHistoryDuration", () => {
+    it("renders sub-second durations as decimal seconds", () => {
+        expect(formatHistoryDuration(0)).toBe("0.0 s");
+        expect(formatHistoryDuration(400)).toBe("0.4 s");
+        expect(formatHistoryDuration(900)).toBe("0.9 s");
+    });
+
     it("renders MM:SS for sub-hour durations", () => {
         expect(formatHistoryDuration(2 * 60 * 1000 + 18 * 1000)).toBe("02:18");
         expect(formatHistoryDuration(48 * 1000)).toBe("00:48");
