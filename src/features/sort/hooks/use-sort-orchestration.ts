@@ -3,7 +3,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-import { cancelSort, pauseSort, pickSourceDir, scanSource, startSort } from "../../../ipc";
+import {
+    cancelSort,
+    pauseSort,
+    pickSourceDir,
+    revealDirectory,
+    scanSource,
+    startSort,
+} from "../../../ipc";
 import type { JobId, ScanId, ScanSummary, SortPlan, SortSettingsDto } from "../../../types/ipc";
 import { formatNumber, toAppErrorView } from "../../../utils";
 import { SORT_SCREEN, type SortScreen } from "../constants/screens";
@@ -25,6 +32,7 @@ export type SortOrchestrationHandlers = {
     pause: () => Promise<void>;
     cancel: () => Promise<void>;
     revert: (id: JobId) => Promise<void>;
+    revealDestination: (path: string) => Promise<void>;
     resetForNewSort: () => void;
 };
 
@@ -153,6 +161,15 @@ export function useSortOrchestration(): SortOrchestration {
         [history, t],
     );
 
+    const revealDestination = useCallback(async (path: string) => {
+        try {
+            await revealDirectory(path);
+        } catch (error) {
+            const view = toAppErrorView(error);
+            toast.error(view.title, { description: view.detail });
+        }
+    }, []);
+
     const resetForNewSort = useCallback(() => {
         setJobId(null);
         setScreen(SORT_SCREEN.setup);
@@ -180,7 +197,7 @@ export function useSortOrchestration(): SortOrchestration {
         job,
         history,
         settings,
-        handlers: { pickSource, run, pause, cancel, revert, resetForNewSort },
+        handlers: { pickSource, run, pause, cancel, revert, revealDestination, resetForNewSort },
     };
 }
 
