@@ -3,8 +3,9 @@ use std::path::Path;
 use crate::domain::{
     EstimateConfidence, EstimateMode, MediaFile, PlanEstimate, SortPlan, SortSettings,
 };
-use crate::utils::volume;
+use crate::utils::{probe, volume};
 
+use super::cache;
 use super::constants::{
     COPY_PER_FILE_HIGH_MS, COPY_PER_FILE_LOW_MS, COPY_THROUGHPUT_HIGH_BPS, COPY_THROUGHPUT_LOW_BPS,
     CROSS_DEVICE_PER_FILE_HIGH_MS, CROSS_DEVICE_PER_FILE_LOW_MS, CROSS_DEVICE_THROUGHPUT_HIGH_BPS,
@@ -28,8 +29,12 @@ pub fn compute(plan: &SortPlan, files: &[MediaFile], settings: &SortSettings) ->
     }
 
     let mode = detect_mode(plan, files, settings);
+    let probed_bps = resolve_probe_throughput(mode, &plan.root, settings);
     let (per_file_low_ms, per_file_high_ms) = per_file_overhead(mode);
-    let (throughput_low_bps, throughput_high_bps) = throughput(mode);
+    let (throughput_low_bps, throughput_high_bps) = match probed_bps {
+        Some(measured) => (measured, measured),
+        None => throughput(mode),
+    };
 
     let per_file_low = per_file_low_ms.saturating_mul(total_files);
     let per_file_high = per_file_high_ms.saturating_mul(total_files);
@@ -50,8 +55,31 @@ pub fn compute(plan: &SortPlan, files: &[MediaFile], settings: &SortSettings) ->
         total_bytes,
         estimated_ms_low,
         estimated_ms_high,
-        confidence: confidence_for(mode),
+        confidence: confidence_for(mode, probed_bps.is_some()),
     }
+}
+
+fn resolve_probe_throughput(
+    mode: EstimateMode,
+    destination_root: &Path,
+    settings: &SortSettings,
+) -> Option<u64> {
+    if !settings.probe_bandwidth {
+        return None;
+    }
+
+    if mode == EstimateMode::MoveSameVolume {
+        return None;
+    }
+
+    if let Some(cached) = cache::get(destination_root) {
+        return Some(cached);
+    }
+
+    let measured = probe::bandwidth_probe(destination_root).ok()?;
+    cache::put(destination_root, measured);
+
+    Some(measured)
 }
 
 fn detect_mode(plan: &SortPlan, files: &[MediaFile], settings: &SortSettings) -> EstimateMode {
@@ -121,10 +149,12 @@ fn apply_multiplier(value: u64, multiplier: f64) -> u64 {
     value
 }
 
-fn confidence_for(mode: EstimateMode) -> EstimateConfidence {
+fn confidence_for(mode: EstimateMode, probe_ran: bool) -> EstimateConfidence {
     match mode {
         EstimateMode::MoveSameVolume => EstimateConfidence::High,
+        EstimateMode::Copy if probe_ran => EstimateConfidence::High,
         EstimateMode::Copy => EstimateConfidence::Medium,
+        EstimateMode::CrossDevice if probe_ran => EstimateConfidence::High,
         EstimateMode::CrossDevice => EstimateConfidence::Low,
     }
 }
@@ -277,5 +307,71 @@ mod tests {
         let estimate = compute(&plan, &files, &settings_move());
 
         assert_eq!(estimate.mode, EstimateMode::MoveSameVolume);
+    }
+
+    #[test]
+    fn copy_with_probe_promotes_confidence_to_high() {
+        cache::reset();
+        let dest = std::env::temp_dir().join("epic-14-service-probe-promotion");
+        let _ = std::fs::remove_dir_all(&dest);
+        std::fs::create_dir_all(&dest).expect("dest dir");
+
+        let files = vec![file("photo.jpg", 5_000_000, &dest); 4];
+        let plan = empty_plan(dest);
+        let settings = SortSettings {
+            probe_bandwidth: true,
+            ..settings_copy()
+        };
+
+        let estimate = compute(&plan, &files, &settings);
+
+        assert_eq!(estimate.mode, EstimateMode::Copy);
+        assert_eq!(estimate.confidence, EstimateConfidence::High);
+    }
+
+    #[test]
+    fn compute_populates_probe_cache_for_subsequent_calls() {
+        cache::reset();
+        let dest = std::env::temp_dir().join("epic-14-service-cache-populate");
+        let _ = std::fs::remove_dir_all(&dest);
+        std::fs::create_dir_all(&dest).expect("dest dir");
+
+        let files = vec![file("clip.mp4", 20_000_000, &dest)];
+        let plan = empty_plan(dest.clone());
+        let settings = SortSettings {
+            probe_bandwidth: true,
+            ..settings_copy()
+        };
+
+        assert_eq!(cache::get(&dest), None, "cache must start empty");
+
+        let first = compute(&plan, &files, &settings);
+        let cached_after_first = cache::get(&dest);
+        let second = compute(&plan, &files, &settings);
+
+        assert!(cached_after_first.is_some(), "probe result must be cached");
+        assert_eq!(first.confidence, EstimateConfidence::High);
+        assert_eq!(second.confidence, EstimateConfidence::High);
+        assert_eq!(first.estimated_ms_low, second.estimated_ms_low);
+        assert_eq!(first.estimated_ms_high, second.estimated_ms_high);
+    }
+
+    #[test]
+    fn probe_disabled_keeps_medium_confidence_for_copy() {
+        cache::reset();
+        let dest = std::env::temp_dir().join("epic-14-service-probe-off");
+        let _ = std::fs::remove_dir_all(&dest);
+        std::fs::create_dir_all(&dest).expect("dest dir");
+
+        let files = vec![file("a.jpg", 5_000_000, &dest); 3];
+        let plan = empty_plan(dest);
+        let settings = SortSettings {
+            probe_bandwidth: false,
+            ..settings_copy()
+        };
+
+        let estimate = compute(&plan, &files, &settings);
+
+        assert_eq!(estimate.confidence, EstimateConfidence::Medium);
     }
 }
