@@ -41,9 +41,17 @@ pub async fn scan_source(request: ScanSourceRequest) -> AppResult<ScanResponse> 
 }
 
 #[tauri::command]
-pub async fn reveal_in_os(request: RevealRequest) -> AppResult<()> {
-    let _ = request;
-    Err(AppError::internal("reveal_in_os: not yet implemented"))
+pub async fn reveal_directory(request: RevealRequest) -> AppResult<()> {
+    let path = request.path;
+
+    if !path.exists() {
+        return Err(AppError::io(format!(
+            "reveal target does not exist: {}",
+            path.display()
+        )));
+    }
+
+    tauri_plugin_opener::reveal_item_in_dir(&path).map_err(|err| AppError::io(err.to_string()))
 }
 
 fn run_scan(path: PathBuf) -> AppResult<ScanResponse> {

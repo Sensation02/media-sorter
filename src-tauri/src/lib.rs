@@ -27,7 +27,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             scanning::command::pick_source_dir,
             scanning::command::scan_source,
-            scanning::command::reveal_in_os,
+            scanning::command::reveal_directory,
             sorting::command::preview_plan,
             sorting::command::start_sort,
             sorting::command::pause_sort,
