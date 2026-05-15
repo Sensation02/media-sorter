@@ -5,4 +5,5 @@ export const IMMUTABLE_SORT_FLAGS: SortSettingsDto = {
     skipDuplicates: true,
     watchSource: false,
     writeReport: true,
+    probeBandwidth: true,
 };

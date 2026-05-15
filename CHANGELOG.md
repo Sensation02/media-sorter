@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features
 
 - Pre-flight ETA estimator: before a sort runs, the app now computes how long the job is expected to take based on file count, total size, and whether the destination is on the same volume as the source; the visible "≈ 15 sec" / "30 sec — 1 min" pill on the Setup screen lands in a follow-up release
+- Pre-flight ETA accuracy: when copying to a different drive (e.g. external USB, network share), the app now does a quick 32 MiB write probe at the destination to measure real write speed instead of guessing; the result is cached per destination so flipping between sorting rules stays instant, and a read-only destination falls back to the static estimate without an error
 - Refreshed UI: dark workbench layout for sort jobs (setup, progress, done, history, settings)
 - Design system tokens extended (@theme): surface scale, fg scale, semantic colors (warning/success), radius scale
 - Source folder scan engine: counts photo, RAW and video files in the chosen folder; skips hidden, system and symlinked entries (UI wiring lands in a follow-up release)

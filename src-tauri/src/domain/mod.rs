@@ -162,6 +162,12 @@ pub struct SortSettings {
     pub skip_duplicates: bool,
     pub watch_source: bool,
     pub write_report: bool,
+    #[serde(default = "default_probe_bandwidth")]
+    pub probe_bandwidth: bool,
+}
+
+fn default_probe_bandwidth() -> bool {
+    true
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
