@@ -8,6 +8,7 @@ import type { ScanId, ScanSummary, SortPlan } from "../../../../types/ipc";
 import type { SortRule, SortRuleId } from "../../../../types/sort";
 import { formatBytes, formatNumber } from "../../../../utils";
 import { Eyebrow } from "../../components/eyebrow";
+import { PlanEstimate } from "../../components/plan-estimate";
 import { PreviewTree } from "../../components/preview-tree";
 import { RuleSelector } from "../../components/rule-selector";
 import { ScanBreakdown } from "../../components/scan-breakdown";
@@ -63,6 +64,7 @@ export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
     const previewState = usePlanPreview(source.scanId, ruleId, i18n.language, IMMUTABLE_SORT_FLAGS);
     const canRun = source.summary !== null && !source.scanning && previewState.status === "success";
     const plan = previewState.status === "success" ? previewState.plan : null;
+    const estimate = previewState.status === "success" ? previewState.estimate : null;
 
     const handleRun = () => {
         if (plan === null) {
@@ -75,15 +77,18 @@ export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
     return (
         <ScreenFrame
             footer={
-                <Button
-                    variant="primary"
-                    size="md"
-                    onClick={handleRun}
-                    disabled={!canRun}
-                    className="ml-auto"
-                >
-                    {t("runSort")} <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-                </Button>
+                <>
+                    {estimate !== null && <PlanEstimate estimate={estimate} />}
+                    <Button
+                        variant="primary"
+                        size="md"
+                        onClick={handleRun}
+                        disabled={!canRun}
+                        className="ml-auto"
+                    >
+                        {t("runSort")} <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                    </Button>
+                </>
             }
         >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
