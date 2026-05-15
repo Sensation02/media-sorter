@@ -34,6 +34,7 @@ export function SortApp() {
     const { screen, setScreen, source, scanId, scanning, job, history, settings, handlers } =
         useSortOrchestration();
 
+    const jobDone = job.done;
     const effectiveScreen = resolveScreen(screen, job.status);
     const progressCompleted =
         effectiveScreen === SORT_SCREEN.progress && job.status === JOB_STATUS.done;
@@ -85,16 +86,15 @@ export function SortApp() {
                                 }}
                             />
                         )}
-                        {effectiveScreen === SORT_SCREEN.done && job.done !== null && (
+                        {effectiveScreen === SORT_SCREEN.done && jobDone !== null && (
                             <DoneScreen
-                                done={toSortDone(job.done)}
+                                done={toSortDone(jobDone)}
                                 onUndo={() => {
                                     setScreen(SORT_SCREEN.history);
                                 }}
                                 onNewSort={handlers.resetForNewSort}
                                 onReveal={() => {
-                                    // EPIC-13: wire to plugin-opener revealItemInDir (docs/specs/epic-13-reveal-in-finder.md)
-                                    console.warn("[SortApp] onReveal not yet wired — see EPIC-13");
+                                    void handlers.revealDestination(jobDone.destination);
                                 }}
                             />
                         )}
