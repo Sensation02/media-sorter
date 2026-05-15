@@ -13,6 +13,7 @@ import { RuleSelector } from "../../components/rule-selector";
 import { ScanBreakdown } from "../../components/scan-breakdown";
 import { ScreenFrame } from "../../components/screen-frame";
 import { ICON } from "../../constants/icons";
+import { IMMUTABLE_SORT_FLAGS } from "../../constants/sort-flags";
 import { usePlanPreview } from "../../hooks/use-plan-preview";
 import { resolveDefaultRule } from "../../mappers/resolve-default-rule";
 
@@ -59,7 +60,7 @@ export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
         setPrevDefault(resolvedDefault);
         setRuleId(resolvedDefault);
     }
-    const previewState = usePlanPreview(source.scanId, ruleId, i18n.language);
+    const previewState = usePlanPreview(source.scanId, ruleId, i18n.language, IMMUTABLE_SORT_FLAGS);
     const canRun = source.summary !== null && !source.scanning && previewState.status === "success";
     const plan = previewState.status === "success" ? previewState.plan : null;
 
