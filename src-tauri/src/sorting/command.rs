@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use tauri::{AppHandle, Manager};
 
-use crate::domain::{AppSettings, HistoryItem, JobId, SessionMemo, SortPlan};
+use crate::domain::{AppSettings, HistoryItem, JobId, SessionMemo};
 use crate::error::{AppError, AppResult};
 use crate::history::summary::write_summary;
 use crate::i18n;
@@ -11,7 +11,10 @@ use crate::scanning::repository::get_session;
 use crate::settings;
 use crate::utils::now_ms;
 
-use super::dto::{JobIdRequest, PreviewPlanRequest, StartSortRequest, StartSortResponse};
+use super::dto::{
+    JobIdRequest, PreviewPlanRequest, PreviewPlanResponse, StartSortRequest, StartSortResponse,
+};
+use super::estimate;
 use super::planner::build_plan;
 use super::runner::constants::THROTTLE_INTERVAL_MS;
 use super::runner::emitter::{ProgressEmitter, TauriEmitter, ThrottledEmitter};
@@ -20,7 +23,10 @@ use super::runner::job;
 use super::runner::service::{run_sort, JobOutcome, RunInput};
 
 #[tauri::command]
-pub async fn preview_plan(app: AppHandle, request: PreviewPlanRequest) -> AppResult<SortPlan> {
+pub async fn preview_plan(
+    app: AppHandle,
+    request: PreviewPlanRequest,
+) -> AppResult<PreviewPlanResponse> {
     tauri::async_runtime::spawn_blocking(move || run_preview(&app, request))
         .await
         .map_err(AppError::internal)?
@@ -79,19 +85,23 @@ pub async fn cancel_sort(request: JobIdRequest) -> AppResult<()> {
     job::cancel(request.job_id)
 }
 
-fn run_preview(app: &AppHandle, request: PreviewPlanRequest) -> AppResult<SortPlan> {
+fn run_preview(app: &AppHandle, request: PreviewPlanRequest) -> AppResult<PreviewPlanResponse> {
     let session = get_session(request.scan_id)?;
     let settings = settings::service::get_settings(app)?;
     let unknown_folder = resolve_unknown_folder(&settings);
 
-    build_plan(
+    let plan = build_plan(
         &session.root,
         request.rule,
         &session.files,
         &session.metadata,
         &unknown_folder,
         &settings.ui_language,
-    )
+    )?;
+
+    let estimate = estimate::compute(&plan, &session.files, &request.sort_settings);
+
+    Ok(PreviewPlanResponse { plan, estimate })
 }
 
 fn resolve_unknown_folder(settings: &AppSettings) -> String {
