@@ -5,7 +5,7 @@
 > places in the same PR — see `docs/workflow/delivery.md`, section
 > _Epic Status Tracking_.
 
-**Last reviewed:** 2026-05-15 (EPIC-14 pre-flight ETA in progress)
+**Last reviewed:** 2026-05-15 (EPIC-14 pre-flight ETA delivered)
 
 ## Status legend
 
@@ -31,7 +31,7 @@
 | [EPIC-11](epic-11-ui-polish.md)            | 🟢 complete    | UI polish — rolling backlog of post-review visual tweaks                        |
 | [EPIC-12](epic-12-frontend-foundations.md) | 🟢 complete    | Frontend foundations refactor (tokens, icons, decomposition, dead-code cleanup) |
 | [EPIC-13](epic-13-reveal-in-finder.md)     | 🟢 complete    | Reveal in Finder — wire the existing Done-screen button to the OS file manager  |
-| [EPIC-14](epic-14-preflight-eta.md)        | 🟡 in progress | Pre-flight ETA estimate — show realistic duration before Start sort             |
+| [EPIC-14](epic-14-preflight-eta.md)        | 🟢 complete    | Pre-flight ETA estimate — show realistic duration before Start sort             |
 
 ## Active follow-ups
 

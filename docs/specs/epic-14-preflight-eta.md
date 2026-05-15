@@ -1,7 +1,7 @@
 # EPIC-14. Pre-flight ETA estimate
 
-**Status:** 🟡 in progress
-**Branch:** `feat/epic-14-estimate-static` (PR-1, current)
+**Status:** 🟢 complete
+**Branches:** `feat/epic-14-estimate-static` (PR-1 merged), `feat/epic-14-estimate-probe` (PR-2 merged), `feat/epic-14-estimate-ui` (PR-3, current)
 **Depends on:** EPIC-05 (planner), EPIC-06 (fs-operations)
 **Last updated:** 2026-05-15
 
