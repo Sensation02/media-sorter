@@ -146,6 +146,7 @@ mod tests {
             skip_duplicates: false,
             watch_source: false,
             write_report: false,
+            probe_bandwidth: false,
         }
     }
 

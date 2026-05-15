@@ -484,6 +484,7 @@ mod tests {
             skip_duplicates,
             watch_source: false,
             write_report: false,
+            probe_bandwidth: false,
         }
     }
 

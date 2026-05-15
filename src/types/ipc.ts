@@ -107,6 +107,7 @@ export type SortSettingsDto = {
     skipDuplicates: boolean;
     watchSource: boolean;
     writeReport: boolean;
+    probeBandwidth: boolean;
 };
 
 export type HistoryItemDto = {
