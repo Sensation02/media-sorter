@@ -3,6 +3,7 @@ import type {
     AppSettingsDto,
     HistoryItemDto,
     JobId,
+    PreviewPlanResponseDto,
     RevertOutcomeDto,
     ScanId,
     ScanResponse,
@@ -20,8 +21,14 @@ export function scanSource(path: string): Promise<ScanResponse> {
     return invoke<ScanResponse>("scan_source", { request: { path } });
 }
 
-export function previewPlan(scanId: ScanId, rule: SortRuleId): Promise<SortPlan> {
-    return invoke<SortPlan>("preview_plan", { request: { scanId, rule } });
+export function previewPlan(
+    scanId: ScanId,
+    rule: SortRuleId,
+    sortSettings: SortSettingsDto,
+): Promise<PreviewPlanResponseDto> {
+    return invoke<PreviewPlanResponseDto>("preview_plan", {
+        request: { scanId, rule, sortSettings },
+    });
 }
 
 export function startSort(

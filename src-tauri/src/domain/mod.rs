@@ -117,6 +117,33 @@ pub struct SortPlan {
     pub items: Vec<SortPlanItem>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum EstimateMode {
+    MoveSameVolume,
+    Copy,
+    CrossDevice,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum EstimateConfidence {
+    Low,
+    Medium,
+    High,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PlanEstimate {
+    pub mode: EstimateMode,
+    pub total_files: u64,
+    pub total_bytes: u64,
+    pub estimated_ms_low: u64,
+    pub estimated_ms_high: u64,
+    pub confidence: EstimateConfidence,
+}
+
 pub type JobId = i64;
 pub type ScanId = i64;
 

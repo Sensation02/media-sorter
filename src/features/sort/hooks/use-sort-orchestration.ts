@@ -11,20 +11,14 @@ import {
     scanSource,
     startSort,
 } from "../../../ipc";
-import type { JobId, ScanId, ScanSummary, SortPlan, SortSettingsDto } from "../../../types/ipc";
+import type { JobId, ScanId, ScanSummary, SortPlan } from "../../../types/ipc";
 import { formatNumber, toAppErrorView } from "../../../utils";
 import { SORT_SCREEN, type SortScreen } from "../constants/screens";
+import { IMMUTABLE_SORT_FLAGS } from "../constants/sort-flags";
 import { revertSummaryParts } from "../mappers/revert-summary";
 import { useHistory, type HistoryHook } from "./use-history";
 import { SETTINGS_STATUS, useSettings, type SettingsHook } from "./use-settings";
 import { JOB_STATUS, useSortJob, type UseSortJobResult } from "./use-sort-job";
-
-const IMMUTABLE_SORT_FLAGS: SortSettingsDto = {
-    copy: false,
-    skipDuplicates: true,
-    watchSource: false,
-    writeReport: true,
-};
 
 export type SortOrchestrationHandlers = {
     pickSource: () => Promise<void>;

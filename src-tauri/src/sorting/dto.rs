@@ -1,12 +1,20 @@
 use serde::{Deserialize, Serialize};
 
-use crate::domain::{JobId, ScanId, SortPlan, SortRuleId, SortSettings};
+use crate::domain::{JobId, PlanEstimate, ScanId, SortPlan, SortRuleId, SortSettings};
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PreviewPlanRequest {
     pub scan_id: ScanId,
     pub rule: SortRuleId,
+    pub sort_settings: SortSettings,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PreviewPlanResponse {
+    pub plan: SortPlan,
+    pub estimate: PlanEstimate,
 }
 
 #[derive(Debug, Clone, Deserialize)]
