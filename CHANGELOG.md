@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - After a sort finishes the progress screen now stays on screen with the final counters, so quick jobs no longer flash past; tap "Continue" when you're ready to see the result summary
 - Durations under one second now show as "0.4 s" (or "0,4 с" in Ukrainian) on the progress, done, and history screens instead of a stuck "00:00"
 - Buttons now use the larger pill-style rounding everywhere by default for a more consistent look across screens
+- "Reveal in Finder" on the Done screen now opens the destination folder in Finder (macOS), Explorer (Windows) or your default file manager (Linux); if the folder was removed between sort and click, an error toast appears instead
 
 ### Bug Fixes
 

@@ -1,9 +1,9 @@
 # EPIC-13. Reveal in Finder
 
-**Status:** ⚪ pending
-**Branch:** _not yet created_
+**Status:** 🟢 complete
+**Branch:** `feat/epic-13-reveal-in-finder`
 **Owner:** Vasyl Kaminskyi
-**Last updated:** 2026-05-12
+**Last updated:** 2026-05-15
 
 ## Goal
 
@@ -44,9 +44,9 @@ Make the "Reveal in Finder" button on the Done screen actually open the OS file 
 
 What this PR ships:
 
-- Tauri capability authorisation for the `opener` plugin's reveal-item-in-dir permission (if not already covered by existing capability set).
-- A thin Tauri command `reveal_directory` (Rust side) that wraps `tauri-plugin-opener::revealItemInDir` — or, if simpler, the JS plugin is invoked directly without a custom command wrapper.
-- IPC binding `revealDirectory(path: string): Promise<void>` in `src/ipc/commands.ts`.
+- Tauri capability authorisation for the `opener` plugin's reveal-item-in-dir permission (already covered by `opener:default` in `src-tauri/capabilities/default.json`, no edits required).
+- A thin Tauri command `reveal_directory` (Rust side) that validates the target exists and delegates to `tauri_plugin_opener::reveal_item_in_dir`, mapping plugin errors to `AppError::Io`.
+- IPC binding `revealDirectory(path: string): Promise<void>` in `src/ipc/commands.ts` that invokes the Rust command (`invoke("reveal_directory", { request: { path } })`).
 - `revealDestination` handler added to `useSortOrchestration` hook, with `try/catch` + `toAppErrorView` + `toast.error` on failure (matching the existing handler pattern for `pause`, `cancel`, `revert`).
 - `SortApp.tsx` `onReveal` JSX prop forwards to `handlers.revealDestination(done.destination)`. The placeholder `console.warn` and the inline `// TODO(IPC):` comment are removed.
 - Manual visual smoke on macOS (and Windows if a build is available) — Finder/Explorer should open with the destination folder visible.
@@ -57,7 +57,13 @@ What this PR ships:
 
 ### Use plugin directly vs. custom Rust command
 
-**Decision**: prefer the JS-only path through `@tauri-apps/plugin-opener` if it works end-to-end without writing Rust. The plugin already exposes `revealItemInDir` to the webview when permissions are granted. A custom Rust command adds an indirection without value here. Revisit if the plugin lacks a feature we need.
+**Decision**: route through a Rust `reveal_directory` command that wraps `tauri_plugin_opener::reveal_item_in_dir`. Rationale:
+
+- Every other IPC entry point in the project goes through a Rust command — keeping that pattern preserves architectural consistency and lets Pattern Guard treat the call site like any other handler.
+- The Rust layer validates the path exists before delegating to the plugin and surfaces a typed `AppError::Io` to the frontend, matching the project's error contract (Article V) and the IPC contract documented below.
+- A future need to log reveal events, scope them to known destinations, or enforce additional policy lives naturally on the backend without rewriting the call site.
+
+The earlier JS-only proposal in this spec was reconsidered in favour of backend cohesion.
 
 ### Where the handler lives
 
@@ -65,19 +71,20 @@ What this PR ships:
 
 ## Subtasks
 
-- [ ] **S1** — Verify (or add) the Tauri capability that authorises `opener:allow-reveal-item-in-dir` in `src-tauri/capabilities/*.json`.
-- [ ] **S2** — Add `revealDirectory(path: string)` binding in `src/ipc/commands.ts`. Invoke `tauri-plugin-opener` directly from JS; no Rust command unless step S1 reveals a blocker.
-- [ ] **S3** — Add `revealDestination` handler in `src/features/sort/hooks/use-sort-orchestration.ts`, following the existing `pause`/`cancel`/`revert` error-handling pattern.
-- [ ] **S4** — Wire `onReveal` in `SortApp.tsx` to `handlers.revealDestination(done.destination)`; remove the `// TODO(IPC):` comment and `console.warn`.
-- [ ] **S5** — Manual visual smoke on macOS: pick a small source, run sort, click `Reveal in Finder` → Finder opens at destination.
-- [ ] **S6** — Add CHANGELOG bullet under `### Features`: e.g. `Reveal in Finder now opens the OS file manager at the destination folder after a successful sort.`
-- [ ] **S7** — Flip EPIC-13 spec status to 🟢 complete; update STATUS.md row.
+- [x] **S1** — Verified: `opener:default` (already in `src-tauri/capabilities/default.json`) includes `allow-reveal-item-in-dir`, so no capability edits were needed.
+- [x] **S2a** — `reveal_directory` Rust command implemented in `src-tauri/src/scanning/command.rs`: checks the path exists (returns `AppError::Io` otherwise), then delegates to `tauri_plugin_opener::reveal_item_in_dir`, mapping plugin errors to `AppError::Io`. The pre-existing `reveal_in_os` stub was replaced (not retained as dead code).
+- [x] **S2b** — `revealDirectory(path: string)` binding added in `src/ipc/commands.ts`; invokes the Rust command via `invoke("reveal_directory", { request: { path } })`.
+- [x] **S3** — `revealDestination` handler added in `src/features/sort/hooks/use-sort-orchestration.ts`, following the existing `pause` / `cancel` / `revert` error-handling pattern (try → `toAppErrorView` → `toast.error`).
+- [x] **S4** — `onReveal` in `SortApp.tsx` wired to `handlers.revealDestination(job.done.destination)`; placeholder `console.warn` and the `// EPIC-13` TODO comment removed.
+- [ ] **S5** — Manual visual smoke on macOS to be performed by reviewer before merge: pick a small source, run sort, click `Reveal in Finder` → Finder opens at destination. Not yet executed in this PR session; lint, `tsc --noEmit`, `cargo check` and `cargo clippy` all pass.
+- [x] **S6** — CHANGELOG bullet added under `## [Unreleased]` → `### Features`.
+- [x] **S7** — EPIC-13 spec status flipped to 🟢 complete; `docs/specs/STATUS.md` row updated.
 
 ## IPC contract
 
-| Command           | Input              | Output          | Notes                                                                                                                     |
-| ----------------- | ------------------ | --------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `revealDirectory` | `{ path: string }` | `Promise<void>` | Opens OS file manager at the given absolute path; rejects with `AppError::Io` if path is missing or permission is denied. |
+| Command            | Input              | Output          | Notes                                                                                                                                                                                                                                     |
+| ----------------- | ------------------ | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `reveal_directory` | `{ path: string }` | `Promise<void>` | Validates `path` exists, then opens the OS file manager at the given absolute path via `tauri_plugin_opener::reveal_item_in_dir`. Rejects with `AppError::Io` on missing path or plugin failure (permission denied, unsupported platform). |
 
 No new event types.
 
