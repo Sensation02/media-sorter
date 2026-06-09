@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 
+### Bug Fixes
+
+### Performance
+
+### Reverts
+
+## [0.2.0] - 2026-06-09
+
+### Features
+
 - The app now checks for updates on launch and offers to install them with one click; you can also check manually from Settings
 - Releases are now built automatically for macOS, Windows, and Linux; install instructions are in the README
 - Pre-flight ETA on the Setup screen: a small "≈ 15 sec" / "30 sec – 1 min" / "> 1 min" pill now appears next to the Run sort button before you click it, so you know what to expect for a 200 GB copy to a slow drive before it starts; a coloured dot signals how much the estimate is trusted (green when the app has measured the destination, amber for a generic guess, gray when the source and destination live on different drives without a probe)
@@ -49,7 +59,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Bug Fixes
 
 - "Browse…" no longer freezes the app on macOS when picking a source folder
-
-### Performance
-
-### Reverts
