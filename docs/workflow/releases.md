@@ -30,6 +30,11 @@ publishes the release. release-please was removed on 2026-06-09 — see
     [`release.yml`](../../.github/workflows/release.yml) always triggers
     (tags created by workflows with the default `GITHUB_TOKEN` never do).
 
+    Alternatively, run the **Release** workflow manually (Actions → Release →
+    Run workflow → branch `production`). In that mode the workflow resolves
+    the tag from `package.json` and creates it on the checked-out commit
+    itself — useful when the current environment cannot push tags.
+
 4. **Build.** `release.yml` validates the tag against the three version
    manifests, extracts the `## [X.Y.Z]` section from `CHANGELOG.md` as the
    release notes, builds installers on macOS, Ubuntu, and Windows, and
