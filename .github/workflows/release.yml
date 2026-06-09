@@ -1,70 +1,104 @@
 name: "Release"
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
+    push:
+        tags:
+            - "v*.*.*"
 
 permissions:
-  contents: write
+    contents: write
 
 env:
-  NODE_VERSION: "22"
-  RUST_TOOLCHAIN: "stable"
-  CARGO_TERM_COLOR: "always"
+    NODE_VERSION: "22"
+    RUST_TOOLCHAIN: "stable"
+    CARGO_TERM_COLOR: "always"
 
 jobs:
-  release:
-    name: Release — ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-    steps:
-      - uses: actions/checkout@v4
+    release:
+        name: Release — ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 45
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [macos-latest, ubuntu-latest, windows-latest]
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+            - name: Validate tag against version manifests
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  TAG_VERSION="${GITHUB_REF_NAME#v}"
+                  PKG=$(node -p "require('./package.json').version")
+                  TAURI=$(node -p "require('./src-tauri/tauri.conf.json').version")
+                  CARGO=$(awk -F'"' '/^version[[:space:]]*=/ { print $2; exit }' src-tauri/Cargo.toml)
+                  for MANIFEST_VERSION in "$PKG" "$TAURI" "$CARGO"; do
+                    if [ "$MANIFEST_VERSION" != "$TAG_VERSION" ]; then
+                      echo "::error::Tag $GITHUB_REF_NAME does not match manifests (package.json=$PKG, tauri.conf.json=$TAURI, Cargo.toml=$CARGO). Run 'make release-prepare VERSION=$TAG_VERSION', merge it, then re-tag."
+                      exit 1
+                    fi
+                  done
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
+            - name: Extract release notes from CHANGELOG
+              id: changelog
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  TAG_VERSION="${GITHUB_REF_NAME#v}"
+                  NOTES=$(awk -v heading="## [$TAG_VERSION]" 'index($0, heading) == 1 { found = 1; next } /^## \[/ { found = 0 } found' CHANGELOG.md)
+                  if [ -z "$(echo "$NOTES" | tr -d '[:space:]')" ]; then
+                    echo "::error::CHANGELOG.md has no section for $TAG_VERSION. Run 'make release-prepare VERSION=$TAG_VERSION' before tagging."
+                    exit 1
+                  fi
+                  {
+                    echo "notes<<CHANGELOG_NOTES_EOF"
+                    echo "$NOTES"
+                    echo "CHANGELOG_NOTES_EOF"
+                  } >> "$GITHUB_OUTPUT"
 
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
 
-      - name: Cache cargo registry & target
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri -> target
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: "pnpm"
 
-      - name: Install Linux system dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libwebkit2gtk-4.1-dev \
-            libappindicator3-dev \
-            librsvg2-dev \
-            patchelf \
-            libssl-dev
+            - name: Install Rust toolchain
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  toolchain: ${{ env.RUST_TOOLCHAIN }}
 
-      - name: Install JS deps
-        run: pnpm install --frozen-lockfile
+            - name: Cache cargo registry & target
+              uses: Swatinem/rust-cache@v2
+              with:
+                  workspaces: src-tauri -> target
 
-      - name: Build and upload release bundles
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
-        with:
-          tagName: ${{ github.ref_name }}
-          releaseName: "media-sorter ${{ github.ref_name }}"
-          prerelease: true
+            - name: Install Linux system dependencies
+              if: matrix.os == 'ubuntu-latest'
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    libwebkit2gtk-4.1-dev \
+                    libappindicator3-dev \
+                    librsvg2-dev \
+                    patchelf \
+                    libssl-dev
+
+            - name: Install JS deps
+              run: pnpm install --frozen-lockfile
+
+            - name: Build and upload release bundles
+              uses: tauri-apps/tauri-action@v0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+                  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
+              with:
+                  tagName: ${{ github.ref_name }}
+                  releaseName: "media-sorter ${{ github.ref_name }}"
+                  releaseBody: ${{ steps.changelog.outputs.notes }}
+                  releaseDraft: true
+                  prerelease: true
