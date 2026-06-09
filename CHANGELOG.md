@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Bug Fixes
 
 - "Browse…" no longer freezes the app on macOS when picking a source folder
+- Release downloads (the macOS `.dmg`, Windows `.msi`, and Linux packages) are now attached to each published release, so the installers and automatic updates are actually available
 
 ### Performance
 

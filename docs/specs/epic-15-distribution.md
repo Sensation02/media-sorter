@@ -3,7 +3,7 @@
 **Status:** 🟡 in progress
 **Branches:** `feat/epic-15-distribution-spec` (PR-1, current), `feat/epic-15-updater-plugin` (PR-2, planned), `feat/epic-15-release-workflow` (PR-3, planned)
 **Depends on:** none (release-please and CI matrix already in place)
-**Last updated:** 2026-05-15
+**Last updated:** 2026-06-09 (see Addendum — release pipeline rework)
 
 ## Goal
 
@@ -315,3 +315,66 @@ Events the frontend listens to (via the plugin):
     - [.github/workflows/release-please.yml](../../.github/workflows/release-please.yml) — tag/Release creation
     - [.github/workflows/ci.yml](../../.github/workflows/ci.yml) — existing build matrix template
     - [src-tauri/tauri.conf.json](../../src-tauri/tauri.conf.json) — bundle config, CSP, identifier
+
+## Addendum — 2026-06-09 (release pipeline rework)
+
+The body above is preserved as approved (Article X). This addendum records what
+the first real release (`v0.1.1`) revealed and the corrected design that
+supersedes the affected decisions. Where this addendum conflicts with the body,
+the addendum governs the release pipeline.
+
+### What broke
+
+On the first real release, the desktop bundles never reached the GitHub
+Release. All three build jobs compiled successfully but failed the final upload
+step with `Cannot upload assets to an immutable release`. Two compounding
+causes:
+
+1. **GitHub now defaults new releases to immutable.** release-please created the
+   release first (changelog, no assets); tauri-action then tried to _append_ the
+   bundles to that already-published immutable release, which is rejected.
+2. **`releaseDraft: false` (the tauri-action default) uploads into a published
+   release** rather than a mutable draft — so even without release-please, the
+   matrix runners would race to publish the same tag and hit the same wall.
+
+Separately, **release-please cannot process this repo's hand-written
+prepare-release PRs** on the `staging`/`production` model (it only acts on PRs it
+authored itself) — confirmed on the sibling `handy-partners` repo, which dropped
+it for the same reason.
+
+### Superseded decisions
+
+- **Assumption "release-please is the single source of truth for tags and GitHub
+  Releases"** — withdrawn. release-please is removed entirely
+  (`release-please.yml`, `release-please-config.json`,
+  `.release-please-manifest.json` deleted). Versioning is manual via the
+  `chore(release): prepare X.Y.Z` PR (Constitution Article VII), exactly as the
+  release flow already assumed.
+- **Q3 ("`releaseId` is not needed")** — reversed. `releaseId` _is_ the fix:
+  tauri-action must upload into a pre-created **draft** by ID, never append to a
+  published release by tag.
+- **Q5 ("first release is a prerelease")** — reversed. The release must be a
+  **full** release. The updater endpoint is hard-wired to
+  `releases/latest/download/latest.json`, and GitHub's `/releases/latest`
+  redirect skips prereleases — a prerelease's `latest.json` is never served, so
+  marking it prerelease silently kills auto-update.
+- **"release-please ↔ tauri-action handoff" section** — no longer applies; there
+  is a single owner of release creation.
+
+### Corrected design (implemented)
+
+`.github/workflows/release.yml`, triggered by `push` on `production` (a merged
+prepare-release PR), runs three jobs:
+
+1. **create-release** — read the version from `package.json`, extract the
+   matching `CHANGELOG.md` section, and `gh release create … --draft` (idempotent
+   guard skips if the tag already exists). Outputs `release_id`.
+2. **build** — the three-OS matrix runs `tauri-action@v0` with
+   `releaseId: <release_id>`, uploading bundles, signatures, and `latest.json`
+   into the mutable draft. Immutability does not apply to drafts.
+3. **publish** — `gh release edit --draft=false --latest` flips the draft to a
+   full published release once all bundles are attached.
+
+This keeps tauri-action as the only component that signs bundles and generates
+the updater manifest, removes the second release creator, and is immune to
+immutable releases via the draft → publish sequence.
