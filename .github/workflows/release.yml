@@ -2,11 +2,15 @@ name: "Release"
 
 on:
   push:
-    tags:
-      - "v*.*.*"
+    branches:
+      - production
 
 permissions:
   contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   NODE_VERSION: "22"
@@ -14,8 +18,63 @@ env:
   CARGO_TERM_COLOR: "always"
 
 jobs:
-  release:
-    name: Release — ${{ matrix.os }}
+  create-release:
+    name: Create draft release
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.create.outputs.release_id }}
+      tag: ${{ steps.create.outputs.tag }}
+      already_released: ${{ steps.create.outputs.already_released }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create tag and draft GitHub Release
+        id: create
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v$VERSION"
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq '.isDraft' > /tmp/is_draft 2>/dev/null; then
+            if [ "$(cat /tmp/is_draft)" = "false" ]; then
+              echo "Published release $TAG already exists — nothing to do"
+              echo "already_released=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Draft release $TAG exists from a prior failed run — removing it to retry"
+            gh release delete "$TAG" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes
+          fi
+
+          awk -v v="$VERSION" '
+            /^## \[/ { if (found) exit; if (index($0, "[" v "]")) { found=1; next } }
+            found { print }
+          ' CHANGELOG.md > /tmp/release-notes.md
+
+          if [ ! -s /tmp/release-notes.md ]; then
+            echo "::error::No CHANGELOG.md section found for version $VERSION — did the prepare-release PR rename [Unreleased]?"
+            exit 1
+          fi
+
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "media-sorter: v$VERSION" \
+            --notes-file /tmp/release-notes.md \
+            --draft
+
+          RELEASE_ID=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json databaseId --jq '.databaseId')
+
+          echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "already_released=false" >> "$GITHUB_OUTPUT"
+          echo "Created draft $TAG (release_id=$RELEASE_ID) at $GITHUB_SHA"
+
+  build:
+    name: Build — ${{ matrix.os }}
+    needs: create-release
+    if: needs.create-release.outputs.already_released == 'false'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
     strategy:
@@ -65,6 +124,23 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: "media-sorter ${{ github.ref_name }}"
-          prerelease: true
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+
+  publish:
+    name: Publish release
+    needs: [create-release, build]
+    if: needs.create-release.outputs.already_released == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release edit "${{ needs.create-release.outputs.tag }}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --draft=false \
+            --latest
+          echo "Published ${{ needs.create-release.outputs.tag }}"
