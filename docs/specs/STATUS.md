@@ -5,7 +5,7 @@
 > places in the same PR — see `docs/workflow/delivery.md`, section
 > _Epic Status Tracking_.
 
-**Last reviewed:** 2026-05-15 (EPIC-14 pre-flight ETA delivered)
+**Last reviewed:** 2026-05-15 (EPIC-15 distribution spec drafted)
 
 ## Status legend
 
@@ -32,6 +32,9 @@
 | [EPIC-12](epic-12-frontend-foundations.md) | 🟢 complete    | Frontend foundations refactor (tokens, icons, decomposition, dead-code cleanup) |
 | [EPIC-13](epic-13-reveal-in-finder.md)     | 🟢 complete    | Reveal in Finder — wire the existing Done-screen button to the OS file manager  |
 | [EPIC-14](epic-14-preflight-eta.md)        | 🟢 complete    | Pre-flight ETA estimate — show realistic duration before Start sort             |
+| [EPIC-15](epic-15-distribution.md)         | 🟡 in progress | Distribution pipeline (unsigned MVP) — auto-updater + release workflow          |
+| EPIC-16 _(spec not drafted)_               | ⚪ pending     | Marketing landing site (separate repo, Cloudflare Pages, privacy-first)         |
+| EPIC-17 _(spec not drafted)_               | ⚪ pending     | Windows code-signing via SignPath.io Foundation (free for OSS)                  |
 
 ## Active follow-ups
 
