@@ -4,6 +4,7 @@ on:
     push:
         tags:
             - "v*.*.*"
+    workflow_dispatch:
 
 permissions:
     contents: write
@@ -25,17 +26,30 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            - name: Resolve release tag
+              id: tag
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+                    TAG_NAME="$GITHUB_REF_NAME"
+                  else
+                    TAG_NAME="v$(node -p "require('./package.json').version")"
+                  fi
+                  echo "name=$TAG_NAME" >> "$GITHUB_OUTPUT"
+
             - name: Validate tag against version manifests
               shell: bash
               run: |
                   set -euo pipefail
-                  TAG_VERSION="${GITHUB_REF_NAME#v}"
+                  TAG_NAME="${{ steps.tag.outputs.name }}"
+                  TAG_VERSION="${TAG_NAME#v}"
                   PKG=$(node -p "require('./package.json').version")
                   TAURI=$(node -p "require('./src-tauri/tauri.conf.json').version")
                   CARGO=$(awk -F'"' '/^version[[:space:]]*=/ { print $2; exit }' src-tauri/Cargo.toml)
                   for MANIFEST_VERSION in "$PKG" "$TAURI" "$CARGO"; do
                     if [ "$MANIFEST_VERSION" != "$TAG_VERSION" ]; then
-                      echo "::error::Tag $GITHUB_REF_NAME does not match manifests (package.json=$PKG, tauri.conf.json=$TAURI, Cargo.toml=$CARGO). Run 'make release-prepare VERSION=$TAG_VERSION', merge it, then re-tag."
+                      echo "::error::Tag $TAG_NAME does not match manifests (package.json=$PKG, tauri.conf.json=$TAURI, Cargo.toml=$CARGO). Run 'make release-prepare VERSION=$TAG_VERSION', merge it, then re-tag."
                       exit 1
                     fi
                   done
@@ -45,7 +59,8 @@ jobs:
               shell: bash
               run: |
                   set -euo pipefail
-                  TAG_VERSION="${GITHUB_REF_NAME#v}"
+                  TAG_NAME="${{ steps.tag.outputs.name }}"
+                  TAG_VERSION="${TAG_NAME#v}"
                   NOTES=$(awk -v heading="## [$TAG_VERSION]" 'index($0, heading) == 1 { found = 1; next } /^## \[/ { found = 0 } found' CHANGELOG.md)
                   if [ -z "$(echo "$NOTES" | tr -d '[:space:]')" ]; then
                     echo "::error::CHANGELOG.md has no section for $TAG_VERSION. Run 'make release-prepare VERSION=$TAG_VERSION' before tagging."
@@ -56,6 +71,17 @@ jobs:
                     echo "$NOTES"
                     echo "CHANGELOG_NOTES_EOF"
                   } >> "$GITHUB_OUTPUT"
+
+            - name: Ensure release tag exists
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  TAG_NAME="${{ steps.tag.outputs.name }}"
+                  if git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" >/dev/null 2>&1; then
+                    exit 0
+                  fi
+                  git tag "$TAG_NAME"
+                  git push origin "$TAG_NAME" || git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" >/dev/null
 
             - name: Setup pnpm
               uses: pnpm/action-setup@v4
@@ -97,8 +123,8 @@ jobs:
                   TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
                   TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
               with:
-                  tagName: ${{ github.ref_name }}
-                  releaseName: "media-sorter ${{ github.ref_name }}"
+                  tagName: ${{ steps.tag.outputs.name }}
+                  releaseName: "media-sorter ${{ steps.tag.outputs.name }}"
                   releaseBody: ${{ steps.changelog.outputs.notes }}
                   releaseDraft: true
                   prerelease: true
