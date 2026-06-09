@@ -3,7 +3,7 @@
 	typecheck typecheck-js typecheck-rust \
 	lint lint-js lint-rust \
 	fmt fmt-js fmt-rust fmt-check fmt-check-js fmt-check-rust \
-	test test-js test-rust verify check clean reset
+	test test-js test-rust verify check release-prepare clean reset
 
 PNPM ?= pnpm
 CARGO ?= cargo
@@ -93,6 +93,14 @@ test-rust: ## Run Rust tests
 verify: typecheck lint ## Quick pre-commit gate (typecheck + lint, no tests)
 
 check: verify test ## Full pre-PR gate (verify + tests; run `make fmt-check` separately)
+
+# ---------------------------------------------------------------------------
+# Release
+# ---------------------------------------------------------------------------
+
+release-prepare: ## Bump versions + cut CHANGELOG for a release (VERSION=x.y.z)
+	@test -n "$(VERSION)" || { echo "Usage: make release-prepare VERSION=x.y.z"; exit 1; }
+	node scripts/prepare-release.mjs $(VERSION)
 
 # ---------------------------------------------------------------------------
 # Cleanup

@@ -3,7 +3,7 @@
 **Status:** 🟡 in progress
 **Branches:** `feat/epic-15-distribution-spec` (PR-1, current), `feat/epic-15-updater-plugin` (PR-2, planned), `feat/epic-15-release-workflow` (PR-3, planned)
 **Depends on:** none (release-please and CI matrix already in place)
-**Last updated:** 2026-05-15
+**Last updated:** 2026-06-09
 
 ## Goal
 
@@ -315,3 +315,20 @@ Events the frontend listens to (via the plugin):
     - [.github/workflows/release-please.yml](../../.github/workflows/release-please.yml) — tag/Release creation
     - [.github/workflows/ci.yml](../../.github/workflows/ci.yml) — existing build matrix template
     - [src-tauri/tauri.conf.json](../../src-tauri/tauri.conf.json) — bundle config, CSP, identifier
+
+## Amendment — 2026-06-09
+
+The out-of-scope item "Replacing release-please" and the
+"release-please ↔ tauri-action handoff" section are superseded. release-please
+was removed after the `v0.1.1` release failed: the repository has GitHub's
+immutable releases enabled, so the release it published could not receive
+assets from tauri-action (`Cannot upload assets to an immutable release`),
+and tags created with its default `GITHUB_TOKEN` never trigger `release.yml`.
+
+Versioning is now owned by the changelog-driven flow documented in
+[docs/workflow/releases.md](../workflow/releases.md): `make release-prepare`
+bumps the version manifests and cuts the CHANGELOG section, a manually pushed
+tag triggers the build, and tauri-action creates a **draft** release that the
+owner reviews and publishes. Q3 and Q5 stay valid in spirit — tauri-action
+still resolves the release by `tagName` (now creating it as a draft), and the
+prerelease flag is decided manually at publish time.
