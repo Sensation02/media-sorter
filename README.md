@@ -37,6 +37,22 @@ target tree like:
 - Every operation is reversible — the app keeps a move log and supports
   undo (planned in EPIC-07).
 
+## Download & install
+
+Grab the latest build for your platform from the
+[Releases page](https://github.com/Sensation02/media-sorter/releases), then
+follow the install guide for your OS:
+
+| Platform | Download             | Guide                                           |
+| -------- | -------------------- | ----------------------------------------------- |
+| macOS    | `.dmg`               | [Install on macOS](./docs/install-macos.md)     |
+| Windows  | `.msi`               | [Install on Windows](./docs/install-windows.md) |
+| Linux    | AppImage / deb / rpm | [Install on Linux](./docs/install-linux.md)     |
+
+> Current builds are **unsigned** — macOS and Windows show a one-time
+> security prompt on first launch. The guides above walk through it. Once
+> installed, the app updates itself with one click.
+
 ## Tech stack
 
 | Layer            | Technology                              |
