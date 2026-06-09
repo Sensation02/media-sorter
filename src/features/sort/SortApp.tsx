@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import { Toaster } from "@/components/ui/sonner";
+import { UpdatePrompt } from "@/components/update-prompt";
 
 import { ErrorBoundary } from "./components/error-boundary";
 import { Sidebar } from "./components/sidebar";
@@ -119,6 +120,7 @@ export function SortApp() {
                 </main>
             </div>
             <Toaster />
+            <UpdatePrompt />
         </div>
     );
 }

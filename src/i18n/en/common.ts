@@ -26,4 +26,11 @@ export default {
     sortedStatus: "Sorted",
     running: "running",
     completed: "completed",
+    updateAvailableTitle: "Update available",
+    updateAvailableDescription: "Version {{version}} is ready to install.",
+    updateNow: "Update now",
+    updateLater: "Later",
+    updateDownloading: "Downloading update…",
+    updateInstalledTitle: "Update installed",
+    updateInstalledDescription: "Restart media-sorter to finish updating.",
 } as const;
