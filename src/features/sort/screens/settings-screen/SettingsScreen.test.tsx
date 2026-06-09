@@ -1,10 +1,22 @@
+import type { ReactElement } from "react";
+
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
+import { AppUpdateProvider } from "@/hooks/AppUpdateProvider";
 
 import type { AppSettingsDto } from "../../../../types/ipc";
 import type { ToastErrorView } from "../../../../utils";
 
 import { SettingsScreen } from "./SettingsScreen";
+
+vi.mock("@tauri-apps/plugin-updater", () => ({
+    check: () => Promise.resolve(null),
+}));
+
+function renderSettings(ui: ReactElement) {
+    return render(<AppUpdateProvider>{ui}</AppUpdateProvider>);
+}
 
 function appSettings(overrides: Partial<AppSettingsDto> = {}): AppSettingsDto {
     return {
@@ -23,7 +35,7 @@ const noopReset = () => Promise.resolve(appSettings());
 
 describe("SettingsScreen", () => {
     it("renders a loading message in the loading state", () => {
-        render(
+        renderSettings(
             <SettingsScreen
                 state={{ status: "loading" }}
                 onSave={noopSave}
@@ -39,7 +51,7 @@ describe("SettingsScreen", () => {
         const error: ToastErrorView = { title: "Backend unavailable", detail: "" };
         const onRetry = vi.fn();
 
-        render(
+        renderSettings(
             <SettingsScreen
                 state={{ status: "error", error }}
                 onSave={noopSave}
@@ -56,7 +68,7 @@ describe("SettingsScreen", () => {
     it("toggle change calls onSave with the new value", () => {
         const onSave = vi.fn((next: AppSettingsDto) => Promise.resolve(next));
 
-        render(
+        renderSettings(
             <SettingsScreen
                 state={{ status: "success", settings: appSettings({ rememberLastSortRule: true }) }}
                 onSave={onSave}
@@ -81,7 +93,7 @@ describe("SettingsScreen", () => {
     it("folder name blur saves the trimmed value", () => {
         const onSave = vi.fn((next: AppSettingsDto) => Promise.resolve(next));
 
-        render(
+        renderSettings(
             <SettingsScreen
                 state={{
                     status: "success",
@@ -103,7 +115,7 @@ describe("SettingsScreen", () => {
     });
 
     it("retention renders the matching preset label", () => {
-        render(
+        renderSettings(
             <SettingsScreen
                 state={{ status: "success", settings: appSettings({ historyRetentionDays: 90 }) }}
                 onSave={noopSave}
@@ -117,7 +129,7 @@ describe("SettingsScreen", () => {
     });
 
     it("retention snaps non-preset values to the next preset", () => {
-        render(
+        renderSettings(
             <SettingsScreen
                 state={{ status: "success", settings: appSettings({ historyRetentionDays: 45 }) }}
                 onSave={noopSave}
@@ -133,7 +145,7 @@ describe("SettingsScreen", () => {
     it("reset button calls onReset", () => {
         const onReset = vi.fn(() => Promise.resolve(appSettings()));
 
-        render(
+        renderSettings(
             <SettingsScreen
                 state={{ status: "success", settings: appSettings() }}
                 onSave={noopSave}
@@ -148,7 +160,7 @@ describe("SettingsScreen", () => {
     });
 
     it("displays the locale-aware placeholder and language for Ukrainian", () => {
-        render(
+        renderSettings(
             <SettingsScreen
                 state={{ status: "success", settings: appSettings({ uiLanguage: "uk" }) }}
                 onSave={noopSave}
