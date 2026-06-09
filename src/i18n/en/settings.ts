@@ -17,4 +17,10 @@ export default {
     retention3Months: "3 months",
     retention6Months: "6 months",
     retention12Months: "12 months",
+    updates: "Updates",
+    updatesDescription: "Check for a newer version of media-sorter.",
+    checkForUpdates: "Check for updates",
+    checkingForUpdates: "Checking…",
+    upToDate: "You're on the latest version.",
+    updateCheckFailed: "Update check failed.",
 } as const;

@@ -19,4 +19,10 @@ export default {
     retention3Months: "3 місяці",
     retention6Months: "6 місяців",
     retention12Months: "12 місяців",
+    updates: "Оновлення",
+    updatesDescription: "Перевірити наявність новішої версії media-sorter.",
+    checkForUpdates: "Перевірити оновлення",
+    checkingForUpdates: "Перевіряємо…",
+    upToDate: "У вас найновіша версія.",
+    updateCheckFailed: "Не вдалося перевірити оновлення.",
 } as const;

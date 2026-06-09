@@ -21,6 +21,7 @@ import { RETENTION_PRESETS } from "../../constants/retention";
 import { retentionLabelKey, snapToPreset } from "../../mappers/retention";
 
 import { SettingsRow } from "./SettingsRow";
+import { UpdatesRow } from "./UpdatesRow";
 
 const SETTINGS_CONTROL_WIDTH = "w-44";
 const SETTINGS_CONTROL_SHAPE = "h-9";
@@ -189,6 +190,12 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                             </div>
                         }
                     />
+                </ul>
+            </Card>
+
+            <Card className="overflow-hidden">
+                <ul className="divide-y divide-divider-soft">
+                    <UpdatesRow />
                 </ul>
             </Card>
 

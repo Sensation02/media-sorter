@@ -26,4 +26,11 @@ export default {
     sortedStatus: "Готово",
     running: "виконується",
     completed: "завершено",
+    updateAvailableTitle: "Доступне оновлення",
+    updateAvailableDescription: "Версія {{version}} готова до встановлення.",
+    updateNow: "Оновити зараз",
+    updateLater: "Пізніше",
+    updateDownloading: "Завантажуємо оновлення…",
+    updateInstalledTitle: "Оновлення встановлено",
+    updateInstalledDescription: "Перезапустіть media-sorter, щоб завершити оновлення.",
 } as const;
