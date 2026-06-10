@@ -1,9 +1,9 @@
 # EPIC-15. Distribution pipeline (unsigned MVP)
 
 **Status:** 🟡 in progress
-**Branches:** `feat/epic-15-distribution-spec` (PR-1, current), `feat/epic-15-updater-plugin` (PR-2, planned), `feat/epic-15-release-workflow` (PR-3, planned)
+**Branches:** `feat/epic-15-distribution-spec` (PR-1, merged), `feat/epic-15-updater-plugin` (PR-2, merged), `feat/epic-15-release-workflow` (PR-3, merged)
 **Depends on:** none (release-please and CI matrix already in place)
-**Last updated:** 2026-06-09
+**Last updated:** 2026-06-10
 
 ## Goal
 
@@ -187,41 +187,42 @@ distribution infrastructure — it makes future EPIC-15 deliveries cheap.
 
 ### PR-2 — Tauri updater plugin + UI prompt
 
-- [ ] `cd src-tauri && cargo add tauri-plugin-updater`.
-- [ ] `pnpm add @tauri-apps/plugin-updater`.
-- [ ] Register plugin in `src-tauri/src/lib.rs` before `invoke_handler`.
-- [ ] Generate Ed25519 key locally:
+- [x] `cd src-tauri && cargo add tauri-plugin-updater`.
+- [x] `pnpm add @tauri-apps/plugin-updater`.
+- [x] Register plugin in `src-tauri/src/lib.rs` before `invoke_handler`.
+- [x] Generate Ed25519 key locally:
       `pnpm tauri signer generate -w ~/.tauri/media-sorter.key`. Store the
       private key in 1Password; store its base64 content in GitHub Secret
       `TAURI_SIGNING_PRIVATE_KEY`; commit the public key to
       `tauri.conf.json` → `plugins.updater.pubkey`.
-- [ ] Add `plugins.updater.endpoints` to `tauri.conf.json`.
-- [ ] Add `updater:default` capability to the default capability set.
-- [ ] Implement `src/hooks/use-app-update.ts` exposing
+- [x] Add `plugins.updater.endpoints` to `tauri.conf.json`.
+- [x] Add `updater:default` capability to the default capability set.
+- [x] Implement `src/hooks/use-app-update.ts` exposing
       `{ status, downloadAndInstall, error }`.
-- [ ] Implement `src/components/update-prompt/UpdatePrompt.tsx` — inline
+- [x] Implement `src/components/update-prompt/UpdatePrompt.tsx` — inline
       toast wired to the root layout.
-- [ ] Add "Check for updates" button in `SettingsScreen`, reuses the hook.
-- [ ] i18n keys for the prompt and button text (EN + UA).
-- [ ] CHANGELOG entry under `### Features`: user-friendly wording, e.g.
+- [x] Add "Check for updates" button in `SettingsScreen`, reuses the hook.
+- [x] i18n keys for the prompt and button text (EN + UA).
+- [x] CHANGELOG entry under `### Features`: user-friendly wording, e.g.
       _"The app now checks for updates on launch and offers to install them with one click."_
-- [ ] Local manual test: `pnpm tauri dev`, confirm the hook runs and logs
+- [x] Local manual test: `pnpm tauri dev`, confirm the hook runs and logs
       "no updates available" (because no `latest.json` exists yet).
 
 ### PR-3 — Release workflow + install docs
 
-- [ ] Create `.github/workflows/release.yml`: - trigger: `push` on tag `v*.*.*` - matrix: `macos-latest`, `windows-latest`, `ubuntu-latest` - uses `tauri-apps/tauri-action@v0` with: - `tagName: ${{ github.ref_name }}` - `releaseName: 'media-sorter v__VERSION__'` - `prerelease: true` for the first release; flip to `false` once
+- [x] Create `.github/workflows/release.yml`: - trigger: `push` on tag `v*.*.*` - matrix: `macos-latest`, `windows-latest`, `ubuntu-latest` - uses `tauri-apps/tauri-action@v0` with: - `tagName: ${{ github.ref_name }}` - `releaseName: 'media-sorter v__VERSION__'` - `prerelease: true` for the first release; flip to `false` once
       validation passes - `includeUpdaterJson: true` (default) - secrets: `TAURI_SIGNING_PRIVATE_KEY`,
       `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (empty string if no passphrase) - **no** Apple or Windows signing secrets — unsigned MVP
-- [ ] Write `docs/install-macos.md` — drag-to-Applications + `xattr -cr`
+      _(superseded by the draft-then-publish flow — see Amendment 2026-06-09 and 2026-06-10.)_
+- [x] Write `docs/install-macos.md` — drag-to-Applications + `xattr -cr`
       instructions, with terminal command snippet and rationale.
-- [ ] Write `docs/install-windows.md` — SmartScreen "More info → Run anyway"
+- [x] Write `docs/install-windows.md` — SmartScreen "More info → Run anyway"
       flow, screenshot-quality numbered steps.
-- [ ] Write `docs/install-linux.md` — AppImage `chmod +x` + .deb / .rpm
+- [x] Write `docs/install-linux.md` — AppImage `chmod +x` + .deb / .rpm
       package manager invocations.
-- [ ] Update `README.md` "Install" section with three OS columns linking
+- [x] Update `README.md` "Install" section with three OS columns linking
       to the docs above; link to GitHub Releases for downloads.
-- [ ] CHANGELOG entry under `### Features`: e.g. _"Releases are now built
+- [x] CHANGELOG entry under `### Features`: e.g. _"Releases are now built
       automatically for macOS, Windows, and Linux; install instructions in
       the README."_
 
@@ -332,3 +333,26 @@ tag triggers the build, and tauri-action creates a **draft** release that the
 owner reviews and publishes. Q3 and Q5 stay valid in spirit — tauri-action
 still resolves the release by `tagName` (now creating it as a draft), and the
 prerelease flag is decided manually at publish time.
+
+## Amendment — 2026-06-10
+
+PR-1, PR-2, and PR-3 are merged and the distribution infrastructure is live:
+the updater plugin ships in both manifests, install docs for all three OS are
+in `docs/`, and `release.yml` builds on the macOS/Windows/Linux matrix. Two
+real releases exist — `v0.2.1` is published as **Latest**, `v0.2.0` remains a
+GitHub draft (the false-start build that was never published).
+
+The Validation runbook below is **read as historical intent, not as an
+executed checklist** — its release-please steps and the `prerelease: true →
+false` flip no longer exist under the draft-then-publish flow (Amendment
+2026-06-09). What the runbook calls a "v0.2.1 patch release to verify the
+updater" is exactly the v0.2.1 cut, and the CI build + publish steps it lists
+are confirmed: all three bundles and `latest.json` are attached to the
+published release.
+
+**One validation step remains open, and it is the sole blocker for 🟢:** the
+manual end-to-end update test on a real machine — install v0.2.0, confirm the
+in-app prompt appears, the update applies, and macOS Gatekeeper / Windows
+SmartScreen do **not** re-block the replaced bundle (validates Q1 and Q13). As
+of this amendment that test has not been run, so EPIC-15 stays 🟡. Flip to 🟢
+in this spec and in `STATUS.md` once it passes.
