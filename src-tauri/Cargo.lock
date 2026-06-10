@@ -2341,7 +2341,7 @@ dependencies = [
 
 [[package]]
 name = "media-sorter"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "chrono",
  "fs4",

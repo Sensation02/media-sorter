@@ -50,11 +50,11 @@ publishes the release. release-please was removed on 2026-06-09 — see
    `latest.json` — to a **draft** GitHub Release. Drafts stay editable even
    with the repository's immutable-releases setting enabled.
 
-5. **Publish.** Review the draft on the Releases page and publish it
-   manually. The workflow pre-ticks "pre-release"; untick it when the build
-   should become `latest` — the updater endpoint reads
-   `releases/latest/download/latest.json`, and pre-releases are never
-   `latest`.
+5. **Publish.** Automatic: once all three OS jobs upload their bundles, the
+   `publish` job flips the draft into a full release marked `latest`, so the
+   updater endpoint `releases/latest/download/latest.json` resolves
+   immediately. If any build job fails, the draft stays unpublished for
+   inspection — fix, re-run, and the next successful run publishes it.
 
 ## What `make release-prepare` does
 

@@ -129,4 +129,24 @@ jobs:
                   releaseName: "media-sorter ${{ steps.tag.outputs.name }}"
                   releaseBody: ${{ steps.changelog.outputs.notes }}
                   releaseDraft: true
-                  prerelease: true
+
+    publish:
+        name: Publish release
+        needs: release
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Publish draft release as latest
+              shell: bash
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  set -euo pipefail
+                  if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+                    TAG_NAME="$GITHUB_REF_NAME"
+                  else
+                    TAG_NAME="v$(node -p "require('./package.json').version")"
+                  fi
+                  gh release edit "$TAG_NAME" --draft=false --latest
