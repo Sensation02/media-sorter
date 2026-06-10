@@ -132,6 +132,5 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Tauri app (no signing)
-        run: pnpm tauri build --ci
-        env:
-          TAURI_SIGNING_PRIVATE_KEY: ""
+        shell: bash
+        run: pnpm tauri build --ci --config '{"bundle":{"createUpdaterArtifacts":false}}'
