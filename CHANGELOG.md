@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug Fixes
 
+- Automatic updates now work end-to-end: each release ships the signed update manifest the app checks on launch
+
 ### Performance
 
 ### Reverts
