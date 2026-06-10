@@ -311,7 +311,6 @@ mod tests {
 
     #[test]
     fn copy_with_probe_promotes_confidence_to_high() {
-        cache::reset();
         let dest = std::env::temp_dir().join("epic-14-service-probe-promotion");
         let _ = std::fs::remove_dir_all(&dest);
         std::fs::create_dir_all(&dest).expect("dest dir");
@@ -331,7 +330,6 @@ mod tests {
 
     #[test]
     fn compute_populates_probe_cache_for_subsequent_calls() {
-        cache::reset();
         let dest = std::env::temp_dir().join("epic-14-service-cache-populate");
         let _ = std::fs::remove_dir_all(&dest);
         std::fs::create_dir_all(&dest).expect("dest dir");
@@ -358,7 +356,6 @@ mod tests {
 
     #[test]
     fn probe_disabled_keeps_medium_confidence_for_copy() {
-        cache::reset();
         let dest = std::env::temp_dir().join("epic-14-service-probe-off");
         let _ = std::fs::remove_dir_all(&dest);
         std::fs::create_dir_all(&dest).expect("dest dir");
