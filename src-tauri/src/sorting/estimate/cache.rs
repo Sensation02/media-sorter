@@ -23,19 +23,11 @@ pub fn put(destination_root: &Path, throughput_bps: u64) {
 }
 
 #[cfg(test)]
-pub fn reset() {
-    if let Ok(mut guard) = cache().lock() {
-        guard.clear();
-    }
-}
-
-#[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn put_then_get_returns_the_stored_value() {
-        reset();
         let root = std::env::temp_dir().join("epic-14-cache-fixture-put-get");
 
         put(&root, 12_345_678);
@@ -45,7 +37,6 @@ mod tests {
 
     #[test]
     fn get_returns_none_for_unknown_root() {
-        reset();
         let unknown = std::env::temp_dir().join("epic-14-cache-fixture-unknown");
 
         assert_eq!(get(&unknown), None);
