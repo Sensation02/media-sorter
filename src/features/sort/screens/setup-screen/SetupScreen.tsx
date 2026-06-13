@@ -103,6 +103,7 @@ export function SetupScreen({ source, rule, dateFormat, actions }: SetupScreenPr
 
     return (
         <ScreenFrame
+            bodyClassName="flex flex-col"
             footer={
                 <>
                     {estimate !== null && <PlanEstimate estimate={estimate} />}
@@ -118,7 +119,7 @@ export function SetupScreen({ source, rule, dateFormat, actions }: SetupScreenPr
                 </>
             }
         >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-7 shrink-0">
                 <section>
                     <Eyebrow className="mb-2.5">{t("sourceFolder")}</Eyebrow>
                     <Card className="px-4 py-3 flex items-center gap-3">
@@ -192,9 +193,9 @@ export function SetupScreen({ source, rule, dateFormat, actions }: SetupScreenPr
                 </section>
             </div>
 
-            <section>
+            <section className="flex-1 min-h-0 flex flex-col">
                 <Eyebrow className="mb-2.5">{t("outputPreview")}</Eyebrow>
-                <Card className="px-4 py-4">
+                <Card className="px-4 py-4 flex-1 min-h-0 overflow-y-auto">
                     <PreviewTree state={previewState} />
                 </Card>
             </section>
