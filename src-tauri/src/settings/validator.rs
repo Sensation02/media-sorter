@@ -1,10 +1,9 @@
 use crate::domain::AppSettings;
 use crate::error::{AppError, AppResult};
 use crate::i18n::{validate_language_code, DEFAULT_LANGUAGE_CODE};
+use crate::utils::path_sanitize::FORBIDDEN_FOLDER_NAME_CHARS;
 
-use super::defaults::{
-    FORBIDDEN_FOLDER_NAME_CHARS, MAX_HISTORY_RETENTION_DAYS, MIN_HISTORY_RETENTION_DAYS,
-};
+use super::defaults::{MAX_HISTORY_RETENTION_DAYS, MIN_HISTORY_RETENTION_DAYS};
 
 pub fn validate(input: AppSettings) -> AppResult<AppSettings> {
     let history_retention_days = clamp_retention(input.history_retention_days);
@@ -17,6 +16,7 @@ pub fn validate(input: AppSettings) -> AppResult<AppSettings> {
         unknown_date_folder_name,
         history_retention_days,
         ui_language,
+        date_format: input.date_format,
         memo: input.memo,
     })
 }
@@ -59,7 +59,7 @@ fn normalize_language(raw: String) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::SessionMemo;
+    use crate::domain::{DateFolderFormat, SessionMemo};
 
     fn base_settings() -> AppSettings {
         AppSettings {
@@ -68,6 +68,7 @@ mod tests {
             unknown_date_folder_name: None,
             history_retention_days: 30,
             ui_language: "en".into(),
+            date_format: DateFolderFormat::default(),
             memo: SessionMemo::default(),
         }
     }

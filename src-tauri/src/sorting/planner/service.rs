@@ -1,8 +1,9 @@
 use std::path::{Path, PathBuf};
 
-use crate::domain::{MediaFile, Metadata, SortPlan, SortPlanItem, SortRuleId};
+use crate::domain::{DateFolderFormat, MediaFile, Metadata, SortPlan, SortPlanItem, SortRuleId};
 use crate::error::{AppError, AppResult};
 use crate::geo::GeoCache;
+use crate::utils::path_sanitize::sanitize_path_segment;
 
 use super::strategy::{ByCamera, ByDate, ByDateAndPlace, ByType, SortStrategy};
 
@@ -13,6 +14,7 @@ pub fn build_plan(
     metadata: &[Metadata],
     unknown_folder: &str,
     lang: &str,
+    date_format: DateFolderFormat,
 ) -> AppResult<SortPlan> {
     if files.len() != metadata.len() {
         return Err(AppError::validation(format!(
@@ -37,6 +39,7 @@ pub fn build_plan(
                 &mut geo,
                 unknown_folder,
                 lang,
+                date_format,
             )
         })
         .collect();
@@ -57,6 +60,7 @@ fn strategy_for(rule: SortRuleId) -> Box<dyn SortStrategy> {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn build_item(
     root: &Path,
     strategy: &dyn SortStrategy,
@@ -65,8 +69,9 @@ fn build_item(
     geo: &mut GeoCache,
     unknown_folder: &str,
     lang: &str,
+    date_format: DateFolderFormat,
 ) -> SortPlanItem {
-    let segments = strategy.folder_segments(file, metadata, geo, unknown_folder, lang);
+    let segments = strategy.folder_segments(file, metadata, geo, unknown_folder, lang, date_format);
     let target = build_target(root, &segments, &file.path);
 
     SortPlanItem {
@@ -79,7 +84,7 @@ fn build_target(root: &Path, segments: &[String], source: &Path) -> PathBuf {
     let mut target = root.to_path_buf();
 
     for segment in segments {
-        target.push(segment);
+        target.push(sanitize_path_segment(segment));
     }
 
     if let Some(file_name) = source.file_name() {
@@ -137,6 +142,7 @@ mod tests {
             &metadata,
             "Misc",
             "en",
+            DateFolderFormat::LocalizedMonthYear,
         );
 
         assert!(matches!(result, Err(AppError::Validation { .. })));
@@ -151,6 +157,7 @@ mod tests {
             &[],
             "Misc",
             "en",
+            DateFolderFormat::LocalizedMonthYear,
         )
         .expect("plan");
 
@@ -181,6 +188,7 @@ mod tests {
             &metadata,
             "Misc",
             "en",
+            DateFolderFormat::LocalizedMonthYear,
         )
         .expect("plan");
 
@@ -207,6 +215,7 @@ mod tests {
             &metadata,
             "Misc",
             "en",
+            DateFolderFormat::LocalizedMonthYear,
         )
         .expect("plan");
 
@@ -234,6 +243,7 @@ mod tests {
             &metadata,
             "Misc",
             "en",
+            DateFolderFormat::LocalizedMonthYear,
         )
         .expect("plan");
 
@@ -252,6 +262,7 @@ mod tests {
             &metadata,
             "Без дати",
             "en",
+            DateFolderFormat::LocalizedMonthYear,
         )
         .expect("plan");
 
@@ -292,11 +303,40 @@ mod tests {
             &metadata,
             "Misc",
             "en",
+            DateFolderFormat::LocalizedMonthYear,
         )
         .expect("plan");
 
         for item in &plan.items {
             assert!(item.target.to_string_lossy().contains("Paris, France"));
         }
+    }
+
+    #[test]
+    fn build_target_keeps_segment_count_with_slashy_place() {
+        let root = Path::new("/dest");
+        let segments = vec!["2024".to_string(), "02".to_string(), "Sony/A7".to_string()];
+        let source = PathBuf::from("/src/IMG_001.jpg");
+
+        let target = build_target(root, &segments, &source);
+
+        let relative = target.strip_prefix(root).expect("target under root");
+
+        assert_eq!(relative.components().count(), 4);
+        assert_eq!(target, PathBuf::from("/dest/2024/02/Sony-A7/IMG_001.jpg"));
+    }
+
+    #[test]
+    fn build_target_sanitizes_every_segment() {
+        let root = Path::new("/dest");
+        let segments = vec!["2024-02".to_string(), "Paris:France".to_string()];
+        let source = PathBuf::from("/src/IMG_001.jpg");
+
+        let target = build_target(root, &segments, &source);
+
+        assert_eq!(
+            target,
+            PathBuf::from("/dest/2024-02/Paris-France/IMG_001.jpg")
+        );
     }
 }

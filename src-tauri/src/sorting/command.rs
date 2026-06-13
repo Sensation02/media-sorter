@@ -97,6 +97,7 @@ fn run_preview(app: &AppHandle, request: PreviewPlanRequest) -> AppResult<Previe
         &session.metadata,
         &unknown_folder,
         &settings.ui_language,
+        settings.date_format,
     )?;
 
     let estimate = estimate::compute(&plan, &session.files, &request.sort_settings);
