@@ -51,6 +51,8 @@ Investigate unknowns before implementation: existing code, third-party libraries
 
 - [ ] Document filename matches `YYYY-MM-DD-<topic>.md`
 - [ ] Every finding has a citation (file:line or URL)
+- [ ] Every key claim has a Confidence value and ≥2 independent sources (or is flagged low-confidence)
+- [ ] Disagreeing sources are recorded under Contradictions, not dropped
 - [ ] Proposed direction is actionable (a brainstorm-ready summary, not a plan)
 - [ ] Open risks are listed honestly
 
