@@ -11,8 +11,9 @@ Let the user choose how the date-based sort groups files on disk. Until now the
 `ByDate` / `ByDateAndPlace` rules produced a single fixed layout — a flat
 `"<LocalizedMonth> <Year>"` segment (`February 2024` / `Лютий 2024`) with the
 year last, which never sorts chronologically in a file manager. This epic adds a
-curated set of six date-folder formats, selectable in Settings, while keeping the
-current style as the default so existing libraries are untouched.
+curated set of six date-folder formats, selectable on the Setup screen alongside the
+sort rule (shown only for date-based rules), while keeping the current style as the
+default so existing libraries are untouched.
 
 Grounded in `docs/discoveries/2026-06-13-folder-organization-schemes.md`
 (directions #1 chronological-sort fix and #5 calendar granularity).
@@ -64,8 +65,8 @@ persisted `AppSettings.date_format` field (defensive store read: absent or
 invalid → default, never panics); the format applied in `ByDate` /
 `ByDateAndPlace` via `i18n::months::date_folder_segments`; per-segment path
 sanitization in `build_target` (`utils::path_sanitize`) closing the latent
-mis-nesting gap; a Settings dropdown with a live example per option; EN/UK
-labels; critical-path tests.
+mis-nesting gap; a Setup-screen dropdown (under the sort rule, shown only for
+date-based rules) with a live example per option; EN/UK labels; critical-path tests.
 
 **Out (deliberately deferred):** timezone-offset correctness (the `Local`
 bucketing is unchanged); the EXIF→mtime fallback ladder (the EPIC-03 "EXIF-only"
@@ -99,4 +100,5 @@ a free-text template engine; ISO-week / quarter granularity.
    default without error.
 6. A folder segment containing a path separator is sanitized so the target keeps
    its intended nesting depth.
-7. Selecting a format in Settings persists it and the next sort uses it.
+7. Selecting a format on the Setup screen (shown only for date rules) persists it and
+   the live preview + the next sort use it.

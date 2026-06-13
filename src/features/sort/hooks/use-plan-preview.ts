@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { previewPlan } from "../../../ipc";
 import { toAppErrorView, type ToastErrorView } from "../../../utils";
 import type {
+    DateFormatId,
     PlanEstimateDto,
     ScanId,
     SortPlan,
@@ -33,6 +34,7 @@ type PreviewResult = {
     scanId: ScanId;
     rule: SortRuleId;
     localeTag: string;
+    dateFormat: DateFormatId;
     sortSettingsKey: string;
     outcome: Outcome;
 };
@@ -41,6 +43,7 @@ export function usePlanPreview(
     scanId: ScanId | null,
     rule: SortRuleId,
     localeTag: string,
+    dateFormat: DateFormatId,
     sortSettings: SortSettingsDto,
 ): PlanPreviewState {
     const [result, setResult] = useState<PreviewResult | null>(null);
@@ -60,6 +63,7 @@ export function usePlanPreview(
                         scanId,
                         rule,
                         localeTag,
+                        dateFormat,
                         sortSettingsKey,
                         outcome: {
                             plan: response.plan,
@@ -74,6 +78,7 @@ export function usePlanPreview(
                         scanId,
                         rule,
                         localeTag,
+                        dateFormat,
                         sortSettingsKey,
                         outcome: { error: toAppErrorView(error) },
                     });
@@ -83,9 +88,9 @@ export function usePlanPreview(
         return () => {
             cancelled = true;
         };
-    }, [scanId, rule, localeTag, sortSettings, sortSettingsKey]);
+    }, [scanId, rule, localeTag, dateFormat, sortSettings, sortSettingsKey]);
 
-    return derivePreviewState(scanId, rule, localeTag, sortSettingsKey, result);
+    return derivePreviewState(scanId, rule, localeTag, dateFormat, sortSettingsKey, result);
 }
 
 function sortSettingsCacheKey(settings: SortSettingsDto): string {
@@ -101,6 +106,7 @@ function derivePreviewState(
     scanId: ScanId | null,
     rule: SortRuleId,
     localeTag: string,
+    dateFormat: DateFormatId,
     sortSettingsKey: string,
     result: PreviewResult | null,
 ): PlanPreviewState {
@@ -112,6 +118,7 @@ function derivePreviewState(
         result?.scanId !== scanId ||
         result.rule !== rule ||
         result.localeTag !== localeTag ||
+        result.dateFormat !== dateFormat ||
         result.sortSettingsKey !== sortSettingsKey
     ) {
         return { status: PLAN_PREVIEW_STATUS.loading };

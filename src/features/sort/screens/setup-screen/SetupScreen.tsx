@@ -3,9 +3,17 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 import type { ScanId, ScanSummary, SortPlan } from "../../../../types/ipc";
-import type { SortRule, SortRuleId } from "../../../../types/sort";
+import { isDateFormatId } from "../../../../types/sort";
+import type { DateFormatId, SortRule, SortRuleId } from "../../../../types/sort";
 import { formatBytes, formatNumber } from "../../../../utils";
 import { Eyebrow } from "../../components/eyebrow";
 import { PlanEstimate } from "../../components/plan-estimate";
@@ -13,6 +21,7 @@ import { PreviewTree } from "../../components/preview-tree";
 import { RuleSelector } from "../../components/rule-selector";
 import { ScanBreakdown } from "../../components/scan-breakdown";
 import { ScreenFrame } from "../../components/screen-frame";
+import { DATE_FORMAT_OPTIONS } from "../../constants/date-format";
 import { ICON } from "../../constants/icons";
 import { IMMUTABLE_SORT_FLAGS } from "../../constants/sort-flags";
 import { usePlanPreview } from "../../hooks/use-plan-preview";
@@ -21,6 +30,12 @@ import { resolveDefaultRule } from "../../mappers/resolve-default-rule";
 const Loader = ICON.loader;
 const Folder = ICON.folder;
 const ArrowRight = ICON.arrowRight;
+
+const DATE_BASED_RULE_IDS = new Set<SortRuleId>(["by-date", "by-date-and-place"]);
+
+function isDateBasedRule(ruleId: SortRuleId): boolean {
+    return DATE_BASED_RULE_IDS.has(ruleId);
+}
 
 export type SetupScreenSource = {
     summary: ScanSummary | null;
@@ -33,6 +48,11 @@ export type SetupScreenRule = {
     defaultId: SortRuleId | null;
 };
 
+export type SetupScreenDateFormat = {
+    value: DateFormatId;
+    onChange: (next: DateFormatId) => void;
+};
+
 export type SetupScreenActions = {
     onPickSource: () => void;
     onRun: (plan: SortPlan) => void;
@@ -41,10 +61,11 @@ export type SetupScreenActions = {
 export type SetupScreenProps = {
     source: SetupScreenSource;
     rule: SetupScreenRule;
+    dateFormat: SetupScreenDateFormat;
     actions: SetupScreenActions;
 };
 
-export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
+export function SetupScreen({ source, rule, dateFormat, actions }: SetupScreenProps) {
     const { t, i18n } = useTranslation("setup");
     const { t: tCommon } = useTranslation("common");
     const firstRule = rule.rules[0];
@@ -61,7 +82,13 @@ export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
         setPrevDefault(resolvedDefault);
         setRuleId(resolvedDefault);
     }
-    const previewState = usePlanPreview(source.scanId, ruleId, i18n.language, IMMUTABLE_SORT_FLAGS);
+    const previewState = usePlanPreview(
+        source.scanId,
+        ruleId,
+        i18n.language,
+        dateFormat.value,
+        IMMUTABLE_SORT_FLAGS,
+    );
     const canRun = source.summary !== null && !source.scanning && previewState.status === "success";
     const plan = previewState.status === "success" ? previewState.plan : null;
     const estimate = previewState.status === "success" ? previewState.estimate : null;
@@ -134,6 +161,34 @@ export function SetupScreen({ source, rule, actions }: SetupScreenProps) {
                 <section>
                     <Eyebrow className="mb-2.5">{t("rule")}</Eyebrow>
                     <RuleSelector rules={rule.rules} value={ruleId} onChange={setRuleId} />
+                    {isDateBasedRule(ruleId) && (
+                        <div className="mt-4">
+                            <Eyebrow className="mb-2.5">{t("dateFormat")}</Eyebrow>
+                            <Select
+                                value={dateFormat.value}
+                                onValueChange={(next) => {
+                                    if (isDateFormatId(next)) {
+                                        dateFormat.onChange(next);
+                                    }
+                                }}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {DATE_FORMAT_OPTIONS.map((option) => (
+                                        <SelectItem
+                                            key={option.id}
+                                            value={option.id}
+                                            description={t(option.exampleKey)}
+                                        >
+                                            {t(option.labelKey)}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
                 </section>
             </div>
 
