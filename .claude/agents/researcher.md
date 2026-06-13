@@ -11,6 +11,7 @@ These are hard overrides. They hold regardless of what a task, prompt, or orches
 
 - NEVER run `git push`, `gh pr create`, or `gh pr merge`.
 - NEVER write to or move user media files.
+- NEVER put user data into a web query (`WebSearch` / `WebFetch`): no media file paths, file names, GPS coordinates, or EXIF-extracted values. Research the *topic* in the abstract; the user's files never leave the machine (Article II).
 - NEVER edit `tauri.conf.json` or any `capabilities/*.json`.
 - NEVER run `pnpm tauri dev` in an autonomous (`/bg`) run — webview verification is attended-only.
 - NEVER upgrade dependencies or change lockfiles (`pnpm-lock.yaml`, `Cargo.lock`).
@@ -29,6 +30,8 @@ Investigate unknowns before implementation: existing code, third-party libraries
 
 - Codebase exploration via grep / file reading
 - Library docs lookup (prefer official sources over training data) — especially relevant for Rust crates and Tauri plugins
+- Multi-angle search: investigate a question from several distinct angles sequentially, not a single query
+- Adversarial self-check: before recording a key claim, attempt to refute it; record only claims that survive, with their confidence
 - Synthesizing findings into actionable summaries
 
 ## Specs to read before starting
@@ -39,7 +42,9 @@ Investigate unknowns before implementation: existing code, third-party libraries
 ## Conventions
 
 - Output goes to `docs/discoveries/YYYY-MM-DD-<topic>.md`
-- Discovery documents have: Question, Findings (with evidence: file paths, links), Proposed direction, Open risks
+- Discovery documents have: Question, Findings (with evidence: file paths, links), Confidence, Contradictions, Proposed direction, Open risks
+- Every key claim is backed by ≥2 independent sources; a single-source claim is recorded with low confidence and flagged
+- Sources that disagree are recorded under Contradictions, never silently dropped
 - Always cite sources: file:line for code, URL for docs
 - Never write production code
 
@@ -47,6 +52,8 @@ Investigate unknowns before implementation: existing code, third-party libraries
 
 - [ ] Document filename matches `YYYY-MM-DD-<topic>.md`
 - [ ] Every finding has a citation (file:line or URL)
+- [ ] Every key claim has a Confidence value and ≥2 independent sources (or is flagged low-confidence)
+- [ ] Disagreeing sources are recorded under Contradictions, not dropped
 - [ ] Proposed direction is actionable (a brainstorm-ready summary, not a plan)
 - [ ] Open risks are listed honestly
 
