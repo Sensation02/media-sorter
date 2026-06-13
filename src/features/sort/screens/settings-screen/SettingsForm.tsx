@@ -15,7 +15,9 @@ import { Switch } from "@/components/ui/switch";
 
 import type { AppSettingsDto } from "../../../../types/ipc";
 import { changeLocale, isSupportedLocale, SUPPORTED_LOCALES } from "../../../../i18n";
+import { isDateFormatId } from "../../../../types/sort";
 import { ScreenFrame } from "../../components/screen-frame";
+import { DATE_FORMAT_OPTIONS } from "../../constants/date-format";
 import { UNKNOWN_DATE_FOLDER_PLACEHOLDER } from "../../constants/locale";
 import { RETENTION_PRESETS } from "../../constants/retention";
 import { retentionLabelKey, snapToPreset } from "../../mappers/retention";
@@ -85,6 +87,17 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                     void changeLocale(saved.uiLanguage);
                 }
             });
+        },
+        [settings, onSave],
+    );
+
+    const handleDateFormatChange = useCallback(
+        (next: string) => {
+            if (!isDateFormatId(next) || next === settings.dateFormat) {
+                return;
+            }
+
+            void onSave({ ...settings, dateFormat: next });
         },
         [settings, onSave],
     );
@@ -183,6 +196,33 @@ export function SettingsForm({ settings, onSave, onReset }: SettingsFormProps) {
                                         {SUPPORTED_LOCALES.map((entry) => (
                                             <SelectItem key={entry.code} value={entry.code}>
                                                 {entry.nativeName}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        }
+                    />
+                    <SettingsRow
+                        label={t("dateFormat")}
+                        description={t("dateFormatDescription")}
+                        control={
+                            <div className={SETTINGS_CONTROL_WIDTH}>
+                                <Select
+                                    value={settings.dateFormat}
+                                    onValueChange={handleDateFormatChange}
+                                >
+                                    <SelectTrigger size="sm" className="rounded-md">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {DATE_FORMAT_OPTIONS.map((option) => (
+                                            <SelectItem
+                                                key={option.id}
+                                                value={option.id}
+                                                description={t(option.exampleKey)}
+                                            >
+                                                {t(option.labelKey)}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

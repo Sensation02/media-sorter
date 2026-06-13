@@ -1,6 +1,6 @@
-export type { SortRuleId } from "./ipc";
+export type { DateFormatId, SortRuleId } from "./ipc";
 
-import type { SortRuleId } from "./ipc";
+import type { DateFormatId, SortRuleId } from "./ipc";
 
 export type SortTreeNode =
     | { kind: "folder"; label: string; muted?: boolean; children: SortTreeNode[] }
@@ -63,4 +63,17 @@ const SORT_RULE_IDS = new Set<SortRuleId>(["by-date-and-place", "by-date", "by-t
 
 export function isSortRuleId(value: string): value is SortRuleId {
     return SORT_RULE_IDS.has(value as SortRuleId);
+}
+
+const DATE_FORMAT_IDS = new Set<DateFormatId>([
+    "localized-month-year",
+    "year-localized-month",
+    "iso-month",
+    "iso-month-nested",
+    "iso-day-nested",
+    "iso-month-localized",
+]);
+
+export function isDateFormatId(value: string): value is DateFormatId {
+    return DATE_FORMAT_IDS.has(value as DateFormatId);
 }

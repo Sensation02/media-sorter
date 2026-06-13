@@ -22,6 +22,7 @@ function appSettings(overrides: Partial<AppSettingsDto> = {}): AppSettingsDto {
         unknownDateFolderName: null,
         historyRetentionDays: 30,
         uiLanguage: "en",
+        dateFormat: "localized-month-year",
         memo: { lastSortRule: null, lastDestination: null },
         ...overrides,
     };

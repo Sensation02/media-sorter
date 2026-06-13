@@ -1,7 +1,8 @@
 import type { ReactElement } from "react";
 
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { AppUpdateProvider } from "@/hooks/AppUpdateProvider";
 
@@ -14,6 +15,12 @@ vi.mock("@tauri-apps/plugin-updater", () => ({
     check: () => Promise.resolve(null),
 }));
 
+beforeAll(() => {
+    Element.prototype.hasPointerCapture = () => false;
+    Element.prototype.releasePointerCapture = () => undefined;
+    Element.prototype.scrollIntoView = () => undefined;
+});
+
 function renderSettings(ui: ReactElement) {
     return render(<AppUpdateProvider>{ui}</AppUpdateProvider>);
 }
@@ -25,6 +32,7 @@ function appSettings(overrides: Partial<AppSettingsDto> = {}): AppSettingsDto {
         unknownDateFolderName: null,
         historyRetentionDays: 30,
         uiLanguage: "en",
+        dateFormat: "localized-month-year",
         memo: { lastSortRule: null, lastDestination: null },
         ...overrides,
     };
@@ -171,5 +179,58 @@ describe("SettingsScreen", () => {
 
         expect(screen.getByPlaceholderText("Різне")).toBeInTheDocument();
         expect(screen.getByText("Українська")).toBeInTheDocument();
+    });
+
+    it("date format select renders all six format options", async () => {
+        const user = userEvent.setup();
+
+        renderSettings(
+            <SettingsScreen
+                state={{ status: "success", settings: appSettings() }}
+                onSave={noopSave}
+                onReset={noopReset}
+                onRetry={() => undefined}
+            />,
+        );
+
+        const dateFormatCombobox = screen.getAllByRole("combobox")[2];
+
+        if (dateFormatCombobox === undefined) {
+            throw new Error("expected a date-format combobox in the rendered settings form");
+        }
+
+        await user.click(dateFormatCombobox);
+
+        const options = within(screen.getByRole("listbox")).getAllByRole("option");
+        expect(options).toHaveLength(6);
+    });
+
+    it("selecting a date format calls onSave with the new dateFormat", async () => {
+        const user = userEvent.setup();
+        const onSave = vi.fn((next: AppSettingsDto) => Promise.resolve(next));
+
+        renderSettings(
+            <SettingsScreen
+                state={{ status: "success", settings: appSettings() }}
+                onSave={onSave}
+                onReset={noopReset}
+                onRetry={() => undefined}
+            />,
+        );
+
+        const dateFormatCombobox = screen.getAllByRole("combobox")[2];
+
+        if (dateFormatCombobox === undefined) {
+            throw new Error("expected a date-format combobox in the rendered settings form");
+        }
+
+        await user.click(dateFormatCombobox);
+
+        const listbox = within(screen.getByRole("listbox"));
+        await user.click(listbox.getByText("2024 / 02 / 15"));
+
+        expect(onSave).toHaveBeenCalledWith(
+            expect.objectContaining({ dateFormat: "iso-day-nested" }),
+        );
     });
 });

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 
+- Choose how date folders are named in Settings: keep the current month-name style ("February 2024" / "Лютий 2024") or pick a year-nested or numeric layout (for example 2024-02, 2024/02, or 2024/02/15) that sorts chronologically in any file manager. The current style stays the default, so existing libraries are untouched
+
 ### Bug Fixes
 
 ### Performance
