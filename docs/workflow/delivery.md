@@ -11,6 +11,18 @@
 
 This phase is **mandatory**. All work must be delivered as PRs — never left as uncommitted changes.
 
+### The green gate (pre-PR)
+
+The pre-PR green gate is **`make check`** (the full lint + test gate —
+`verify` + `test`, where `verify` is `typecheck` + `lint` and `lint` already
+runs `cargo clippy -D warnings`) plus **`make fmt-check`** (Prettier `--check`
++ `cargo fmt --check`). Both must pass before opening a PR.
+
+It is **not** `make verify` — that is only the quick typecheck + lint
+pre-commit tier and runs no tests or format checks. Wherever the delivery
+steps below say "Lint + tests MUST pass", the canonical command is `make
+check && make fmt-check`.
+
 ### Develop-then-Split Model
 
 All development happens in the working directory first (Phases 1–3). Only after code is complete and verified does the Orchestrator split it into branches, atomic commits, and PRs.

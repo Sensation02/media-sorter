@@ -73,6 +73,10 @@ You'll need:
 - **Node.js ≥ 22** and **pnpm ≥ 10** — install pnpm via
   [`pnpm.io/installation`](https://pnpm.io/installation).
 - **Rust (stable)** — install via [`rustup`](https://rustup.rs).
+- **`jq`** — required by the `.claude/hooks/` Claude Code enforcement
+  layer, not by the app build itself. The hooks parse tool-input JSON with
+  `jq` and **fail closed** (block every Bash command and Edit/Write) when it
+  is missing. Install once: `brew install jq` (macOS).
 - **OS-specific Tauri system dependencies** — see the official
   [Tauri 2 prerequisites guide](https://tauri.app/start/prerequisites/):
   - **macOS** — Xcode Command Line Tools (`xcode-select --install`).
