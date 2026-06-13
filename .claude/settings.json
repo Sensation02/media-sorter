@@ -10,6 +10,15 @@
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-bash.sh"
           }
         ]
+      },
+      {
+        "matcher": "WebSearch|WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-web.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
