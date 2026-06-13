@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup install install-js install-rust dev build build-ui \
+.PHONY: help setup install install-js install-rust dev kill-ports build build-ui \
 	typecheck typecheck-js typecheck-rust \
 	lint lint-js lint-rust \
 	fmt fmt-js fmt-rust fmt-check fmt-check-js fmt-check-rust \
@@ -8,6 +8,7 @@
 PNPM ?= pnpm
 CARGO ?= cargo
 TAURI_DIR := src-tauri
+DEV_PORTS := 1420 1421
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*##"; printf "Usage: make <target>\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -39,6 +40,17 @@ install-rust: ## Fetch Rust dependencies (cargo fetch)
 
 dev: ## Run Tauri dev (Rust + Vite + webview)
 	$(PNPM) tauri dev
+
+kill-ports: ## Free the Vite dev ports (1420 HTTP + 1421 HMR) if a dev run is stuck
+	@for port in $(DEV_PORTS); do \
+		pid=$$(lsof -ti tcp:$$port 2>/dev/null); \
+		if [ -n "$$pid" ]; then \
+			echo "Killing process on port $$port (pid $$pid)"; \
+			kill $$pid 2>/dev/null || true; \
+		else \
+			echo "Port $$port is free"; \
+		fi; \
+	done
 
 build: ## Production desktop build (signed installers)
 	$(PNPM) tauri build

@@ -35,6 +35,7 @@
 | [EPIC-15](epic-15-distribution.md)         | 🟡 in progress | Distribution pipeline (unsigned MVP) — infra shipped; manual test pending       |
 | EPIC-16 _(spec not drafted)_               | ⚪ pending     | Marketing landing site (separate repo, Cloudflare Pages, privacy-first)         |
 | EPIC-17 _(spec not drafted)_               | ⚪ pending     | Windows code-signing via SignPath.io Foundation (free for OSS)                  |
+| [EPIC-18](epic-18-workflow-automation.md)  | ⚪ pending     | Workflow automation & governance — `.claude/hooks/` enforcement, release/CI hardening, article-anchored review, `/attack-plan`, `feature-loop` (Handy Partners adoption) |
 
 ## Active follow-ups
 

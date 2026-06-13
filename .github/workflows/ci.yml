@@ -3,6 +3,9 @@ name: "CI"
 on:
   push:
     branches: [main, staging, production]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
   pull_request:
     branches: [main, staging, production]
 
@@ -134,3 +137,42 @@ jobs:
       - name: Build Tauri app (no signing)
         shell: bash
         run: pnpm tauri build --ci --config '{"bundle":{"createUpdaterArtifacts":false}}'
+
+      - name: Write build summary
+        shell: bash
+        env:
+          RUNNER_OS: ${{ matrix.os }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          {
+            echo "### Build — $RUNNER_OS"
+            echo ""
+            echo "- Unsigned smoke build succeeded on \`$RUNNER_OS\`."
+            echo "- Commit: \`$COMMIT_SHA\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  comment-status:
+    name: Comment build status on merged PR
+    needs: [build-matrix]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment build status on the merged PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          PR_NUMBER=$(gh api "repos/$REPOSITORY/commits/$COMMIT_SHA/pulls" --jq '.[0].number // empty' || true)
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No associated PR for $COMMIT_SHA; skipping comment."
+            exit 0
+          fi
+          gh pr comment "$PR_NUMBER" --repo "$REPOSITORY" \
+            --body "CI build passed on macOS, Ubuntu, and Windows for merge commit \`$COMMIT_SHA\`."

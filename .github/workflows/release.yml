@@ -11,6 +11,10 @@ on:
 permissions:
     contents: write
 
+concurrency:
+    group: release-${{ github.ref }}
+    cancel-in-progress: false
+
 env:
     NODE_VERSION: "22"
     RUST_TOOLCHAIN: "stable"
@@ -82,7 +86,7 @@ jobs:
                   if git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" >/dev/null 2>&1; then
                     exit 0
                   fi
-                  git tag "$TAG_NAME"
+                  git tag "$TAG_NAME" "$GITHUB_SHA"
                   git push origin "$TAG_NAME" || git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" >/dev/null
 
             - name: Setup pnpm
@@ -118,7 +122,22 @@ jobs:
             - name: Install JS deps
               run: pnpm install --frozen-lockfile
 
+            - name: Skip if release already exists
+              id: release_guard
+              shell: bash
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  set -euo pipefail
+                  TAG_NAME="${{ steps.tag.outputs.name }}"
+                  if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+                    echo "exists=true" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "exists=false" >> "$GITHUB_OUTPUT"
+                  fi
+
             - name: Build and upload release bundles
+              if: steps.release_guard.outputs.exists != 'true'
               uses: tauri-apps/tauri-action@v0
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

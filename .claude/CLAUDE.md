@@ -21,6 +21,15 @@ The supreme law of this project is `docs/CONSTITUTION.md`. It overrides this fil
 - **IX. Tests guard the critical path** — ~60–70% on business logic, not global coverage
 - **X. Specs precede code for non-trivial work** — `docs/specs/` is the contract; immutable once approved
 
+## Stack-Scoped Rules (auto-loaded)
+
+Backend- and frontend-specific conventions live in stack-scoped memory files. The agent loads them on demand when it reads files in that tree, so this root file stays lean and a UI-only or backend-only session does not pay for the other stack's rules. They **extend** this file — precedence unchanged; everything in this file applies to both stacks.
+
+**Precedence:** Constitution → root `.claude/CLAUDE.md` → stack-scoped (`src-tauri/CLAUDE.md` & `src/CLAUDE.md`) → `docs/workflow/*` → `docs/specs/*` → code. Lower documents may add detail; they must not contradict a higher one.
+
+- **`src-tauri/CLAUDE.md`** (Rust / Tauri) — Rust naming, the backend module layout (`src-tauri/src/` vertical-feature + shared-core hybrid), the Session Context Rust learning-notes obligation, and `cargo` commands.
+- **`src/CLAUDE.md`** (React / TypeScript / Vite) — TS/React naming, one-file-one-component, the frontend vertical-split mirror, the UI server-state architecture rule, the "do not explain TS/React language features" note, and frontend `pnpm` commands.
+
 ## Working Protocol
 
 These four imperatives govern HOW the agent works on every task, before any project-specific rule applies. They are testable — Pattern Guard and Reviewer may flag violations.
@@ -88,8 +97,6 @@ Commit `pnpm-lock.yaml` and `Cargo.lock` only. Never commit `package-lock.json` 
 
 **Deduplication before creation** — before creating a new component, utility, or constant file, search the codebase for existing duplicates. Extract shared version to the correct location.
 
-**One file — one component (UI)** — every UI component lives in its own file. Never co-locate two or more components in a single file, including small private helpers.
-
 **Error handling** — always raise framework-native exceptions / typed errors (`Result<T, E>` in Rust, throw in TS). Never return error objects from happy-path APIs.
 
 **Strict typing** — avoid lazy escape hatches (`any`, `unknown` without validation, untyped dictionaries in TS; `Box<dyn Any>` without a real need in Rust). Use concrete types and define interfaces / structs when shapes are non-trivial.
@@ -98,10 +105,12 @@ Commit `pnpm-lock.yaml` and `Cargo.lock` only. Never commit `package-lock.json` 
 
 **Naming conventions:**
 
-- Rust: `snake_case` for functions/variables, `PascalCase` for types, `SCREAMING_SNAKE_CASE` for constants
-- TS/React: `camelCase` for functions/variables, `PascalCase` for types and components, `UPPER_SNAKE_CASE` for constants
 - Private fields immutable by default
 - Avoid: single-letter vars (except `i`, `j`, `k`), abbreviations (`cls`, `ctx`, `usr`), non-descriptive names (`data`, `info`, `temp`)
+
+> Per-stack case rules — Rust (`snake_case` / `PascalCase` / `SCREAMING_SNAKE_CASE`) lives in `src-tauri/CLAUDE.md`; TS/React (`camelCase` / `PascalCase` / `UPPER_SNAKE_CASE`) lives in `src/CLAUDE.md`.
+
+> Stack-specific code rules — "one file — one component (UI)" lives in `src/CLAUDE.md`.
 
 ## Code Structure & Readability
 
@@ -154,35 +163,10 @@ Separate groups with a blank line only when the linter requires it.
 5. **Barrel exports** → use `index.ts` / `mod.rs` files
 6. **Config** → inject via a config module, never read environment variables directly in business code
 7. **Migrations** → none (no DB at start). If a DB is added, auto-generated migrations only
-8. **UI server-state** — N/A (desktop without a backend API). For local async state from Rust commands, use the project's chosen state lib (TanStack Query is allowed but often overkill — we'll pick one when the need arises)
+8. **UI server-state** → frontend-specific; lives in `src/CLAUDE.md` > Architecture (frontend)
 9. **Tests** → unit tests only for critical business logic
 
-### Backend module layout (Rust / `src-tauri/src/`)
-
-Hybrid: **feature modules vertical, shared core horizontal.** Each feature owns its IPC entry points, business logic, persistence, and DTOs. Shared types and utilities are centralized so features can depend on them without depending on each other.
-
-```
-src-tauri/src/
-├── lib.rs            ← bootstrap, plugin registration, invoke_handler
-├── error.rs          ← AppError, AppResult (shared)
-├── domain/           ← entities, enums, value objects (shared, never per-feature)
-├── utils/            ← cross-cutting helpers (shared)
-├── <feature>/        ← e.g. scanning, sorting, history
-│   ├── mod.rs        ← re-exports the public command fns and dto types
-│   ├── command.rs    ← #[tauri::command] entry points (thin)
-│   ├── service.rs    ← business logic (where the work happens)
-│   ├── repository.rs ← filesystem / persistence access (optional per feature)
-│   └── dto.rs        ← request / response IPC contracts for this feature
-└── …
-```
-
-Rules:
-
-- **Feature module owns its `command.rs` and `dto.rs`.** No flat `commands/` or `dto/` umbrella module.
-- **Domain types stay in `domain/`** even if used by exactly one feature today — moving them later breaks more than the duplication it avoids.
-- **`lib.rs` reexports nothing from features except command fns** — register them in `tauri::generate_handler![feature::command_name, …]`.
-- **Cross-feature imports allowed only for DTOs and read-only domain types**, never for service internals. If two features need to share business logic, extract to `domain/` or a new shared module.
-- **Frontend mirrors the same vertical split** under `src/features/<feature>/` (components, hooks, IPC bindings).
+> Stack-specific architecture — the **backend module layout** (Rust `src-tauri/src/` vertical-feature + shared-core hybrid, including the `domain/` / `command.rs` / `dto.rs` rules and `lib.rs` registration) lives in `src-tauri/CLAUDE.md`; the **frontend vertical-split mirror** (`src/features/<feature>/`) and the **UI server-state** rule live in `src/CLAUDE.md`.
 
 ## Testing Philosophy
 
@@ -410,20 +394,6 @@ pnpm install              # JS deps
 pnpm tauri dev            # Run Tauri in dev (Rust + Vite + webview)
 pnpm tauri build          # Production desktop build (signed installers)
 
-# Frontend (UI only)
-pnpm dev                  # Vite dev server (no Tauri shell — for UI debug)
-pnpm preview              # Preview UI production build
-pnpm lint                 # ESLint
-pnpm format               # Prettier
-
-# Backend (Rust, in src-tauri/)
-cd src-tauri
-cargo check               # Fast type-check
-cargo build               # Build the crate
-cargo test                # Run Rust tests
-cargo clippy              # Linter
-cargo fmt                 # Formatter
-
 # Makefile (from the repo root) — quick shortcuts
 make help                 # List targets
 make setup                # Full setup from scratch
@@ -435,6 +405,8 @@ make fmt                  # Prettier + cargo fmt
 make test                 # pnpm test + cargo test
 make clean                # Remove build artifacts
 ```
+
+> Stack-specific commands — frontend-only `pnpm dev` / `preview` / `lint` / `format` live in `src/CLAUDE.md` > Commands; backend `cargo check` / `build` / `test` / `clippy` / `fmt` live in `src-tauri/CLAUDE.md` > Commands.
 
 Migrations: `none` (no DB at start).
 
@@ -455,26 +427,9 @@ Migrations: `none` (no DB at start).
 
 ## Session Context
 
-The repository owner is using this project as a vehicle for **learning Rust** alongside delivery. They are a senior JS / TS / React developer with no prior Rust background.
+The repository owner is using this project as a vehicle for **learning Rust** alongside delivery. They are a senior JS / TS / React developer with no prior Rust background. (Article VIII — Learning is a first-class concern.)
 
-When the agent makes Rust changes in `src-tauri/`, it MUST briefly explain in English:
-
-- new syntax that hasn't appeared in this codebase yet (`let-else`, `match`, `?`, closures `|x|`, lifetimes, generics, turbofish, pattern matching, `impl Trait`)
-- attribute macros (`#[derive(...)]`, `#[tauri::command]`, `#[serde(...)]`, `#[cfg(...)]`, `#[error("...")]`)
-- ownership / borrowing decisions (`&str` vs `String`, `&Path` vs `PathBuf`, `&mut`, when to `.clone()`)
-- async vs blocking trade-offs in Tauri commands (`blocking_*`, `spawn_blocking`, oneshot channels)
-- module / crate structure (`mod`, `pub`, `use`, `super::`, `crate::`, barrel re-exports)
-- error-handling patterns (`Result`, `Option`, `?`, `From`, `thiserror`, `map_err`)
-
-Style for explanations:
-
-- short, concrete, with code excerpts
-- English
-- mark explanation blocks clearly so they are skippable (e.g. a dedicated `### 🎓` heading or block)
-- do NOT repeat explanations of concepts already covered in the same conversation — rely on context
-- skip explanations on trivial mechanical edits (renames, formatting fixes, moving lines)
-
-For TS / React / Vite changes, **do not** explain language features unless asked — the user is fluent there.
+> Stack-specific learning rules — the full Rust explanation obligation (what syntax / macros / ownership / async-vs-blocking to explain, and the explanation style) lives in `src-tauri/CLAUDE.md` > Session Context. The "do not explain TS / React / Vite language features unless asked" rule lives in `src/CLAUDE.md` > Session Context.
 
 ## How to Respond
 
