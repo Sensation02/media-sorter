@@ -54,6 +54,18 @@ guards.
 
 `pnpm-lock.yaml` is explicitly allowed — MS commits `pnpm-lock.yaml` and `Cargo.lock`.
 
+### `pre-web.sh` — PreToolUse:WebSearch\|WebFetch
+
+| Rule | Action |
+|---|---|
+| Query / url / prompt contains a filesystem path (`/Users/`, `/home/`, `~/`, `C:\`) | block |
+| Query / url / prompt contains a media filename (`*.jpg`, `*.heic`, `*.mov`, …) | block |
+| Query / url / prompt contains a GPS coordinate pair (two signed decimals) | block |
+
+Layer-2 of the research privacy model (Article II): a deterministic backstop so user data never
+leaves the machine in a web query, regardless of what an agent intends. The prompt-layer half lives
+in `.claude/agents/researcher.md` ABSOLUTE PROHIBITIONS.
+
 ## MS inversions vs Handy Partners (HP)
 
 These hooks are structurally borrowed from HP but invert HP's stack policy:
@@ -94,6 +106,13 @@ echo '{"tool_input":{"command":"pnpm install"}}'        | .claude/hooks/pre-bash
 echo '{"tool_input":{"command":"cargo add serde"}}'     | .claude/hooks/pre-bash.sh
 echo '{"tool_input":{"command":"npx eslint ."}}'        | .claude/hooks/pre-bash.sh
 echo '{"tool_input":{"file_path":"/p/pnpm-lock.yaml"}}' | .claude/hooks/post-edit.sh
+
+# pre-web: block (expect exit 2):
+echo '{"tool_input":{"query":"exif of /Users/bob/IMG_1.jpg"}}' | .claude/hooks/pre-web.sh
+# pre-web: allow (expect exit 0):
+echo '{"tool_input":{"query":"best offline reverse geocoding crate for Rust"}}' | .claude/hooks/pre-web.sh
+# pre-web: full suite:
+.claude/hooks/tests/pre-web.test.sh
 ```
 
 ## Dependencies
