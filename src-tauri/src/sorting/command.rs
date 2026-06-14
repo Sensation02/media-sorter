@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use tauri::{AppHandle, Manager};
 
-use crate::domain::{AppSettings, HistoryItem, JobId, SessionMemo};
+use crate::domain::{AppSettings, HistoryItem, JobId, SessionMemo, SortPlan, SortRuleId};
 use crate::error::{AppError, AppResult};
 use crate::history::summary::write_summary;
 use crate::i18n;
@@ -21,6 +21,7 @@ use super::runner::emitter::{ProgressEmitter, TauriEmitter, ThrottledEmitter};
 use super::runner::fs_repo::RealFsRepo;
 use super::runner::job;
 use super::runner::service::{run_sort, JobOutcome, RunInput};
+use super::sample::build_sample_plan;
 
 #[tauri::command]
 pub async fn preview_plan(
@@ -30,6 +31,19 @@ pub async fn preview_plan(
     tauri::async_runtime::spawn_blocking(move || run_preview(&app, request))
         .await
         .map_err(AppError::internal)?
+}
+
+#[tauri::command]
+pub fn sample_preview(app: AppHandle, rule: SortRuleId) -> AppResult<SortPlan> {
+    let settings = settings::service::get_settings(&app)?;
+    let unknown_folder = resolve_unknown_folder(&settings);
+
+    build_sample_plan(
+        rule,
+        settings.date_format,
+        &unknown_folder,
+        &settings.ui_language,
+    )
 }
 
 #[tauri::command]
