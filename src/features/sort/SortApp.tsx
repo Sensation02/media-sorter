@@ -57,6 +57,12 @@ export function SortApp() {
             ? settings.state.settings.dateFormat
             : DEFAULT_DATE_FORMAT;
 
+    const rememberedSource =
+        settings.state.status === SETTINGS_STATUS.success &&
+        settings.state.settings.rememberLastDestination
+            ? settings.state.settings.memo.lastDestination
+            : null;
+
     return (
         <div className="h-screen w-screen flex bg-bg text-fg-1 antialiased">
             <Sidebar active={screen} onNavigate={setScreen} />
@@ -66,7 +72,12 @@ export function SortApp() {
                     <ErrorBoundary>
                         {effectiveScreen === SORT_SCREEN.setup && (
                             <SetupScreen
-                                source={{ summary: source, scanId, scanning }}
+                                source={{
+                                    summary: source,
+                                    scanId,
+                                    scanning,
+                                    rememberedPath: rememberedSource,
+                                }}
                                 rule={{
                                     rules,
                                     defaultId: preferredDefaultRule(settings.state),
@@ -85,6 +96,11 @@ export function SortApp() {
                                 actions={{
                                     onPickSource: () => {
                                         void handlers.pickSource();
+                                    },
+                                    onReopenLast: () => {
+                                        if (rememberedSource !== null) {
+                                            void handlers.reopenSource(rememberedSource);
+                                        }
                                     },
                                     onRun: (plan) => {
                                         void handlers.run(plan);

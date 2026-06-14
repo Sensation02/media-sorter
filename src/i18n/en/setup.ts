@@ -2,6 +2,7 @@ export default {
     sourceFolder: "Source folder",
     chooseFolder: "Choose folder",
     browse: "Browse…",
+    reopenLast: "Reopen last folder",
     scanning: "Scanning…",
     rule: "Sorting rule",
     pickRule: "Pick a rule",

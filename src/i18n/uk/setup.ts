@@ -2,6 +2,7 @@ export default {
     sourceFolder: "Тека з джерелом",
     chooseFolder: "Обрати теку",
     browse: "Огляд…",
+    reopenLast: "Відкрити останню теку",
     scanning: "Сканування…",
     rule: "Правило сортування",
     pickRule: "Оберіть правило",

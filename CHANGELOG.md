@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug Fixes
 
+- The Setup screen now keeps showing the sample folder tree on launch until you actively choose a source folder, instead of silently reopening the folder from your last sort. Your most recent folder is still one click away via a "reopen last folder" shortcut
+
 ### Performance
 
 ### Reverts
