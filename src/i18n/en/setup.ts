@@ -12,6 +12,7 @@ export default {
     previewLoading: "Building preview…",
     previewEmpty: "No media files matched the chosen rule",
     outputPreview: "Output preview",
+    previewSampleBadge: "sample",
     filesSummary_one: "{{value}} file",
     filesSummary_other: "{{value}} files",
     breakdownPhotos: "Photos",

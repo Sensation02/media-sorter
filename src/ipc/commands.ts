@@ -31,6 +31,10 @@ export function previewPlan(
     });
 }
 
+export function samplePreview(rule: SortRuleId): Promise<SortPlan> {
+    return invoke<SortPlan>("sample_preview", { rule });
+}
+
 export function startSort(
     plan: SortPlan,
     settings: SortSettingsDto,

@@ -92,6 +92,7 @@ export function SetupScreen({ source, rule, dateFormat, actions }: SetupScreenPr
     const canRun = source.summary !== null && !source.scanning && previewState.status === "success";
     const plan = previewState.status === "success" ? previewState.plan : null;
     const estimate = previewState.status === "success" ? previewState.estimate : null;
+    const isSamplePreview = previewState.status === "success" && previewState.isSample;
 
     const handleRun = () => {
         if (plan === null) {
@@ -196,7 +197,15 @@ export function SetupScreen({ source, rule, dateFormat, actions }: SetupScreenPr
             <div className="flex-1" aria-hidden />
 
             <section>
-                <Eyebrow className="mb-2.5">{t("outputPreview")}</Eyebrow>
+                <Eyebrow className="mb-2.5">
+                    {t("outputPreview")}
+                    {isSamplePreview && (
+                        <>
+                            <span aria-hidden> · </span>
+                            <span className="text-fg-2">{t("previewSampleBadge")}</span>
+                        </>
+                    )}
+                </Eyebrow>
                 <Card className="px-4 py-4">
                     <PreviewTree state={previewState} />
                 </Card>

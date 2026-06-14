@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { previewPlan } from "../../../ipc";
+import { previewPlan, samplePreview } from "../../../ipc";
 import { toAppErrorView, type ToastErrorView } from "../../../utils";
 import type {
     DateFormatId,
@@ -24,18 +24,20 @@ export type PlanPreviewState =
     | {
           status: typeof PLAN_PREVIEW_STATUS.success;
           plan: SortPlan;
-          estimate: PlanEstimateDto;
+          estimate: PlanEstimateDto | null;
+          isSample: boolean;
       }
     | { status: typeof PLAN_PREVIEW_STATUS.error; error: ToastErrorView };
 
-type Outcome = { plan: SortPlan; estimate: PlanEstimateDto } | { error: ToastErrorView };
+type Outcome = { plan: SortPlan; estimate: PlanEstimateDto | null } | { error: ToastErrorView };
 
 type PreviewResult = {
-    scanId: ScanId;
+    scanId: ScanId | null;
     rule: SortRuleId;
     localeTag: string;
     dateFormat: DateFormatId;
     sortSettingsKey: string;
+    isSample: boolean;
     outcome: Outcome;
 };
 
@@ -48,16 +50,19 @@ export function usePlanPreview(
 ): PlanPreviewState {
     const [result, setResult] = useState<PreviewResult | null>(null);
     const sortSettingsKey = sortSettingsCacheKey(sortSettings);
+    const isSample = scanId === null;
 
     useEffect(() => {
-        if (scanId === null) {
-            return;
-        }
-
         let cancelled = false;
 
-        previewPlan(scanId, rule, sortSettings)
-            .then((response) => {
+        const request =
+            scanId === null
+                ? samplePreview(rule).then(toSampleOutcome)
+                : previewPlan(scanId, rule, sortSettings).then(toRealOutcome);
+
+        void request
+            .catch((error: unknown): Outcome => ({ error: toAppErrorView(error) }))
+            .then((outcome) => {
                 if (!cancelled) {
                     setResult({
                         scanId,
@@ -65,22 +70,8 @@ export function usePlanPreview(
                         localeTag,
                         dateFormat,
                         sortSettingsKey,
-                        outcome: {
-                            plan: response.plan,
-                            estimate: response.estimate,
-                        },
-                    });
-                }
-            })
-            .catch((error: unknown) => {
-                if (!cancelled) {
-                    setResult({
-                        scanId,
-                        rule,
-                        localeTag,
-                        dateFormat,
-                        sortSettingsKey,
-                        outcome: { error: toAppErrorView(error) },
+                        isSample,
+                        outcome,
                     });
                 }
             });
@@ -88,9 +79,25 @@ export function usePlanPreview(
         return () => {
             cancelled = true;
         };
-    }, [scanId, rule, localeTag, dateFormat, sortSettings, sortSettingsKey]);
+    }, [scanId, rule, localeTag, dateFormat, sortSettings, sortSettingsKey, isSample]);
 
-    return derivePreviewState(scanId, rule, localeTag, dateFormat, sortSettingsKey, result);
+    return derivePreviewState(
+        scanId,
+        rule,
+        localeTag,
+        dateFormat,
+        sortSettingsKey,
+        isSample,
+        result,
+    );
+}
+
+function toRealOutcome(response: { plan: SortPlan; estimate: PlanEstimateDto }): Outcome {
+    return { plan: response.plan, estimate: response.estimate };
+}
+
+function toSampleOutcome(plan: SortPlan): Outcome {
+    return { plan, estimate: null };
 }
 
 function sortSettingsCacheKey(settings: SortSettingsDto): string {
@@ -108,18 +115,16 @@ function derivePreviewState(
     localeTag: string,
     dateFormat: DateFormatId,
     sortSettingsKey: string,
+    isSample: boolean,
     result: PreviewResult | null,
 ): PlanPreviewState {
-    if (scanId === null) {
-        return { status: PLAN_PREVIEW_STATUS.idle };
-    }
-
     if (
         result?.scanId !== scanId ||
         result.rule !== rule ||
         result.localeTag !== localeTag ||
         result.dateFormat !== dateFormat ||
-        result.sortSettingsKey !== sortSettingsKey
+        result.sortSettingsKey !== sortSettingsKey ||
+        result.isSample !== isSample
     ) {
         return { status: PLAN_PREVIEW_STATUS.loading };
     }
@@ -129,6 +134,7 @@ function derivePreviewState(
             status: PLAN_PREVIEW_STATUS.success,
             plan: result.outcome.plan,
             estimate: result.outcome.estimate,
+            isSample: result.isSample,
         };
     }
 

@@ -12,6 +12,7 @@ export default {
     previewLoading: "Будуємо попередній перегляд…",
     previewEmpty: "Жоден медіафайл не підпадає під обране правило",
     outputPreview: "Попередній перегляд",
+    previewSampleBadge: "приклад",
     filesSummary_one: "{{value}} файл",
     filesSummary_few: "{{value}} файли",
     filesSummary_many: "{{value}} файлів",
