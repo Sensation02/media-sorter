@@ -167,15 +167,18 @@ export function SetupScreen({ source, rule, dateFormat, actions }: SetupScreenPr
                         <ScanBreakdown summary={source.summary} />
                     )}
                     {showReopenLast && (
-                        <button
-                            type="button"
+                        <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={actions.onReopenLast}
-                            className="mt-2.5 flex w-full items-center gap-2 text-left font-mono text-meta-sm text-fg-3 transition-colors hover:text-fg-1"
+                            className="mt-2.5 w-full justify-start gap-2 text-fg-3"
                         >
                             <Folder className="h-3.5 w-3.5 shrink-0" aria-hidden />
                             <span className="shrink-0">{t("reopenLast")}</span>
-                            <span className="truncate text-fg-2">{source.rememberedPath}</span>
-                        </button>
+                            <span className="min-w-0 truncate font-mono text-fg-2">
+                                {source.rememberedPath}
+                            </span>
+                        </Button>
                     )}
                 </section>
 
