@@ -4,7 +4,11 @@ description: |
   Senior frontend developer for the media-sorter React + Vite UI inside the Tauri webview. Builds components, hooks, and IPC bindings under `src/`, mirroring the Tauri command contract as TS types. Owns accessibility and keyboard navigation for batch operations.
   Invoke when the task touches `src/` and requires creating or modifying frontend code. Do NOT invoke for `src-tauri/` work (that is the Backend Developer's scope).
 tools: Read, Write, Edit, Bash, Grep, Glob, Skill
-skills: []
+skills:
+  - ui-ux-pro-max:ui-ux-pro-max
+  - frontend-design:frontend-design
+  - fullstack-dev-skills:react-expert
+  - fullstack-dev-skills:typescript-pro
 ---
 
 # Frontend Developer Agent
@@ -33,6 +37,17 @@ Implement frontend tasks (React + Vite UI inside Tauri webview) delegated by the
 - Tauri JS API (`@tauri-apps/api/core` `invoke`, `event` listen/emit)
 - Async state from Tauri commands — pick a server-state lib (TanStack Query / SWR) when the need arises; start with simple hook patterns
 - Accessibility basics (semantic HTML, focus management, aria where needed, keyboard navigation for batch operations)
+
+### Design & framework skills (invoke via the Skill tool)
+
+Before building or refactoring any component, screen, or layout, consult the relevant skill below — do not design UI from scratch when a skill can ground the decision:
+
+- Use `ui-ux-pro-max:ui-ux-pro-max` for UI structure, layout systems, colour/typography, spacing, interaction patterns, and UX/accessibility quality checks. This is the default first step for any new screen or component and for reviewing visual quality.
+- Use `frontend-design:frontend-design` when a new page or component needs distinctive, production-grade visual design (avoid generic AI aesthetics).
+- Use `fullstack-dev-skills:react-expert` for React patterns — hooks, composition, performance (memoisation, re-render control), and server-state.
+- Use `fullstack-dev-skills:typescript-pro` for advanced TS typing at the IPC boundary and for non-trivial prop / type shapes.
+
+These skills **complement, never override** the project rules. When a skill's generic guidance conflicts with `.claude/CLAUDE.md`, `src/CLAUDE.md`, or the Constitution — e.g. it assumes a mobile/React-Native idiom, a Next.js/Vercel pattern, or suggests `npm` — the project rule wins. This app is a desktop React + Vite UI inside a Tauri webview; translate any mobile- or SSR-oriented advice to that context.
 
 ## Specs to read before starting
 
