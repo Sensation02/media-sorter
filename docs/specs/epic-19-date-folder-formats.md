@@ -3,7 +3,7 @@
 **Status:** 🟡 in progress
 **Branches:** `feat/core-date-folder-formats` (current)
 **Depends on:** EPIC-05 (planner), EPIC-09 (settings), EPIC-10 (i18n)
-**Last updated:** 2026-06-13
+**Last updated:** 2026-06-14
 
 ## Goal
 
@@ -39,6 +39,7 @@ Grounded in `docs/discoveries/2026-06-13-folder-organization-schemes.md`
 | Q2  | A free-text template engine, or a fixed set?      | **Fixed closed enum** of 6 variants (Lightroom precedent: folders stay a curated dropdown). No free text. | 2026-06-13  |
 | Q3  | Localize month names on disk, despite sort cost?  | **Yes, offer both** localized and numeric; the localized options carry a documented sort/idempotency caveat. | 2026-06-13 |
 | Q4  | Close the latent path-segment safety gap now?     | **Yes** (user override) — sanitize every folder segment in `build_target` so an embedded separator cannot mis-nest. | 2026-06-13 |
+| Q5  | Should the launch prefill (EPIC-09 "remember last destination") auto-scan and replace the illustrative sample preview? | **No.** The sample stays the empty state until the user actively picks a folder; the remembered folder is offered as a one-click "reopen last folder" affordance on the Setup screen instead of an automatic scan, so the sample is never pre-empted and no folder is scanned without an explicit action. **Supersedes EPIC-09 PR3's launch auto-scan.** | 2026-06-14 |
 
 ## The six formats
 
@@ -102,3 +103,7 @@ a free-text template engine; ISO-week / quarter granularity.
    its intended nesting depth.
 7. Selecting a format on the Setup screen (shown only for date rules) persists it and
    the live preview + the next sort use it.
+8. On launch the output preview shows the illustrative sample until the user actively
+   picks a source; the prefill never auto-scans a folder. When a destination is
+   remembered, a one-click "reopen last folder" affordance loads it on demand without
+   pre-empting the sample.
