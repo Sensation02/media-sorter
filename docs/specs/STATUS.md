@@ -33,7 +33,7 @@
 | [EPIC-13](epic-13-reveal-in-finder.md)     | 🟢 complete    | Reveal in Finder — wire the existing Done-screen button to the OS file manager  |
 | [EPIC-14](epic-14-preflight-eta.md)        | 🟢 complete    | Pre-flight ETA estimate — show realistic duration before Start sort             |
 | [EPIC-15](epic-15-distribution.md)         | 🟡 in progress | Distribution pipeline (unsigned MVP) — infra shipped; manual test pending       |
-| EPIC-16 _(spec not drafted)_               | ⚪ pending     | Marketing landing site (separate repo, Cloudflare Pages, privacy-first)         |
+| [EPIC-16](epic-16-distribution-website.md) | ⚪ pending     | Distribution website (Astro on Cloudflare Pages); downloads via GitHub Releases |
 | EPIC-17 _(spec not drafted)_               | ⚪ pending     | Windows code-signing via SignPath.io Foundation (free for OSS)                  |
 | [EPIC-18](epic-18-workflow-automation.md)  | ⚪ pending     | Workflow automation & governance — `.claude/hooks/` enforcement, release/CI hardening, article-anchored review, `/attack-plan`, `feature-loop` (Handy Partners adoption) |
 | [EPIC-19](epic-19-date-folder-formats.md)  | 🟡 in progress | Configurable date-folder formats — selectable localized/numeric month-year layouts (incl. day granularity) with per-segment path-safety; current style stays the default |
