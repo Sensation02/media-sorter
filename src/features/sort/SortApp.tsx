@@ -9,12 +9,16 @@ import { Toolbar } from "./components/toolbar";
 import { SORT_SCREEN, TOOLBAR_STATUS, type SortScreen } from "./constants/screens";
 import { JOB_STATUS } from "./hooks/use-sort-job";
 import { useDefaultRules } from "./hooks/use-default-rules";
+import { SETTINGS_STATUS } from "./hooks/use-settings";
 import { useSortOrchestration } from "./hooks/use-sort-orchestration";
 import { preferredDefaultRule } from "./mappers/preferred-rule";
 import { resolveScreen } from "./mappers/resolve-screen";
 import { toSortDone } from "./mappers/to-sort-done";
 import { DoneScreen, HistoryScreen, ProgressScreen, SettingsScreen, SetupScreen } from "./screens";
+import type { DateFormatId } from "../../types/ipc";
 import { SORT_STATUS } from "../../types/sort";
+
+const DEFAULT_DATE_FORMAT: DateFormatId = "localized-month-year";
 
 const TOOLBAR_TITLE_KEY: Record<SortScreen, string> = {
     [SORT_SCREEN.setup]: "newSort",
@@ -48,6 +52,11 @@ export function SortApp() {
     const subtitle = subtitleKey === undefined ? undefined : t(subtitleKey);
     const toolbarStatus = progressCompleted ? SORT_STATUS.idle : TOOLBAR_STATUS[effectiveScreen];
 
+    const dateFormat =
+        settings.state.status === SETTINGS_STATUS.success
+            ? settings.state.settings.dateFormat
+            : DEFAULT_DATE_FORMAT;
+
     return (
         <div className="h-screen w-screen flex bg-bg text-fg-1 antialiased">
             <Sidebar active={screen} onNavigate={setScreen} />
@@ -61,6 +70,17 @@ export function SortApp() {
                                 rule={{
                                     rules,
                                     defaultId: preferredDefaultRule(settings.state),
+                                }}
+                                dateFormat={{
+                                    value: dateFormat,
+                                    onChange: (next) => {
+                                        if (settings.state.status === SETTINGS_STATUS.success) {
+                                            void settings.save({
+                                                ...settings.state.settings,
+                                                dateFormat: next,
+                                            });
+                                        }
+                                    },
                                 }}
                                 actions={{
                                     onPickSource: () => {

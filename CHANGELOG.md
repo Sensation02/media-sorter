@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 
+- Choose how date folders are named right where you set up the sort, next to the sort rule: keep the current month-name style ("February 2024" / "Лютий 2024") or pick a year-nested or numeric layout (for example 2024-02, 2024/02, or 2024/02/15) that sorts chronologically in any file manager. The picker appears only for the date-based rules; the current style stays the default, so existing libraries are untouched
+- The Setup screen now shows a sample folder tree before you pick a source folder, so you can compare sort rules and date formats and see the expected structure up front
+
 ### Bug Fixes
 
 ### Performance

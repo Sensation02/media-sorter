@@ -36,6 +36,7 @@
 | EPIC-16 _(spec not drafted)_               | ⚪ pending     | Marketing landing site (separate repo, Cloudflare Pages, privacy-first)         |
 | EPIC-17 _(spec not drafted)_               | ⚪ pending     | Windows code-signing via SignPath.io Foundation (free for OSS)                  |
 | [EPIC-18](epic-18-workflow-automation.md)  | ⚪ pending     | Workflow automation & governance — `.claude/hooks/` enforcement, release/CI hardening, article-anchored review, `/attack-plan`, `feature-loop` (Handy Partners adoption) |
+| [EPIC-19](epic-19-date-folder-formats.md)  | 🟡 in progress | Configurable date-folder formats — selectable localized/numeric month-year layouts (incl. day granularity) with per-segment path-safety; current style stays the default |
 
 ## Active follow-ups
 

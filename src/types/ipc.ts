@@ -167,6 +167,14 @@ export type SortDoneDto = {
 
 export type LanguageCode = string;
 
+export type DateFormatId =
+    | "localized-month-year"
+    | "year-localized-month"
+    | "iso-month"
+    | "iso-month-nested"
+    | "iso-day-nested"
+    | "iso-month-localized";
+
 export type SessionMemoDto = {
     lastSortRule: SortRuleId | null;
     lastDestination: string | null;
@@ -178,5 +186,6 @@ export type AppSettingsDto = {
     unknownDateFolderName: string | null;
     historyRetentionDays: number;
     uiLanguage: LanguageCode;
+    dateFormat: DateFormatId;
     memo: SessionMemoDto;
 };

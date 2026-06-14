@@ -21,6 +21,18 @@ pub enum SortRuleId {
     ByCamera,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "kebab-case")]
+pub enum DateFolderFormat {
+    #[default]
+    LocalizedMonthYear,
+    YearLocalizedMonth,
+    IsoMonth,
+    IsoMonthNested,
+    IsoDayNested,
+    IsoMonthLocalized,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum DateSource {
@@ -178,6 +190,8 @@ pub struct AppSettings {
     pub unknown_date_folder_name: Option<String>,
     pub history_retention_days: u16,
     pub ui_language: String,
+    #[serde(default)]
+    pub date_format: DateFolderFormat,
     pub memo: SessionMemo,
 }
 

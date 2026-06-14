@@ -30,6 +30,7 @@ pub fn run() {
             scanning::command::scan_source,
             scanning::command::reveal_directory,
             sorting::command::preview_plan,
+            sorting::command::sample_preview,
             sorting::command::start_sort,
             sorting::command::pause_sort,
             sorting::command::cancel_sort,

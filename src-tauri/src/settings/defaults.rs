@@ -1,4 +1,4 @@
-use crate::domain::{AppSettings, SessionMemo};
+use crate::domain::{AppSettings, DateFolderFormat, SessionMemo};
 use crate::i18n::{validate_language_code, DEFAULT_LANGUAGE_CODE};
 
 pub const DEFAULT_REMEMBER_LAST_SORT_RULE: bool = true;
@@ -14,9 +14,8 @@ pub const KEY_REMEMBER_LAST_DESTINATION: &str = "rememberLastDestination";
 pub const KEY_UNKNOWN_DATE_FOLDER_NAME: &str = "unknownDateFolderName";
 pub const KEY_HISTORY_RETENTION_DAYS: &str = "historyRetentionDays";
 pub const KEY_UI_LANGUAGE: &str = "uiLanguage";
+pub const KEY_DATE_FORMAT: &str = "dateFormat";
 pub const KEY_MEMO: &str = "memo";
-
-pub const FORBIDDEN_FOLDER_NAME_CHARS: &[char] = &['/', '\\', ':', '*', '?', '"', '<', '>', '|'];
 
 pub fn default_settings() -> AppSettings {
     AppSettings {
@@ -25,6 +24,7 @@ pub fn default_settings() -> AppSettings {
         unknown_date_folder_name: None,
         history_retention_days: DEFAULT_HISTORY_RETENTION_DAYS,
         ui_language: detect_initial_language(),
+        date_format: DateFolderFormat::default(),
         memo: SessionMemo::default(),
     }
 }

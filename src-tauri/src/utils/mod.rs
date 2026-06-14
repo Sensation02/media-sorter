@@ -1,3 +1,4 @@
+pub mod path_sanitize;
 pub mod probe;
 pub mod time;
 pub mod volume;
