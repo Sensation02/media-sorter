@@ -1,5 +1,5 @@
 import type { TFunction } from "i18next";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -17,11 +17,12 @@ import { SORT_SCREEN, type SortScreen } from "../constants/screens";
 import { IMMUTABLE_SORT_FLAGS } from "../constants/sort-flags";
 import { revertSummaryParts } from "../mappers/revert-summary";
 import { useHistory, type HistoryHook } from "./use-history";
-import { SETTINGS_STATUS, useSettings, type SettingsHook } from "./use-settings";
+import { useSettings, type SettingsHook } from "./use-settings";
 import { JOB_STATUS, useSortJob, type UseSortJobResult } from "./use-sort-job";
 
 export type SortOrchestrationHandlers = {
     pickSource: () => Promise<void>;
+    reopenSource: (path: string) => Promise<void>;
     run: (plan: SortPlan) => Promise<void>;
     pause: () => Promise<void>;
     cancel: () => Promise<void>;
@@ -82,26 +83,12 @@ export function useSortOrchestration(): SortOrchestration {
         await scanPath(path);
     }, [scanPath]);
 
-    const prefillTriggeredRef = useRef(false);
-
-    useEffect(() => {
-        if (prefillTriggeredRef.current) {
-            return;
-        }
-
-        if (settings.state.status !== SETTINGS_STATUS.success) {
-            return;
-        }
-
-        prefillTriggeredRef.current = true;
-
-        const { rememberLastDestination, memo } = settings.state.settings;
-
-        if (rememberLastDestination && memo.lastDestination !== null) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- first-success prefill is gated by prefillTriggeredRef; the scanSource IPC is the canonical external-sync use case
-            void scanPath(memo.lastDestination);
-        }
-    }, [settings.state, scanPath]);
+    const reopenSource = useCallback(
+        async (path: string) => {
+            await scanPath(path);
+        },
+        [scanPath],
+    );
 
     const run = useCallback(async (plan: SortPlan) => {
         try {
@@ -191,7 +178,16 @@ export function useSortOrchestration(): SortOrchestration {
         job,
         history,
         settings,
-        handlers: { pickSource, run, pause, cancel, revert, revealDestination, resetForNewSort },
+        handlers: {
+            pickSource,
+            reopenSource,
+            run,
+            pause,
+            cancel,
+            revert,
+            revealDestination,
+            resetForNewSort,
+        },
     };
 }
 

@@ -326,6 +326,7 @@ export type SessionMemoDto = {
 - [x] `sorting/command.rs::start_sort` writes memo on entry (best-effort, skips on dry-run; failure logs and does not abort the sort)
 - [x] `SortApp` prefills `SetupScreen.defaultRuleId` from `memo.lastSortRule` when `rememberLastSortRule` is on
 - [x] `SortApp` auto-scans `memo.lastDestination` once on first successful settings hydration when `rememberLastDestination` is on (gated by `prefillTriggeredRef`)
+  > **Superseded by EPIC-19 (Q5, 2026-06-14):** the launch auto-scan was removed because it pre-empted the illustrative sample preview. The remembered destination is now loaded on demand via a one-click "reopen last folder" affordance instead of scanning automatically on launch.
 - [x] `SetupScreen` accepts optional `defaultRuleId`; render-phase reset pattern keeps local `ruleId` in sync if the prop changes
 - [~] Unit tests for prefill — `resolveDefaultRule` is a trivial helper (skipped per CLAUDE.md §IX); backend memo write requires Tauri `mock_app` (deferred). Manual smoke-test in PR description.
 - [x] CHANGELOG entry

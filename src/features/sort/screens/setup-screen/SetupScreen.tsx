@@ -41,6 +41,7 @@ export type SetupScreenSource = {
     summary: ScanSummary | null;
     scanId: ScanId | null;
     scanning: boolean;
+    rememberedPath?: string | null;
 };
 
 export type SetupScreenRule = {
@@ -55,6 +56,7 @@ export type SetupScreenDateFormat = {
 
 export type SetupScreenActions = {
     onPickSource: () => void;
+    onReopenLast?: () => void;
     onRun: (plan: SortPlan) => void;
 };
 
@@ -93,6 +95,12 @@ export function SetupScreen({ source, rule, dateFormat, actions }: SetupScreenPr
     const plan = previewState.status === "success" ? previewState.plan : null;
     const estimate = previewState.status === "success" ? previewState.estimate : null;
     const isSamplePreview = previewState.status === "success" && previewState.isSample;
+    const showReopenLast =
+        source.summary === null &&
+        !source.scanning &&
+        typeof source.rememberedPath === "string" &&
+        source.rememberedPath.length > 0 &&
+        actions.onReopenLast !== undefined;
 
     const handleRun = () => {
         if (plan === null) {
@@ -157,6 +165,20 @@ export function SetupScreen({ source, rule, dateFormat, actions }: SetupScreenPr
                     </Card>
                     {source.summary !== null && !source.scanning && (
                         <ScanBreakdown summary={source.summary} />
+                    )}
+                    {showReopenLast && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={actions.onReopenLast}
+                            className="mt-2.5 w-full justify-start gap-2 text-fg-3"
+                        >
+                            <Folder className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                            <span className="shrink-0">{t("reopenLast")}</span>
+                            <span className="min-w-0 truncate font-mono text-fg-2">
+                                {source.rememberedPath}
+                            </span>
+                        </Button>
                     )}
                 </section>
 
