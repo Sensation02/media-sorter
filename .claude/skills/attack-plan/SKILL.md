@@ -121,9 +121,13 @@ Dispatch `team-lead` (not in background) with: the original target + all N adver
 
 Present the synthesis (Standard/Deep) or the inline report (Quick) to the user. **Do not modify the target.**
 
+**A caller running rounds has to close that loop itself.** `feature-loop` Phase 5 is *attack → revise → attack the revision*, and the revision is the caller's edit, not this skill's: dispatching a second round against an unedited artifact is one round performed twice. Either pass `--apply`, or apply the synthesis in the calling session before the next round.
+
 ### 8. Apply (conditional)
 
 Only if `--apply` was passed OR the user explicitly says to apply: edit the target file with the suggested edits and show the resulting diff. Never apply to a free-text idea (no file). Applying is a reversible, human-visible edit (Article VI) — show the diff, do not commit unless asked.
+
+**A gap that is neither fixed nor applied is logged, never dropped.** A non-critical gap that survives the final round is recorded as an accepted risk, in the words of the gap and its consequence, and carried onto the delivery PR when there is one. A Critical or human-needed gap is never accepted this way — it escalates to the human (in `feature-loop`, via the Phase-5 residue reviewed at the G gate).
 
 ## Shared gap-report schema (every adversary emits this)
 
@@ -136,7 +140,7 @@ Only if `--apply` was passed OR the user explicitly says to apply: edit the targ
   - claim: what is wrong, missing, or underspecified
   - evidence: file:line in the codebase, plan section, or Constitution article that grounds the claim
   - consequence: what breaks (or what defect ships) if the plan stays as-is
-  - suggested resolution: the concrete edit the plan needs
+  - suggested resolution: the concrete edit the plan needs — or `unknown — needs <what>` when the adversary genuinely cannot name one (never blank)
 
 ### Cross-cutting concerns
 - dependencies on other angles (e.g. "file-safety gap G-2 forces a data-flow contract change")
@@ -144,6 +148,8 @@ Only if `--apply` was passed OR the user explicitly says to apply: edit the targ
 ### Coverage note
 - what this adversary could NOT assess (out of lens, or missing info in idea-mode)
 ```
+
+**`suggested resolution` is what makes a round worth running.** The synthesis owes a suggested plan diff, and it can only assemble one from resolutions the adversaries actually proposed; a report of pure diagnosis leaves the synthesiser inventing fixes for gaps it did not investigate.
 
 Severity anchoring (shared with `reviewer` and `team-lead`): **Article I (user files are sacred)** and **Article VI (reversibility)** violations are Critical; **Article V (type safety)** violations are non-negotiable. A concern that cannot be anchored to any Constitution article is at most a Suggestion, never a blocker.
 
