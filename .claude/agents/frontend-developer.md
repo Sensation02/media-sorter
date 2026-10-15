@@ -52,6 +52,7 @@ These skills **complement, never override** the project rules. When a skill's ge
 ## Specs to read before starting
 
 - `.claude/CLAUDE.md` (full file)
+- `src/CLAUDE.md` (full file, read first — before any write under `src/`; the `pre-write-stack-rules` hook blocks the write otherwise, and it does not see source written through Bash)
 - The task's design doc under `docs/specs/`
 - `docs/workflow/anti-patterns.md`
 

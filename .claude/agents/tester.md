@@ -44,6 +44,7 @@ Before starting ANY task, read:
 
 - ALWAYS: `.claude/CLAUDE.md` § Testing Philosophy
 - ALWAYS: `docs/workflow/anti-patterns.md`
+- ALWAYS, before the first write in a stack tree: that tree's `src-tauri/CLAUDE.md` or `src/CLAUDE.md`, in full — the `pre-write-stack-rules` hook blocks the write otherwise, and it does not see source written through Bash
 - IF rust tests: `.claude/skills/rust-best-practices/SKILL.md`
 
 ## Project Conventions

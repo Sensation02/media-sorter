@@ -66,6 +66,26 @@ Layer-2 of the research privacy model (Article II): a deterministic backstop so 
 leaves the machine in a web query, regardless of what an agent intends. The prompt-layer half lives
 in `.claude/agents/researcher.md` ABSOLUTE PROHIBITIONS.
 
+### `pre-write-stack-rules.sh` — PreToolUse:Edit\|Write
+
+| Rule | Action |
+|---|---|
+| Write under `src-tauri/` or `src/` while that tree's `CLAUDE.md` is not in the writer's context | block |
+| Write outside a stack tree, or to the stack `CLAUDE.md` itself | allow |
+
+The stack tree is the nearest ancestor of the written file named `src-tauri` or `src` (any case) that holds a
+`CLAUDE.md`, stopping at the checkout root — so `src-tauri/src/...` resolves to `src-tauri/CLAUDE.md`, never to
+`src/CLAUDE.md`, and a `CLAUDE.md` nested deeper in a tree does not hide the stack rules. A relative path, or one
+with `.` / `..` segments, is blocked: the walk only resolves normalized absolute paths, which Edit / Write use. Evidence that the
+rules are in context is read from the writer's own transcript (a subagent's is keyed by `agent_id`), counting
+only what came after the last compaction: either the harness's automatic load of the stack `CLAUDE.md`, or a
+full, successful `Read` of it (no `limit` short of the file, no `offset` past line 1).
+
+**Gaps it cannot see** — a `Read` of the rules and the write in the same message (the harness logs the call
+only after the hook runs), and source written through Bash instead of Edit / Write. The "read first" line in
+the developer agent definitions covers both. A transcript missing from where the harness keeps it **blocks**
+(fail closed) and the message prints the expected path, so a Claude Code layout change is fixed here once.
+
 ## MS inversions vs Handy Partners (HP)
 
 These hooks are structurally borrowed from HP but invert HP's stack policy:
@@ -113,6 +133,8 @@ echo '{"tool_input":{"query":"exif of /Users/bob/IMG_1.jpg"}}' | .claude/hooks/p
 echo '{"tool_input":{"query":"best offline reverse geocoding crate for Rust"}}' | .claude/hooks/pre-web.sh
 # pre-web: full suite:
 .claude/hooks/tests/pre-web.test.sh
+# pre-write-stack-rules: full suite (synthetic transcripts):
+.claude/hooks/tests/pre-write-stack-rules.test.sh
 ```
 
 ## Dependencies
