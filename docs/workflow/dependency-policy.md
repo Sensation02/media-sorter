@@ -2,8 +2,8 @@
 
 Package-level security baseline for media-sorter's two dependency trees — JS (`package.json` /
 `pnpm-lock.yaml`) and Rust (`src-tauri/Cargo.toml` / `src-tauri/Cargo.lock`). Anchors to Constitution
-**Article II** (privacy & secrets hygiene — a vulnerable parser or TLS stack in the shipped app is a
-path for user data to leak) and **Article VI** (each fix is an atomic, revertable lockfile change).
+**Article II** (privacy by default — a vulnerable parser or TLS stack in the shipped app is a path for
+user data to leak) and **Article VI** (each fix is an atomic, revertable lockfile change).
 
 ## Audit locally
 
@@ -49,14 +49,16 @@ An override forces a version the parent package never declared. Unlike an accept
 natural expiry — the audit stays clean whether or not the override is still needed — so this table is
 the signal: when a row's review trigger is true, delete the row and the override together.
 
-| Override                                | Reached via                                    | Ships?           | Review trigger                                                       |
-| --------------------------------------- | ---------------------------------------------- | ---------------- | -------------------------------------------------------------------- |
-| `brace-expansion` `^1.1.21` / `^5.0.12` | `eslint` and `typescript-eslint` → `minimatch` | dev-only         | `eslint` / `typescript-eslint` pull patched `minimatch` on their own |
-| `browserslist` `^4.28.7`                | `eslint-plugin-react-hooks` → `@babel/core`    | dev-only         | `@babel/helper-compilation-targets` requires `>=4.28.7`              |
-| `js-yaml` `^4.3.2`                      | `eslint` → `@eslint/eslintrc`                  | dev-only         | `@eslint/eslintrc` requires `>=4.3.2`                                |
-| `nanoid` `^3.3.18`, `postcss` `^8.5.23` | `vite` → `postcss`                             | dev-only         | `vite` pins a patched `postcss`                                      |
-| `source-map-js` `^1.2.2`                | `@tailwindcss/vite` → `@tailwindcss/node`      | dev-only         | `@tailwindcss/node` requires `>=1.2.2`                               |
-| `undici` `^7.29.1`                      | `jsdom`                                        | dev-only (tests) | `jsdom` requires `>=7.29.1`                                          |
+| Override                                | Reached via                                                                           | Ships?           | Review trigger                                                       |
+| --------------------------------------- | ------------------------------------------------------------------------------------- | ---------------- | -------------------------------------------------------------------- |
+| `brace-expansion` `^1.1.21` / `^5.0.12` | `eslint` and `typescript-eslint` → `minimatch`                                        | dev-only         | `eslint` / `typescript-eslint` pull patched `minimatch` on their own |
+| `browserslist` `^4.28.7`                | `eslint-plugin-react-hooks` → `@babel/core`                                           | dev-only         | `@babel/helper-compilation-targets` requires `>=4.28.7`              |
+| `js-yaml` `^4.3.2`                      | `eslint` → `@eslint/eslintrc`                                                         | dev-only         | `@eslint/eslintrc` requires `>=4.3.2`                                |
+| `source-map-js` `^1.2.2`                | `@tailwindcss/node`, `css-tree` (via `jsdom`), `magicast` (via `@vitest/coverage-v8`) | dev-only         | all three require `>=1.2.2`                                          |
+| `undici` `^7.29.1`                      | `jsdom`                                                                               | dev-only (tests) | `jsdom` requires `>=7.29.1`                                          |
+
+The `brace-expansion` selectors stay on the major each consumer already uses (1.x and 5.x are the only
+lines in the tree), so neither caret target crosses a major.
 
 `pnpm audit --prod` was clean before these overrides; they protect the developer machine and CI, not
 the shipped bundle.
