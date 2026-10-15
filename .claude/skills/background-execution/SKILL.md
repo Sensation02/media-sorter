@@ -68,7 +68,7 @@ hold:
   signatures, DTO shapes) is locked and visible in code or spec
 - Self-improvement loop on a large changeset — re-reading files, fixing typos,
   consolidating imports, drafting `docs/workflow/anti-patterns.md` entries at
-  AP-015+
+  the next free AP-XXX
 - Discovery research — reading external documentation, drafting
   `docs/discoveries/*.md`, building summary tables
 - Long sequential implementations whose steps are purely additive: new files
