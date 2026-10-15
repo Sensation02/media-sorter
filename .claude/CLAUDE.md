@@ -367,7 +367,7 @@ docs/
 ├── specs/         # Design documents per feature
 │   ├── STATUS.md  # Index of every epic and its current status
 │   └── epic-XX-*.md
-├── workflow/      # Process docs (anti-patterns, releases, CI/CD, epic status tracking)
+├── workflow/      # Process docs (anti-patterns, releases, CI/CD, epic status tracking, skill-authoring rubric)
 └── discoveries/   # Research / discovery documents
 ```
 
