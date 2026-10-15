@@ -38,6 +38,12 @@ Ask in order, one at a time. If an answer is vague, re-ask before moving on.
 
 **Pre-supplied details.** If the loop invocation already carried a feature description (e.g. text passed to `/feature-loop`), treat it as given answers — fill the matching aspects from it and ask only for the gaps. Still confirm ④ and ⑤ explicitly even when the text seems to cover them: a passing mention is not the deliberate risk / reversibility judgment the tier decision needs.
 
+## Product forks — closed by a question, not an assumption
+
+When two readings of the feature would build different behaviour on screen or on disk, ask — one `AskUserQuestion`, here, before anything is written.
+
+**The test, applied before you ask and before you assume:** *can the repo decide this?* Read the code, `docs/specs/`, and what a sibling feature already does — a fork one of those settles is not a fork, and asking it back is noise. **If none of them decides it, ask.** The standing "state the assumption and proceed" rule (CLAUDE.md, Working Protocol #1) is right for a fork the repo can settle and wrong for one only the human can: no amount of reading decides it, so proceeding is picking a branch and hoping — and Phase 5 will then spend its attack rounds hardening a branch one answer can discard. The question costs a minute; the assumption can cost the whole planning phase.
+
 ## Output
 
 Write `docs/superpowers/loop/<feature>/intent-brief.md` with all six aspects as headed sections, then a final **tier-feed** line:
@@ -55,6 +61,8 @@ The tier-feed is a *candidate*, not the verdict. The final tier is decided at Ph
 | Inferring ④/⑤ from the code instead of asking          | Risk and reversibility are human judgments at intake — ask explicitly          |
 | Emitting `ELIGIBLE-candidate` when unsure              | Unsure → `ATTENDED-candidate`. Conservative by design                          |
 | Treating tier-feed as the final tier                   | It only feeds Phase 1; `risk-classify.sh` can still escalate to ATTENDED       |
+| Skipping the brief because the feature "looks small"   | A small change that writes to user folders is not a small risk — Phase 0 still runs |
+| Writing an assumption into the brief for a product fork | If the repo cannot decide it, ask now; an assumed branch gets attacked and hardened for nothing |
 | Anchoring ⑤ to Article VI alone for user-file ops      | User-media reversibility is **Article I** (move log / undo / no deletion); VI covers code/PR revertability |
 
 ## Cross-references
