@@ -1,6 +1,6 @@
 ---
 name: pattern-guard-scan
-description: Use when running the anti-pattern scan against a changeset — during the standard PR delivery flow (before the multi-agent reviewer pass) or as an ad-hoc audit of a single file or module. Triggers when changes are staged, before dispatching the reviewer agent, or whenever the user asks for an anti-pattern check. Dispatches .claude/agents/pattern-guard.md with the changed file list and turns its [AP-XXX | Article Y] matches into concrete fix / false-positive / escalate decisions against docs/workflow/anti-patterns.md (AP-001..AP-014+).
+description: Use when running the anti-pattern scan against a changeset — during the standard PR delivery flow (before the multi-agent reviewer pass) or as an ad-hoc audit of a single file or module. Triggers when changes are staged, before dispatching the reviewer agent, or whenever the user asks for an anti-pattern check. Dispatches .claude/agents/pattern-guard.md with the changed file list and turns its [AP-XXX | Article Y] matches into concrete fix / false-positive / escalate decisions against docs/workflow/anti-patterns.md (AP-001 onward).
 ---
 
 # Pattern Guard Scan
@@ -63,7 +63,7 @@ Fix: <one-line suggestion>
 
 | Field        | Meaning                                                                              |
 | ------------ | ------------------------------------------------------------------------------------ |
-| `AP-XXX`     | Registry entry in `docs/workflow/anti-patterns.md` (AP-001..AP-014, AP-015+ ongoing) |
+| `AP-XXX`     | Registry entry in `docs/workflow/anti-patterns.md` (AP-001 onward, append-only) |
 | `Article Y`  | The Constitution article the AP anchors to (mapping owned by `pattern-guard.md`)     |
 | `<short name>` | The AP's short name, copied from the registry entry                                |
 | `File:`      | The specific match site as `file:line` — pattern-guard always cites this             |
@@ -149,7 +149,7 @@ If a match persists after two scan-fix cycles, escalate to the human reviewer �
 | Fixing pattern-guard matches by editing the agent definition       | Never. The agent is read-only on the registry. Add a new AP or remove a stale one in `docs/workflow/anti-patterns.md` itself                     |
 | Skipping the article citation when reporting                       | Pattern-guard MUST cite the article. If the report is missing the citation, re-dispatch with the corrected prompt                                |
 | Inventing new AP-XXX identifiers on the fly during a scan          | Only AP-IDs that exist in the registry are valid. If the agent invents one, that is a defect — flag to the human                                 |
-| Renumbering or reformatting AP-001..AP-014 to "tidy" the registry  | Forbidden by the file's permanence rule. New work appends at AP-015+ in the existing schema; existing entries are immutable                      |
+| Renumbering or reformatting existing AP entries to "tidy" the registry  | Forbidden by the file's permanence rule. New work appends at the next free AP-XXX in the existing schema; existing entries are immutable                      |
 
 ---
 
@@ -158,7 +158,7 @@ If a match persists after two scan-fix cycles, escalate to the human reviewer �
 - [pr-delivery](../pr-delivery/SKILL.md) — where this scan fits in the PR flow (before the multi-agent reviewer pass)
 - [false-positive-triage](../false-positive-triage/SKILL.md) — how to handle close-but-not-quite matches
 - [background-execution](../background-execution/SKILL.md) — judgement-call AP matches stop `/bg`; mechanical ones don't
-- `docs/workflow/anti-patterns.md` — the registry of AP-XXX entries (source of truth; AP-001..AP-014, ongoing at AP-015+)
+- `docs/workflow/anti-patterns.md` — the registry of AP-XXX entries (source of truth; AP-001 onward, append-only)
 - `.claude/agents/pattern-guard.md` — the agent that gets dispatched; owns the `AP-XXX → Article` mapping
 - `.claude/agents/reviewer.md` — the broader article-anchored review pass that runs after this scan
 - `docs/CONSTITUTION.md` — the 10 articles cited in every match

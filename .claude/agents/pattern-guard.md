@@ -64,14 +64,17 @@ Anchor an AP to an article only when the AP's "Why it's bad" restates a MUST in 
 | AP-012 | Dead code surviving via unused exports              | III (simplicity)  | IV        | Defensible — KISS / no maintenance burden (III); out-of-scope retention (IV).    |
 | AP-013 | Misleading "LEGACY" naming for active code          | —                 | —         | None — a CLAUDE.md naming rule; no article states a MUST it breaks. Flag.         |
 | AP-014 | Component props exceeding 5 fields                  | III (SOLID)       | —         | Weak — SOLID single-responsibility signal; the cap is a CLAUDE.md code rule. Note. |
+| AP-015 | Porting a sibling repo's rule without inverting it  | —                 | —         | None — breaks the CLAUDE.md pnpm/cargo-only policy; no article states a MUST it breaks. Flag. |
+| AP-016 | Verifying emptiness with a too-narrow grep          | —                 | —         | None — a verification-rigour rule (CLAUDE.md Working Protocol #4); no article states a MUST it breaks. Flag. |
+| AP-017 | Fail-closed hook that silently fails open           | V (silent fallback) | —       | Weak — echoes V's "never as silent fallbacks", but V targets Rust/TS error propagation, not shell tooling. Note. |
 
 ### Distribution
 
 - **Article III (simplicity / DRY / SOLID):** AP-003, 004, 005, 006, 007, 008, 010, 011, 012, 014 — the most common cluster (DRY and SOLID).
-- **Article V (type safety):** AP-002, 009 (primary); AP-008 (secondary).
+- **Article V (type safety):** AP-002, 009, 017 (primary; AP-017 weak); AP-008 (secondary).
 - **Article I (user files sacred):** AP-002 (secondary — a misclassified error drops a user file from the sort).
 - **Article IV (scope discipline):** AP-012 (secondary).
-- **No clean anchor (flag, do not force):** AP-001, AP-013.
+- **No clean anchor (flag, do not force):** AP-001, AP-013, AP-015, AP-016.
 
 If a new AP doesn't fit cleanly into an existing article, that is a signal — flag it to the human reviewer, do not coin an anchor. The Constitution covers what matters for this project; an AP that anchors to nothing may either be miscategorised or pointing at a Constitutional gap. An AP that only breaks a CLAUDE.md code rule (not a Constitution article) is reported with the `no anchor` marker and surfaced to the human reviewer.
 
@@ -79,7 +82,7 @@ If a new AP doesn't fit cleanly into an existing article, that is a signal — f
 
 - Output format per finding:
   - `[AP-XXX | Article Y] <short name>` — when the AP has a clean anchor
-  - `[AP-XXX | no anchor] <short name>` — when the AP has no clean article (AP-001, AP-013)
+  - `[AP-XXX | no anchor] <short name>` — when the AP's mapping-table row has Primary `—`
   - `File: <path>:<line>`
   - `Match: <quoted code>`
   - `Why it matters: <one sentence — the concrete consequence the article warns about>`
@@ -92,7 +95,7 @@ If a new AP doesn't fit cleanly into an existing article, that is a signal — f
 
 - [ ] Every finding has an AP-XXX identifier
 - [ ] Every finding cites file:line
-- [ ] Every finding names the anchoring article from the mapping table (or `no anchor` for AP-001 / AP-013) — never omit
+- [ ] Every finding names the anchoring article from the mapping table (or `no anchor` for APs whose Primary is `—`) — never omit
 - [ ] Fix suggestions are concrete (one sentence, actionable)
 - [ ] All applicable patterns checked for each file, not just the first match
 - [ ] No false positives bundled with real findings without labelling
