@@ -52,7 +52,7 @@ These four imperatives govern HOW the agent works on every task, before any proj
 | Linter / Formatter (Rust) | rustfmt + clippy            | Standard Rust toolchain                                       |
 | Testing (Rust)            | TBD                         | Decide once we start writing tests                            |
 | Testing (UI)              | TBD                         | Likely Vitest, later                                          |
-| CI                        | GitHub Actions              | `cargo fmt + clippy + test`, `pnpm lint + build` on each PR   |
+| CI                        | GitHub Actions              | `cargo fmt + clippy + test`, `pnpm lint + build` on each PR; dependency audit (`docs/workflow/dependency-policy.md`) |
 
 ## Package Manager
 
