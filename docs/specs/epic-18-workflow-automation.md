@@ -3,7 +3,7 @@
 **Status:** draft
 **Branch:** `feat/workflow-automation`
 **Owner:** Vasyl Kaminskyi
-**Last updated:** 2026-06-12
+**Last updated:** 2026-10-15
 
 ---
 
@@ -44,7 +44,7 @@ Move the workflow rules that today live only as CLAUDE.md prose into determinist
 
 ### Constraints
 
-- **B4-guard / self-modification lock is dropped (owner decision, 2026-06-12).** MS adopts **no** default-deny guard on safety-control files and has **no `MS_GUARDRAIL_UNLOCK` env var**. Every governance file (`.claude/hooks/`, `.claude/settings*.json`, `CLAUDE.md`, `docs/CONSTITUTION.md`, `.claude/skills/`) is editable immediately. Concretely: omit `pre-edit.sh` and `guardrail-paths.sh`, omit any `PreToolUse:Edit|Write` hook, and drop `pre-bash.sh` Rule 5 (Bash mutation of guardrail files). Rationale lives in Decisions; aligns with Article III.
+- **B4-guard / self-modification lock is dropped (owner decision, 2026-06-12).** MS adopts **no** default-deny guard on safety-control files and has **no `MS_GUARDRAIL_UNLOCK` env var**. Every governance file (`.claude/hooks/`, `.claude/settings*.json`, `CLAUDE.md`, `docs/CONSTITUTION.md`, `.claude/skills/`) is editable immediately. Concretely: omit `pre-edit.sh` and `guardrail-paths.sh`, omit any `PreToolUse:Edit|Write` hook that guards governance files (a stack-rules read guard is allowed — see Decisions, 2026-10-15 clarification), and drop `pre-bash.sh` Rule 5 (Bash mutation of guardrail files). Rationale lives in Decisions; aligns with Article III.
 - **Background-session (`/bg`) limits.** The forbidden-action list is **defined canonically in `docs/workflow/background-execution.md` and `CLAUDE.md` §/bg; this spec adds nothing to it and maintains no second copy.** For convenience the full list is: no `git push`, no `gh pr create`, no `gh pr merge`, no writes to user media, no `tauri.conf.json` **or `capabilities/*.json`** edits, no `pnpm tauri dev`, no dependency upgrades / lockfile changes, and no STATUS.md status **transitions** autonomously. Outward-facing CI (`release.yml`, `ci.yml`) and STATUS transitions are human-gated. Articles I & VI apply.
 - **Package managers: `pnpm` + `cargo` only.** Hooks must block `npm` / `yarn` / `bun`. This inverts HP's rule (HP is yarn-only and blocks `pnpm`).
 - **MS commits both lockfiles.** `pnpm-lock.yaml` and `Cargo.lock` are committed; `post-edit.sh` blocks foreign lockfiles (`package-lock.json` / `yarn.lock`) instead — the inverse of HP, which blocks `pnpm-lock.yaml`.
@@ -93,6 +93,8 @@ The full adoption from `docs/discoveries/handy-partners-workflow-adoption.md`, e
 MS does not adopt HP's default-deny guard on safety-control files and ships no `MS_GUARDRAIL_UNLOCK` env var; every governance file is editable immediately. Rationale: for a solo project with mandatory manual PR review, the physical barrier adds clever machinery that Article III (Simplicity over cleverness) tells us to avoid. **Trade-off accepted knowingly:** in autonomous `/bg` / `feature-loop` runs the agent can now *technically* rewrite its own constraints (CLAUDE.md, hooks, Constitution). The remaining safety net is the feature-loop **G gate** (unconditional human STOP) plus **manual PR merge** — not a physical lock. We lean harder on those to compensate: the G gate stays unconditional and nothing auto-merges.
 
 **Bootstrap caveat (while EPIC-18 builds its own enforcement layer):** the G gate ships last (S28), so it cannot guard the subtasks that *construct* the enforcement layer — S01–S03 (hooks + `settings.json`), S26 (`risk-classify.sh`), S27 (background-execution skill), S33 (`leak-scan.sh`). During this epic's own `/bg` construction the **only** live safety net on those diffs is **manual PR review**. Therefore every hook / `settings.json` / classifier / skill diff in this epic MUST be human-inspected before merge — it must NOT be fast-merged on green CI, because a silently weakened hook (e.g. a `leak-scan.sh` that scans nothing, or a `settings.json` that wires no `PreToolUse:Bash`) would fail open while appearing fail-closed.
+
+**Clarification (owner, 2026-10-15) — the Edit|Write exclusion is about the lock only.** The constraint "omit any `PreToolUse:Edit|Write` hook" exists to keep governance files editable without an unlock step. It does not forbid an Edit|Write hook with a different purpose. `pre-write-stack-rules.sh` is allowed: it never guards a governance file, and only blocks a write under `src-tauri/` or `src/` until that tree's stack `CLAUDE.md` is in the writer's context. It is still a hook + `settings.json` diff, so the bootstrap caveat applies — human-inspected, never fast-merged on green CI.
 
 ### `release.yml` — harden the already-shipped pipeline, do not re-create it
 
