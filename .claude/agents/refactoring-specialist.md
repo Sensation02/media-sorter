@@ -46,6 +46,7 @@ Before starting ANY task, read:
 
 - ALWAYS: `.claude/CLAUDE.md` — sections "Code Rules" and "Code Structure & Readability"
 - ALWAYS: `docs/workflow/anti-patterns.md` — for project-specific traps
+- ALWAYS, before the first write in a stack tree: that tree's `src-tauri/CLAUDE.md` or `src/CLAUDE.md`, in full — the `pre-write-stack-rules` hook blocks the write otherwise, and it does not see source written through Bash
 
 ## Project Conventions
 
