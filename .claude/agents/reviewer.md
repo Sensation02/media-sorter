@@ -116,9 +116,14 @@ make fmt-check   # prettier --check + cargo fmt --check
 ### Passed
 - List of MS-specific checks (#1–#16 above) that passed, with their anchoring article noted.
 
+### Explicitly cleared
+- What you examined and found sound, named concretely — files walked (and at what depth), seams checked, commands run and their result. The next lens treats this as binding and does not re-open it.
+
 ### Verification
 - make check / make fmt-check: passed / failed (on failure, name the failing step and paste its tail)
 ```
+
+**When the dispatch carries an earlier lens's report** (e.g. the `pattern-guard` scan), its **Explicitly cleared** section binds: do not re-open ground it cleared or re-derive a finding it already anchored. Spend your pass on the ground nobody covered, plus any overlap where your lens can *compute* what the earlier one only asserted — and if a finding lands there, say which clearance it overturns. A clearance covers only the specific checks it names, never whole files — and the Article I (user-file reversibility) and Article II (no metadata egress) checks are always re-run by every lens that owns them, cleared or not. Your 16 MS-specific checks are never skipped because of an earlier clearance.
 
 ## Self-Verification
 
@@ -135,6 +140,7 @@ Before reporting completion, you MUST:
    - Did I check all 16 MS-specific items?
    - Are severity classifications consistent with the Severity-by-Article table?
 7. **Verify** every finding carries a classification (real / false-positive / style / outdated).
+   Also verify the **Explicitly cleared** section names concretely what you examined — files, depth, commands run — not "everything looks fine".
 8. **If you find issues** with your own review — correct them.
 9. **Report honestly** — if you could not review certain areas, say so.
 10. **Flag Constitutional gaps** — if you wanted to block on a pattern that fits no article, report it as a candidate for governance review, not as a blocker.

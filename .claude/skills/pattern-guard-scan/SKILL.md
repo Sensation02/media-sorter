@@ -46,7 +46,7 @@ prompt: |
   Output Format in the agent definition. Do not propose fixes.
 ```
 
-3. **Wait for the report** — pattern-guard produces its structured findings block: one finding per match with the AP-XXX identifier, the anchored article, the `file:line`, the matched code, and a one-line fix suggestion. If there are no matches it outputs exactly `No anti-patterns detected.`
+3. **Wait for the report** — pattern-guard produces its structured findings block: one finding per match with the AP-XXX identifier, the anchored article, the `file:line`, the matched code, and a one-line fix suggestion. If there are no matches it outputs exactly `No anti-patterns detected.`; either way it closes with an **Explicitly cleared** line (files scanned, AP range checked), which travels to the reviewer (see [pr-delivery](../pr-delivery/SKILL.md) § _The handoff between lenses_).
 
 ---
 

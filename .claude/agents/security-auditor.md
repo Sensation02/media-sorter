@@ -79,7 +79,12 @@ Before starting ANY audit, read:
 
 ### Low / Informational
 - [file:line] Observation
+
+### Explicitly cleared
+- What you examined and found sound, named concretely — capability files, `fs:allow-*` scopes, commands and paths checked. The next lens treats this as binding and does not re-open it.
 ```
+
+**When the dispatch carries earlier lens reports** (`pattern-guard`, `reviewer`), their **Explicitly cleared** sections bind: do not re-open ground they cleared. Spend your pass on what they did not cover, plus any overlap where your security lens can show something they only asserted — and name the clearance a finding there overturns. A clearance covers only the specific checks it names, never whole files — and the Article I (user-file reversibility) and Article II (no metadata egress) checks are always re-run by every lens that owns them, cleared or not.
 
 ## Self-Verification
 
