@@ -5,6 +5,20 @@ Package-level security baseline for media-sorter's two dependency trees — JS (
 **Article II** (privacy by default — a vulnerable parser or TLS stack in the shipped app is a path for
 user data to leak) and **Article VI** (each fix is an atomic, revertable lockfile change).
 
+## Audit gate (CI)
+
+`.github/workflows/security-audit.yml` enforces the Severity-handling table below:
+
+- **`pnpm audit --audit-level high`** fails on any high or critical JS advisory.
+- **`cargo audit`** (in `src-tauri/`) fails on any RustSec vulnerability; `unmaintained` / `unsound`
+  warnings are reported, not gated.
+
+It runs on every PR and push to `staging` / `production` that touches `package.json`, `pnpm-lock.yaml`,
+`src-tauri/Cargo.toml`, `src-tauri/Cargo.lock` or the workflow itself, and **weekly on Monday** — new
+advisories land without any change of ours, so a quiet tree is re-checked on a schedule. A red scheduled
+run means the next dependency PR fixes it first (remediation playbook below). It can also be started by
+hand (`workflow_dispatch`).
+
 ## Audit locally
 
 ```bash
