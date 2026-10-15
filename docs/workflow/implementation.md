@@ -229,7 +229,7 @@ This phase runs AFTER Phase 3 (Verify) and BEFORE Phase 4 (Deliver). It is **man
 
 ### Document Learnings
 
-If you discover a **recurring pattern** — an error you've made before or a gotcha that's not obvious — save it to memory or to `docs/workflow/anti-patterns.md` (as a candidate AP-XXX) so it doesn't happen again.
+If you discover a **recurring pattern** — an error you've made before or a gotcha that's not obvious — save it to memory or to `docs/workflow/anti-patterns.md` (as a candidate AP-XXX) so it doesn't happen again. Recording an AP follows the procedure in the [self-improvement-loop](../../.claude/skills/self-improvement-loop/SKILL.md) skill.
 
 **What to document:**
 

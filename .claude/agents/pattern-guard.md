@@ -85,7 +85,8 @@ If a new AP doesn't fit cleanly into an existing article, that is a signal — f
   - `Why it matters: <one sentence — the concrete consequence the article warns about>`
   - `Fix: <one-line suggestion>`
 - One finding per match. Do not aggregate.
-- If no matches, output exactly: `No anti-patterns detected.`
+- If no matches, output exactly: `No anti-patterns detected.` — followed by the cleared line below.
+- Always close with an **Explicitly cleared** line: the files scanned and the AP range checked (e.g. `Cleared: 7 files against AP-001..AP-017`). The reviewer that runs next reads it as the ground already covered.
 
 ## Self-verification checklist
 

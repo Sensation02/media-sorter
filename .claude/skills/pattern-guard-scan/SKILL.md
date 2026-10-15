@@ -46,7 +46,7 @@ prompt: |
   Output Format in the agent definition. Do not propose fixes.
 ```
 
-3. **Wait for the report** — pattern-guard produces its structured findings block: one finding per match with the AP-XXX identifier, the anchored article, the `file:line`, the matched code, and a one-line fix suggestion. If there are no matches it outputs exactly `No anti-patterns detected.`
+3. **Wait for the report** — pattern-guard produces its structured findings block: one finding per match with the AP-XXX identifier, the anchored article, the `file:line`, the matched code, and a one-line fix suggestion. If there are no matches it outputs exactly `No anti-patterns detected.`; either way it closes with an **Explicitly cleared** line (files scanned, AP range checked), which travels to the reviewer (see [pr-delivery](../pr-delivery/SKILL.md) § _The handoff between lenses_).
 
 ---
 
@@ -118,18 +118,7 @@ If a match arrives with no article anchor (the agent reports `[AP-XXX | —]` or
 
 ## Adding a new AP to the registry
 
-If pattern-guard misses something you keep seeing in reviews:
-
-1. Confirm it is a **recurring** pattern (one-off bugs don't justify an AP).
-2. Append an entry to `docs/workflow/anti-patterns.md` using the live schema — do not invent a new shape:
-   - `**AP-XXX: \`<short name>\`**`
-   - `**Problem:**` the bad pattern
-   - `**Why it's bad:**` the consequence
-   - `**Fix:**` the correct approach
-   - `**First seen in:**` PR number or commit SHA
-3. Number it **sequentially** at the next free identifier (AP-015, AP-016, …). Never reuse or renumber an existing AP — the file rule (`anti-patterns.md` line 15) makes every AP-XXX permanent.
-4. Add the `AP-XXX → Article` anchor row in `.claude/agents/pattern-guard.md` so the new AP carries its consequence.
-5. Record new APs during the **self-improvement loop** (CLAUDE.md § Self-Improvement Loop) — the loop that follows implementation is where recurring mistakes get codified.
+If pattern-guard misses something you keep seeing in reviews, record it as a new AP. The procedure — confirm it recurred, grep for a near-duplicate, append at the next free number with the live schema, add the `AP-XXX → Article` row in `.claude/agents/pattern-guard.md`, ship it in the same PR as its own commit, and the collision rule — lives in one place: [self-improvement-loop](../self-improvement-loop/SKILL.md) § _Recording a new anti-pattern_.
 
 ---
 

@@ -197,9 +197,25 @@ prompt: |
   Files to review:
   <one path per line, from `git diff --name-only staging...HEAD`>
 
+  Earlier lens report (binding — do not re-open its Explicitly cleared ground):
+  <the pattern-guard report, verbatim>
+
   Produce the structured findings list per the agent definition.
   Do not modify code.
 ```
+
+### The handoff between lenses
+
+Every lens after the first is dispatched with the previous reports **in full**, and the handoff carries two things — the second is the one usually missed:
+
+| What travels | Why the next lens needs it |
+| --- | --- |
+| **Findings** — the `file:line` lines | So the next lens can correct a wrong anchor or close an open question instead of re-raising it |
+| **Explicitly cleared** — what the lens examined and found sound, named concretely (files walked, seams checked, commands run and their result) | So the next lens spends its pass on ground nobody has covered |
+
+**The cleared section binds.** A lens does not re-open ground a previous lens cleared and does not re-derive a finding already anchored. What earns its attention is the untouched ground, plus the overlap where its own lens can *compute* something the previous one only asserted — and a finding there says which clearance it overturns. A lens that reports only findings has given the next one half a handoff; a chain of lenses that each re-read the whole diff has run several passes and bought one.
+
+**What a clearance does not cover.** A clearance covers only the specific checks it names, never whole files — and the Article I (user-file reversibility) and Article II (no metadata egress) checks are always re-run by every lens that owns them, cleared or not.
 
 Re-review rule: if the review found **critical** findings, re-dispatch after the fixes are committed. Suggestion-level findings do not require a re-review.
 
